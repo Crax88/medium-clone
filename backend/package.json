@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Medium clone backend with Express Typeorm Typescript",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Crax88/medium-clone.git"
+  },
+  "keywords": [
+    "Express",
+    "Typeorm",
+    "Typescript"
+  ],
+  "author": "N. Trafilkin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Crax88/medium-clone/issues"
+  },
+  "homepage": "https://github.com/Crax88/medium-clone#readme"
+}

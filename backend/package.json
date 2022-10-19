@@ -1,42 +1,50 @@
 {
-  "name": "backend",
-  "version": "1.0.0",
-  "description": "Medium clone backend with Express Typeorm Typescript",
-  "main": "index.js",
-  "scripts": {
-    "build": "tsc -p ./tsconfig.prod.json",
-    "build:dev": "tsc",
-    "start": "node dist.main.js",
-    "start:dev": "nodemon ./src/main.ts"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Crax88/medium-clone.git"
-  },
-  "keywords": [
-    "Express",
-    "Typeorm",
-    "Typescript"
-  ],
-  "author": "N. Trafilkin",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Crax88/medium-clone/issues"
-  },
-  "homepage": "https://github.com/Crax88/medium-clone#readme",
-  "dependencies": {
-    "body-parser": "^1.20.1",
-    "cookie-parser": "^1.4.6",
-    "express": "^4.18.2",
-    "inversify": "^6.0.1",
-    "reflect-metadata": "^0.1.13"
-  },
-  "devDependencies": {
-    "@types/body-parser": "^1.19.2",
-    "@types/cookie-parser": "^1.4.3",
-    "@types/express": "^4.17.14",
-    "nodemon": "^2.0.20",
-    "ts-node": "^10.9.1",
-    "typescript": "^4.8.4"
-  }
+	"name": "backend",
+	"version": "1.0.0",
+	"description": "Medium clone backend with Express Typeorm Typescript",
+	"main": "index.js",
+	"scripts": {
+		"build": "tsc -p ./tsconfig.prod.json",
+		"build:dev": "tsc",
+		"start": "node dist.main.js",
+		"start:dev": "nodemon ./src/main.ts",
+		"lint": "eslint ./src/**",
+		"lint:fix": "eslint ./src/** --fix"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Crax88/medium-clone.git"
+	},
+	"keywords": [
+		"Express",
+		"Typeorm",
+		"Typescript"
+	],
+	"author": "N. Trafilkin",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/Crax88/medium-clone/issues"
+	},
+	"homepage": "https://github.com/Crax88/medium-clone#readme",
+	"dependencies": {
+		"body-parser": "^1.20.1",
+		"cookie-parser": "^1.4.6",
+		"express": "^4.18.2",
+		"inversify": "^6.0.1",
+		"reflect-metadata": "^0.1.13"
+	},
+	"devDependencies": {
+		"@types/body-parser": "^1.19.2",
+		"@types/cookie-parser": "^1.4.3",
+		"@types/express": "^4.17.14",
+		"@typescript-eslint/eslint-plugin": "^5.40.1",
+		"@typescript-eslint/parser": "^5.40.1",
+		"eslint": "^8.25.0",
+		"eslint-config-prettier": "^8.5.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"nodemon": "^2.0.20",
+		"prettier": "^2.7.1",
+		"ts-node": "^10.9.1",
+		"typescript": "^4.8.4"
+	}
 }

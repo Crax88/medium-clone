@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import { TYPES } from './types';
 import { LoggerInterface } from './common/types/logger.interface';
 import { ConfigInterface } from './common/types/config.interface';
+import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
 
 @injectable()
 export class App {
@@ -17,6 +18,7 @@ export class App {
 	constructor(
 		@inject(TYPES.LoggerService) private loggerService: LoggerInterface,
 		@inject(TYPES.ConfigService) private configService: ConfigInterface,
+		@inject(TYPES.ExceptionFilter) private exceptionFilter: ExceptionFilterInterface,
 	) {
 		this.port = Number(this.configService.get('PORT'));
 		this.app = express();
@@ -48,6 +50,6 @@ export class App {
 	}
 
 	private useExceptionFilters(): void {
-		console.log('Bind error middleware');
+		this.app.use(this.exceptionFilter.catch.bind(this.exceptionFilter));
 	}
 }

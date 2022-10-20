@@ -64,7 +64,9 @@ export class LoggerService implements LoggerInterface {
 				if (typeof arg === 'number' || typeof arg === 'string') {
 					return arg;
 				}
-
+				if (arg instanceof Error) {
+					return JSON.stringify(arg, Object.getOwnPropertyNames(arg));
+				}
 				return JSON.stringify(arg);
 			})
 			.join(' ');

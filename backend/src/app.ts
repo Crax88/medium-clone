@@ -6,6 +6,7 @@ import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { TYPES } from './types';
 import { LoggerInterface } from './common/types/logger.interface';
+import { ConfigInterface } from './common/types/config.interface';
 
 @injectable()
 export class App {
@@ -13,9 +14,12 @@ export class App {
 	private port: number;
 	private server: Server;
 
-	constructor(@inject(TYPES.LoggerService) private loggerService: LoggerInterface) {
+	constructor(
+		@inject(TYPES.LoggerService) private loggerService: LoggerInterface,
+		@inject(TYPES.ConfigService) private configService: ConfigInterface,
+	) {
+		this.port = Number(this.configService.get('PORT'));
 		this.app = express();
-		this.port = 4000;
 	}
 
 	async init(): Promise<void> {

@@ -20,7 +20,7 @@ const colors = {
 
 const consoleFormat = winston.format.combine(
 	winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
-	winston.format.colorize({ colors: colors }),
+	winston.format.colorize({ all: true, colors }),
 	winston.format.printf((info) => {
 		return `${info.timestamp} ${info.level} ${info.message}`;
 	}),
@@ -28,7 +28,7 @@ const consoleFormat = winston.format.combine(
 
 const errorFormat = winston.format.combine(
 	winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss:ms' }),
-	winston.format.colorize({ colors: colors }),
+	winston.format.colorize({ all: true, colors }),
 	winston.format.printf((info) => {
 		return `${info.timestamp} ${info.level} ${info.message}`;
 	}),

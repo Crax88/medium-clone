@@ -5,6 +5,7 @@ import { LoggerInterface } from './common/types/logger.interface';
 import { ExceptionFilter } from './errors/exception.filter';
 import { ConfigService } from './shared/services/config.service';
 import { LoggerService } from './shared/services/logger.service';
+import { TypeormService } from './shared/services/typeorm.service';
 import { TYPES } from './types';
 export interface IBootsrapReturn {
 	appContainer: Container;
@@ -19,7 +20,10 @@ async function bootstrap(): Promise<IBootsrapReturn> {
 		.bind<ExceptionFilterInterface>(TYPES.ExceptionFilter)
 		.to(ExceptionFilter)
 		.inSingletonScope();
+	appContainer.bind<TypeormService>(TYPES.DatabaseService).to(TypeormService).inSingletonScope();
+
 	const app = appContainer.get<App>(TYPES.Application);
+
 	await app.init();
 
 	return { app, appContainer };

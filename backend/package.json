@@ -28,6 +28,8 @@
 	"homepage": "https://github.com/Crax88/medium-clone#readme",
 	"dependencies": {
 		"body-parser": "^1.20.1",
+		"class-transformer": "^0.5.1",
+		"class-validator": "^0.13.2",
 		"cookie-parser": "^1.4.6",
 		"express": "^4.18.2",
 		"inversify": "^6.0.1",

@@ -1,7 +1,7 @@
 import { Container } from 'inversify';
 import { App } from './app';
 import { LoggerInterface } from './common/types/logger.interface';
-import { LoggerService } from './shared/logger/logger.service';
+import { LoggerService } from './shared/services/logger.service';
 import { TYPES } from './types';
 export interface IBootsrapReturn {
 	appContainer: Container;

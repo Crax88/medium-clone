@@ -1,9 +1,11 @@
 import 'reflect-metadata';
-import { injectable } from 'inversify';
+import { injectable, inject } from 'inversify';
 import { Server } from 'node:http';
 import express, { Express } from 'express';
 import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
+import { TYPES } from './types';
+import { LoggerInterface } from './common/types/logger.interface';
 
 @injectable()
 export class App {
@@ -11,7 +13,7 @@ export class App {
 	private port: number;
 	private server: Server;
 
-	constructor() {
+	constructor(@inject(TYPES.LoggerService) private loggerService: LoggerInterface) {
 		this.app = express();
 		this.port = 4000;
 	}
@@ -21,10 +23,10 @@ export class App {
 		this.useRoutes();
 		this.useExceptionFilters();
 		this.server = this.app.listen(this.port, () => {
-			console.log(`Server started on port ${this.port}`);
+			this.loggerService.info(`[App] Server started on port ${this.port}`);
 		});
 		process.on('uncaughtException', (err) => {
-			console.log(`Error ${err.message}`);
+			this.loggerService.error(`[App] Uncaught exception ${err.message}`, err);
 		});
 	}
 

@@ -8,6 +8,7 @@ import { TYPES } from './types';
 import { LoggerInterface } from './common/types/logger.interface';
 import { ConfigInterface } from './common/types/config.interface';
 import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
+import { TypeormService } from './shared/services/typeorm.service';
 
 @injectable()
 export class App {
@@ -19,6 +20,7 @@ export class App {
 		@inject(TYPES.LoggerService) private loggerService: LoggerInterface,
 		@inject(TYPES.ConfigService) private configService: ConfigInterface,
 		@inject(TYPES.ExceptionFilter) private exceptionFilter: ExceptionFilterInterface,
+		@inject(TYPES.DatabaseService) private databaseService: TypeormService,
 	) {
 		this.port = Number(this.configService.get('PORT'));
 		this.app = express();
@@ -28,6 +30,7 @@ export class App {
 		this.useMiddlewares();
 		this.useRoutes();
 		this.useExceptionFilters();
+		await this.databaseService.connect();
 		this.server = this.app.listen(this.port, () => {
 			this.loggerService.info(`[App] Server started on port ${this.port}`);
 		});

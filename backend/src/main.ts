@@ -1,5 +1,6 @@
 import { Container } from 'inversify';
 import { App } from './app';
+import { AuthModule } from './auth/auth.module';
 import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
 import { LoggerInterface } from './common/types/logger.interface';
 import { ExceptionFilter } from './errors/exception.filter';
@@ -21,6 +22,7 @@ async function bootstrap(): Promise<IBootsrapReturn> {
 		.to(ExceptionFilter)
 		.inSingletonScope();
 	appContainer.bind<TypeormService>(TYPES.DatabaseService).to(TypeormService).inSingletonScope();
+	appContainer.load(AuthModule);
 
 	const app = appContainer.get<App>(TYPES.Application);
 

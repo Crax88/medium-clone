@@ -1,13 +1,12 @@
 import 'reflect-metadata';
 import { inject, injectable } from 'inversify';
 import { DataSource, ObjectLiteral, ObjectType, Repository } from 'typeorm';
-import { DatabaseInterface } from '../../common/types/database.interface';
 import { LoggerInterface } from '../../common/types/logger.interface';
 import { ConfigInterface } from '../../common/types/config.interface';
 import { TYPES } from '../../types';
 
 @injectable()
-export class TypeormService implements DatabaseInterface {
+export class TypeormService {
 	client: DataSource;
 
 	constructor(

@@ -2,12 +2,12 @@
 	"name": "backend",
 	"version": "1.0.0",
 	"description": "Medium clone backend with Express Typeorm Typescript",
-	"main": "index.js",
+	"main": "src/main.ts",
 	"scripts": {
 		"build": "tsc -p ./tsconfig.prod.json",
 		"build:dev": "tsc",
 		"start": "node dist.main.js",
-		"start:dev": "nodemon ./src/main.ts",
+		"start:dev": "nodemon -L ./src/main.ts",
 		"lint": "eslint ./src/**",
 		"lint:fix": "eslint ./src/** --fix"
 	},

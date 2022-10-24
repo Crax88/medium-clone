@@ -1,3 +1,5 @@
+import { AppConfigKey } from './appConfig.interface';
+
 export interface ConfigInterface {
-	get: (key: string) => string;
+	get: (key: AppConfigKey) => string;
 }

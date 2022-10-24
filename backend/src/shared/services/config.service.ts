@@ -1,13 +1,21 @@
 import { inject, injectable } from 'inversify';
 import { ConfigInterface } from '../../common/types/config.interface';
 import { LoggerInterface } from '../../common/types/logger.interface';
-import { AppConfigInterface } from '../../common/types/appConfig.interface';
+import { AppConfigInterface, AppConfigKey } from '../../common/types/appConfig.interface';
 import { TYPES } from '../../types';
+
+type a = keyof AppConfigInterface;
 
 @injectable()
 export class ConfigService implements ConfigInterface {
 	private config: AppConfigInterface = {
 		PORT: '',
+		NODE_ENV: '',
+		DB_NAME: '',
+		DB_USER: '',
+		DB_PORT: '',
+		DB_PASSWORD: '',
+		DB_HOST: '',
 	};
 
 	constructor(@inject(TYPES.LoggerService) private loggerService: LoggerInterface) {
@@ -17,7 +25,7 @@ export class ConfigService implements ConfigInterface {
 				if (!envParam) {
 					throw new Error(`Parametr ${param} is not defined in the env`);
 				}
-				this.config[param] = envParam;
+				this.config[param as keyof AppConfigInterface] = envParam;
 			}
 			this.loggerService.info(`[ConfigService] Successfully load env configuration`);
 		} catch (error) {
@@ -25,7 +33,7 @@ export class ConfigService implements ConfigInterface {
 		}
 	}
 
-	get(key: string): string {
+	get(key: AppConfigKey): string {
 		return this.config[key];
 	}
 }

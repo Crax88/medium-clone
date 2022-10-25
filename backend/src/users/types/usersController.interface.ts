@@ -7,4 +7,5 @@ export interface UsersControllerInterface extends BaseController {
 	logout: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 	refresh: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 	authenticate: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+	update: (req: Request, res: Response, next: NextFunction) => Promise<void>;
 }

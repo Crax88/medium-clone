@@ -10,6 +10,7 @@ import { UserRegisterDto } from './types/userRegister.dto';
 import { UsersRepositoryInterface } from './types/usersRepository.interface';
 import { UsersServiceInterface } from './types/usersService.interface';
 import { User } from './user.entity';
+import { UserUpdateDto } from './types/userUpdate.dto';
 
 @injectable()
 export class UsersService implements UsersServiceInterface {
@@ -83,12 +84,31 @@ export class UsersService implements UsersServiceInterface {
 			throw new HttpError(401, 'unauthorized');
 		}
 		const tokens = this.tokensService.generateTokens({ userId: user.id });
-		// await this.tokensService.saveToken(user.id, tokens.refreshToken);
 		return this.buildAuthResponse(user, tokens);
 	}
 
 	async logout(token: string): Promise<void> {
 		await this.tokensService.removeToken(token);
+	}
+
+	async update(id: number, dto: UserUpdateDto): Promise<AuthResponse> {
+		const toUpdateFields: UserUpdateDto = {};
+		for (const key in dto) {
+			if (dto[key as keyof UserUpdateDto]) {
+				toUpdateFields[key as keyof UserUpdateDto] = dto[key as keyof UserUpdateDto];
+			}
+		}
+		if (toUpdateFields.password) {
+			const salt = await genSalt(Number(this.configService.get('SALT')));
+			const hashedPasword = await hash(toUpdateFields.password, salt);
+			toUpdateFields.password = hashedPasword;
+		}
+		const user = await this.usersRepository.updateUser(id, toUpdateFields);
+		if (!user) {
+			throw new HttpError(404, 'user not found');
+		}
+		const tokens = this.tokensService.generateTokens({ userId: user.id });
+		return this.buildAuthResponse(user, tokens);
 	}
 
 	private buildAuthResponse(

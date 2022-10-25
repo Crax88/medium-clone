@@ -1,13 +1,17 @@
 import { Request, Response, NextFunction } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
 import { inject, injectable } from 'inversify';
+import { ParsedQs } from 'qs';
 import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { ValidationMiddleware } from '../common/validation.middleware';
+import { AuthGuard } from '../shared/services/auth.guard';
 import { TYPES } from '../types';
 import { UserLoginDto } from './types/userLogin.dto';
 import { UserRegisterDto } from './types/userRegister.dto';
 import { UsersControllerInterface } from './types/usersController.interface';
 import { UsersServiceInterface } from './types/usersService.interface';
+import { UserUpdateDto } from './types/userUpdate.dto';
 
 @injectable()
 export class UsersController extends BaseController implements UsersControllerInterface {
@@ -43,6 +47,12 @@ export class UsersController extends BaseController implements UsersControllerIn
 				path: '/user',
 				method: 'get',
 				handler: this.authenticate,
+			},
+			{
+				path: '/user',
+				method: 'put',
+				handler: this.update,
+				middlewares: [new AuthGuard()],
 			},
 		]);
 	}
@@ -108,11 +118,20 @@ export class UsersController extends BaseController implements UsersControllerIn
 
 	async authenticate(req: Request<{}, {}, {}>, res: Response, next: NextFunction): Promise<void> {
 		try {
-			const { user, refreshToken } = await this.usersService.authenticate(req.userId);
-			res.cookie('rf', refreshToken, {
-				maxAge: 30 * 24 * 60 * 60 * 1000,
-				httpOnly: true,
-			});
+			const { user } = await this.usersService.authenticate(req.userId);
+			this.ok(res, user);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async update(
+		req: Request<{}, {}, UserUpdateDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const { user } = await this.usersService.update(req.userId, req.body);
 			this.ok(res, user);
 		} catch (error) {
 			next(error);

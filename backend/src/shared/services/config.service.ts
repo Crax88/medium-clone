@@ -16,6 +16,11 @@ export class ConfigService implements ConfigInterface {
 		DB_PORT: '',
 		DB_PASSWORD: '',
 		DB_HOST: '',
+		ACCESS_TOKEN_SECRET: '',
+		ACCESS_TOKEN_EXPIRES: '',
+		REFRESH_TOKEN_SECRET: '',
+		REFRESH_TOKEN_EXPIRES: '',
+		SALT: '',
 	};
 
 	constructor(@inject(TYPES.LoggerService) private loggerService: LoggerInterface) {

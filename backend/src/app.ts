@@ -9,6 +9,9 @@ import { LoggerInterface } from './common/types/logger.interface';
 import { ConfigInterface } from './common/types/config.interface';
 import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
 import { TypeormService } from './shared/services/typeorm.service';
+import { UsersControllerInterface } from './users/types/usersController.interface';
+import { AuthMiddleware } from './shared/services/auth.middleware';
+import { TokensServiceInterface } from './tokens/types/tokensService.interface';
 
 @injectable()
 export class App {
@@ -21,6 +24,8 @@ export class App {
 		@inject(TYPES.ConfigService) private configService: ConfigInterface,
 		@inject(TYPES.ExceptionFilter) private exceptionFilter: ExceptionFilterInterface,
 		@inject(TYPES.DatabaseService) private databaseService: TypeormService,
+		@inject(TYPES.UsersController) private usersController: UsersControllerInterface,
+		@inject(TYPES.TokenService) private tokensService: TokensServiceInterface,
 	) {
 		this.port = Number(this.configService.get('PORT'));
 		this.app = express();
@@ -46,10 +51,12 @@ export class App {
 	private useMiddlewares(): void {
 		this.app.use(json());
 		this.app.use(cookieParser());
+		const authMiddleware = new AuthMiddleware(this.tokensService);
+		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}
 
 	private useRoutes(): void {
-		console.log('Bindind routes');
+		this.app.use('/api', this.usersController.router);
 	}
 
 	private useExceptionFilters(): void {

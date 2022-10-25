@@ -7,7 +7,6 @@ import { LoggerInterface } from './types/logger.interface';
 @injectable()
 export abstract class BaseController {
 	private readonly _router: Router;
-	protected abstract _pathPrefix: string;
 
 	constructor(private loggerService: LoggerInterface) {
 		this._router = Router();
@@ -17,13 +16,8 @@ export abstract class BaseController {
 		return this._router;
 	}
 
-	get pathPrefix(): string {
-		return this._pathPrefix;
-	}
-
 	protected send<T>(res: Response, code: number, data: T): ExpressReturnType {
 		res.type('application/json');
-		res.setDefaultEncoding('utf-8');
 		return res.status(code).json(data);
 	}
 
@@ -37,7 +31,7 @@ export abstract class BaseController {
 
 	protected bindRoutes(routes: RouteInterface[]): void {
 		for (const route of routes) {
-			const routePath = `${this._pathPrefix}${route.path}`.replace(/\/$/, '');
+			const routePath = `${route.path}`.replace(/\/$/, '');
 			this.loggerService.info(`[${route.method}] ${routePath}`);
 			const middleware = route?.middlewares?.map((m) => m.execute.bind(m));
 			const handler = route.handler.bind(this);

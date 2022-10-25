@@ -27,6 +27,8 @@
 	},
 	"homepage": "https://github.com/Crax88/medium-clone#readme",
 	"dependencies": {
+		"@types/bcryptjs": "^2.4.2",
+		"bcryptjs": "^2.4.3",
 		"body-parser": "^1.20.1",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.13.2",

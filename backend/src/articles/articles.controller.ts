@@ -11,10 +11,6 @@ import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { TYPES } from '../types';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
 
-interface Params {
-	slug: string;
-}
-
 @injectable()
 export class ArticlesContoller extends BaseController implements ArticlesControllerInterface {
 	constructor(

@@ -75,7 +75,6 @@ export class ArticlesService implements ArticlesServiceInterface {
 	}
 
 	async getArticles(query: ArticlesQueryDto): Promise<ArticlesResponseDto> {
-		console.log(query);
 		const articles = await this.articlesRepository.getArticles(query);
 		return { articles };
 	}

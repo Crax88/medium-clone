@@ -1,7 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { ParamsDictionary } from 'express-serve-static-core';
 import { inject, injectable } from 'inversify';
-import { ParsedQs } from 'qs';
 import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { ValidationMiddleware } from '../common/validation.middleware';

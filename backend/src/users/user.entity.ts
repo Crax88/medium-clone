@@ -1,5 +1,15 @@
 import 'reflect-metadata';
-import { Column, Entity, PrimaryGeneratedColumn, Unique } from 'typeorm';
+import {
+	Column,
+	CreateDateColumn,
+	Entity,
+	JoinColumn,
+	OneToMany,
+	PrimaryGeneratedColumn,
+	Unique,
+	UpdateDateColumn,
+} from 'typeorm';
+import { Article } from '../articles/article.entity';
 
 @Entity('users')
 export class User {
@@ -23,14 +33,23 @@ export class User {
 	@Column({ type: 'text', nullable: true })
 	bio: string | null;
 
-	@Column({
+	@OneToMany(() => Article, (article) => article.authorId)
+	@JoinColumn({ name: 'articles' })
+	articles: Article[];
+
+	@CreateDateColumn({
 		name: 'created_at',
 		nullable: false,
 		type: 'timestamp without time zone',
-		default: () => 'CURRENT_TIMESTAMP',
+		default: 'NOW()',
 	})
 	createdAt: string;
 
-	@Column({ name: 'updated_at', type: 'timestamp without time zone', nullable: true })
+	@UpdateDateColumn({
+		name: 'updated_at',
+		type: 'timestamp without time zone',
+		onUpdate: 'NOW()',
+		nullable: true,
+	})
 	updatedAt: string;
 }

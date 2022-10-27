@@ -12,6 +12,7 @@ import { TypeormService } from './shared/services/typeorm.service';
 import { UsersControllerInterface } from './users/types/usersController.interface';
 import { AuthMiddleware } from './shared/services/auth.middleware';
 import { TokensServiceInterface } from './tokens/types/tokensService.interface';
+import { ArticlesControllerInterface } from './articles/types/articlesController.interface';
 
 @injectable()
 export class App {
@@ -25,6 +26,7 @@ export class App {
 		@inject(TYPES.ExceptionFilter) private exceptionFilter: ExceptionFilterInterface,
 		@inject(TYPES.DatabaseService) private databaseService: TypeormService,
 		@inject(TYPES.UsersController) private usersController: UsersControllerInterface,
+		@inject(TYPES.ArticlesController) private articlesController: ArticlesControllerInterface,
 		@inject(TYPES.TokenService) private tokensService: TokensServiceInterface,
 	) {
 		this.port = Number(this.configService.get('PORT'));
@@ -57,6 +59,7 @@ export class App {
 
 	private useRoutes(): void {
 		this.app.use('/api', this.usersController.router);
+		this.app.use('/api', this.articlesController.router);
 	}
 
 	private useExceptionFilters(): void {

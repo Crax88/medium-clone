@@ -6,6 +6,7 @@ import { ArticlesRepositoryInterface } from './types/articlesRepository.interfac
 import { ArticleDto } from './types/article.dto';
 import { ArticleSaveDto } from './types/articleSave.dto';
 import { TYPES } from '../types';
+import { ArticlesQueryDto } from './types/articlesQuery.dto';
 
 @injectable()
 export class ArticlesRepository implements ArticlesRepositoryInterface {
@@ -48,7 +49,7 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 		return article;
 	}
 
-	async getArticles(query: string): Promise<ArticleDto[]> {
+	async getArticles(query: ArticlesQueryDto): Promise<ArticleDto[]> {
 		const articles = await this.repository
 			.createQueryBuilder('article')
 			.select([
@@ -60,8 +61,13 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 				'article.updatedAt as updatedAt',
 				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
 			])
-			.innerJoin('article.authorId', 'user')
-			// .where('article.slug = :slug', { slug })
+			.innerJoin('article.author', 'user')
+			.where(`${this.parameterOrNull('user.username', 'username')}`, {
+				username: this.valueOrNull(query.author, 'string'),
+			})
+			.limit(query.limit ? Number(query.limit) : 10)
+			.offset(query.offset ? Number(query.offset) : 0)
+			.orderBy('article.created_at', 'DESC')
 			.getRawMany();
 
 		return articles;
@@ -69,5 +75,19 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 
 	async getArticleRaw(slug: string): Promise<Article | null> {
 		return await this.repository.findOne({ where: { slug } });
+	}
+
+	private parameterOrNull(columnName: string, paramName: string): string {
+		return `(${columnName} = :${paramName} OR COALESCE(:${paramName}, NULL) IS NULL)`;
+	}
+
+	private valueOrNull(value: unknown, type: 'string' | 'number'): number | string | null {
+		if (type === 'string' && typeof value === 'string') {
+			return value.toString() ?? null;
+		}
+		if (type === 'number' && typeof value !== 'object') {
+			return value === undefined || value === null ? null : +value;
+		}
+		return null;
 	}
 }

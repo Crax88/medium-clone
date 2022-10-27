@@ -9,10 +9,7 @@ import { LoggerInterface } from '../common/types/logger.interface';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { TYPES } from '../types';
-
-interface Params {
-	slug: string;
-}
+import { ArticlesQueryDto } from './types/articlesQuery.dto';
 
 @injectable()
 export class ArticlesContoller extends BaseController implements ArticlesControllerInterface {
@@ -58,9 +55,13 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		]);
 	}
 
-	async getArticles(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async getArticles(
+		req: Request<{}, {}, {}, ArticlesQueryDto>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
 		try {
-			const articles = await this.articlesService.getArticles({});
+			const articles = await this.articlesService.getArticles(req.query);
 			this.ok(res, { articles });
 		} catch (error) {
 			next(error);

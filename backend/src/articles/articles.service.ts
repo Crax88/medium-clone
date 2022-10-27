@@ -8,6 +8,7 @@ import { ArticleSaveDto } from './types/articleSave.dto';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { TYPES } from '../types';
+import { ArticlesQueryDto } from './types/articlesQuery.dto';
 
 @injectable()
 export class ArticlesService implements ArticlesServiceInterface {
@@ -73,7 +74,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		return { article };
 	}
 
-	async getArticles(query: any): Promise<ArticlesResponseDto> {
+	async getArticles(query: ArticlesQueryDto): Promise<ArticlesResponseDto> {
 		const articles = await this.articlesRepository.getArticles(query);
 		return { articles };
 	}

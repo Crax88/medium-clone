@@ -1,23 +1,30 @@
 import { inject, injectable } from 'inversify';
 import slugify from 'slugify';
+import { Repository, SelectQueryBuilder } from 'typeorm';
+import { TypeormService } from '../shared/services/typeorm.service';
 import { HttpError } from '../errors/httpError';
+import { Tag } from '../tags/tag.entity';
+import { Article } from './article.entity';
 import { ArticlesServiceInterface } from './types/articlesService.interface';
-import { ArticlesRepositoryInterface } from './types/articlesRepository.interface';
+import { TagsServiceInterface } from '../tags/types/tagsService.interface';
+import { QueryHelperInterface } from '../shared/types/queryHelper.interface';
 import { ArticleResponseDto, ArticlesResponseDto } from './types/article.dto';
 import { ArticleSaveDto } from './types/articleSave.dto';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
-import { TYPES } from '../types';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
-import { TagsService } from '../tags/tags.service';
-import { Tag } from '../tags/tag.entity';
+import { TYPES } from '../types';
 
 @injectable()
 export class ArticlesService implements ArticlesServiceInterface {
+	private articlesRepository: Repository<Article>;
 	constructor(
-		@inject(TYPES.ArticlesRepository) private articlesRepository: ArticlesRepositoryInterface,
-		@inject(TYPES.TagsService) private tagsService: TagsService,
-	) {}
+		@inject(TYPES.DatabaseService) databaseService: TypeormService,
+		@inject(TYPES.TagsService) private tagsService: TagsServiceInterface,
+		@inject(TYPES.QueryHelper) private queryHelper: QueryHelperInterface,
+	) {
+		this.articlesRepository = databaseService.getRepository(Article);
+	}
 
 	async createArticle(
 		{ article }: CreateArticleRequestDto,
@@ -30,12 +37,13 @@ export class ArticlesService implements ArticlesServiceInterface {
 				tags.push(await this.tagsService.saveTag(tag));
 			}
 		}
-		await this.articlesRepository.createArticle({
+		const newArticle = this.articlesRepository.create({
 			...article,
 			slug,
 			authorId: userId,
 			tags,
 		});
+		await this.articlesRepository.save(newArticle);
 		return this.getArticle(slug);
 	}
 
@@ -44,7 +52,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		{ article }: UpdateArticleRequestDto,
 		userId: number,
 	): Promise<ArticleResponseDto> {
-		const foundArticle = await this.articlesRepository.getArticleRaw(slug);
+		const foundArticle = await this.articlesRepository.findOneBy({ slug });
 
 		if (!foundArticle) {
 			throw new HttpError(404, 'article not found');
@@ -52,16 +60,15 @@ export class ArticlesService implements ArticlesServiceInterface {
 		if (foundArticle.authorId !== userId) {
 			throw new HttpError(403, 'not authorized');
 		}
-		const toUpdate: ArticleSaveDto = {
+		const toUpdate: Omit<ArticleSaveDto, 'tags'> = {
 			title: article.title || foundArticle.title,
 			description: article.description || foundArticle.description,
 			body: article.body || foundArticle.body,
-			slug: article.title ? this.createSlug(article.title) : foundArticle.slug,
 			authorId: userId,
-			tags: [],
+			slug: article.title ? this.createSlug(article.title) : foundArticle.slug,
 		};
 
-		const result = await this.articlesRepository.updateArticle(slug, toUpdate);
+		const result = await this.articlesRepository.update({ slug }, toUpdate);
 
 		if (!result.affected || result.affected === 0) {
 			throw new HttpError(404, 'article not found');
@@ -70,7 +77,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 	}
 
 	async deleteArticle(slug: string, userId: number): Promise<void> {
-		const article = await this.articlesRepository.getArticleRaw(slug);
+		const article = await this.articlesRepository.findOneBy({ slug });
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
@@ -79,14 +86,40 @@ export class ArticlesService implements ArticlesServiceInterface {
 			throw new HttpError(403, 'not authorized');
 		}
 
-		const result = await this.articlesRepository.deleteArticle(slug);
+		const result = await this.articlesRepository.delete({ slug });
 		if (!result.affected || result.affected === 0) {
 			throw new HttpError(404, 'article not found');
 		}
 	}
 
 	async getArticle(slug: string): Promise<ArticleResponseDto> {
-		const article = await this.articlesRepository.getArticle(slug);
+		const article = await this.articlesRepository
+			.createQueryBuilder('article')
+			.select([
+				'article.slug as slug',
+				'article.title as title',
+				'article.description as description',
+				'article.body as body',
+				'article.createdAt as createdAt',
+				'article.updatedAt as updatedAt',
+				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
+				'COALESCE(t."tagList", \'{}\') as "tagList"',
+			])
+			.innerJoin('article.author', 'user')
+			.leftJoin(
+				(qb: SelectQueryBuilder<Tag>) => {
+					return qb
+						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
+						.from('tags', 't')
+						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
+						.groupBy('"article_id"');
+				},
+				't',
+				't."articleId" = article.id',
+			)
+			.where('article.slug = :slug', { slug })
+			.getRawOne();
+
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
@@ -95,7 +128,40 @@ export class ArticlesService implements ArticlesServiceInterface {
 	}
 
 	async getArticles(query: ArticlesQueryDto): Promise<ArticlesResponseDto> {
-		const articles = await this.articlesRepository.getArticles(query);
+		const articles = await this.articlesRepository
+			.createQueryBuilder('article')
+			.select([
+				'article.slug as slug',
+				'article.title as title',
+				'article.description as description',
+				'article.body as body',
+				'article.createdAt as createdAt',
+				'article.updatedAt as updatedAt',
+				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
+				'COALESCE(t."tagList", \'{}\') as "tagList"',
+			])
+			.innerJoin('article.author', 'user')
+			.leftJoin(
+				(qb: SelectQueryBuilder<Tag>) => {
+					return qb
+						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
+						.from('tags', 't')
+						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
+						.groupBy('"article_id"');
+				},
+				't',
+				't."articleId" = article.id',
+			)
+			.where(`${this.queryHelper.parameterOrNull('user.username', 'username')}`, {
+				username: this.queryHelper.valueOrNull(query.author, 'string'),
+			})
+			.andWhere(this.queryHelper.parameterOrNull('t."tagList"::text', 'tag', 'ILIKE'), {
+				tag: this.queryHelper.valueOrNull(query.tag, 'string') ? `%${query.tag}%` : null,
+			})
+			.limit(query.limit ? Number(query.limit) : 10)
+			.offset(query.offset ? Number(query.offset) : 0)
+			.orderBy('article.created_at', 'DESC')
+			.getRawMany();
 		return { articles };
 	}
 

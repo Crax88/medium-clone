@@ -1,33 +1,38 @@
 import { inject, injectable } from 'inversify';
+import { Repository } from 'typeorm';
 import { hash, genSalt, compare } from 'bcryptjs';
-import { ConfigInterface } from '../common/types/config.interface';
+import { TypeormService } from '../shared/services/typeorm.service';
+import { User } from './user.entity';
 import { HttpError } from '../errors/httpError';
+import { ConfigInterface } from '../common/types/config.interface';
 import { TokensServiceInterface } from '../tokens/types/tokensService.interface';
-import { TYPES } from '../types';
+import { UsersServiceInterface } from './types/usersService.interface';
 import { AuthResponse } from './types/authResponse.interface';
 import { UserLoginDto } from './types/userLogin.dto';
 import { UserRegisterDto } from './types/userRegister.dto';
-import { UsersRepositoryInterface } from './types/usersRepository.interface';
-import { UsersServiceInterface } from './types/usersService.interface';
-import { User } from './user.entity';
 import { UserUpdateDto } from './types/userUpdate.dto';
+import { TYPES } from '../types';
 
 @injectable()
 export class UsersService implements UsersServiceInterface {
+	private usersRepository: Repository<User>;
+
 	constructor(
-		@inject(TYPES.UsersRepository) private usersRepository: UsersRepositoryInterface,
 		@inject(TYPES.ConfigService) private configService: ConfigInterface,
 		@inject(TYPES.TokenService) private tokensService: TokensServiceInterface,
-	) {}
+		@inject(TYPES.DatabaseService) databaseService: TypeormService,
+	) {
+		this.usersRepository = databaseService.getRepository(User);
+	}
 
 	async register(dto: UserRegisterDto): Promise<AuthResponse> {
-		let candidate = await this.usersRepository.findUser({
+		let candidate = await this.usersRepository.findOneBy({
 			email: dto.email,
 		});
 		if (candidate) {
 			throw new HttpError(400, 'email already taken');
 		}
-		candidate = await this.usersRepository.findUser({
+		candidate = await this.usersRepository.findOneBy({
 			username: dto.username,
 		});
 		if (candidate) {
@@ -36,14 +41,15 @@ export class UsersService implements UsersServiceInterface {
 		const salt = await genSalt(Number(this.configService.get('SALT')));
 		const hashedPasword = await hash(dto.password, salt);
 		dto.password = hashedPasword;
-		const newUser = await this.usersRepository.createUser(dto);
+		const newUser = this.usersRepository.create(dto);
+		await this.usersRepository.save(newUser);
 		const tokens = this.tokensService.generateTokens({ userId: newUser.id });
 		await this.tokensService.saveToken(newUser.id, tokens.refreshToken);
 		return this.buildAuthResponse(newUser, tokens);
 	}
 
 	async login(dto: UserLoginDto): Promise<AuthResponse> {
-		const user = await this.usersRepository.findUser({ email: dto.email });
+		const user = await this.usersRepository.findOneBy({ email: dto.email });
 		if (!user) {
 			throw new HttpError(400, 'invalid email or password');
 		}
@@ -66,7 +72,7 @@ export class UsersService implements UsersServiceInterface {
 		if (!tokenData || !savedToken) {
 			throw new HttpError(401, 'unauthorized');
 		}
-		const user = await this.usersRepository.findUser({ id: tokenData.userId });
+		const user = await this.usersRepository.findOneBy({ id: tokenData.userId });
 		if (!user) {
 			throw new HttpError(401, 'unauthorized');
 		}
@@ -79,7 +85,7 @@ export class UsersService implements UsersServiceInterface {
 		if (!id) {
 			throw new HttpError(401, 'unauthorized');
 		}
-		const user = await this.usersRepository.findUser({ id });
+		const user = await this.usersRepository.findOneBy({ id });
 		if (!user) {
 			throw new HttpError(401, 'unauthorized');
 		}
@@ -103,7 +109,11 @@ export class UsersService implements UsersServiceInterface {
 			const hashedPasword = await hash(toUpdateFields.password, salt);
 			toUpdateFields.password = hashedPasword;
 		}
-		const user = await this.usersRepository.updateUser(id, toUpdateFields);
+		const updateResult = await this.usersRepository.update(id, toUpdateFields);
+		if (!updateResult || updateResult.affected === 0) {
+			throw new HttpError(404, 'user not found');
+		}
+		const user = await this.usersRepository.findOneBy({ id });
 		if (!user) {
 			throw new HttpError(404, 'user not found');
 		}

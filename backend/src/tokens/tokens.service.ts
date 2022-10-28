@@ -1,19 +1,23 @@
 import { inject, injectable } from 'inversify';
+import { Repository } from 'typeorm';
 import { sign, verify } from 'jsonwebtoken';
+import { TypeormService } from '../shared/services/typeorm.service';
+import { Token } from './token.entity';
 import { ConfigInterface } from '../common/types/config.interface';
-import { TokensRepositoryInterface } from './types/tokensRepository.interface';
 import { TokensServiceInterface } from './types/tokensService.interface';
 import { TokenPayloadDto } from './types/tokenPayload.dto';
 import { TokensDto } from './types/tokens.dto';
 import { TYPES } from '../types';
-import { Token } from './token.entity';
 
 @injectable()
 export class TokensService implements TokensServiceInterface {
+	private tokensRepository: Repository<Token>;
 	constructor(
 		@inject(TYPES.ConfigService) private configService: ConfigInterface,
-		@inject(TYPES.TokenRepository) private tokenRepository: TokensRepositoryInterface,
-	) {}
+		@inject(TYPES.DatabaseService) databaseService: TypeormService,
+	) {
+		this.tokensRepository = databaseService.getRepository(Token);
+	}
 
 	generateTokens(payload: TokenPayloadDto): TokensDto {
 		const accessToken = sign(payload, this.configService.get('ACCESS_TOKEN_SECRET'), {
@@ -44,16 +48,16 @@ export class TokensService implements TokensServiceInterface {
 	}
 
 	async saveToken(userId: number, token: string): Promise<Token> {
-		const savedToken = await this.tokenRepository.saveToken(userId, token);
+		const savedToken = await this.tokensRepository.save({ userId, token });
 		return savedToken;
 	}
 
 	async removeToken(token: string): Promise<void> {
-		await this.tokenRepository.removeToken(token);
+		await this.tokensRepository.delete(token);
 	}
 
 	async findToken(token: string): Promise<Token | null> {
-		const foundToken = await this.tokenRepository.findToken(token);
+		const foundToken = await this.tokensRepository.findOneBy({ token });
 		return foundToken;
 	}
 }

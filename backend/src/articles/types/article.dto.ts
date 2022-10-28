@@ -11,6 +11,7 @@ export interface ArticleDto {
 		image: string;
 	};
 	tagList: string[];
+	favoritesCount: number;
 }
 
 export interface ArticleResponseDto {

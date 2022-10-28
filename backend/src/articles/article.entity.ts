@@ -4,11 +4,14 @@ import {
 	CreateDateColumn,
 	Entity,
 	JoinColumn,
+	JoinTable,
+	ManyToMany,
 	ManyToOne,
 	PrimaryGeneratedColumn,
 	Unique,
 	UpdateDateColumn,
 } from 'typeorm';
+import { Tag } from '../tags/tag.entity';
 import { User } from '../users/user.entity';
 
 @Entity('articles')
@@ -35,6 +38,14 @@ export class Article {
 	@ManyToOne(() => User, (user) => user.articles, { nullable: false })
 	@JoinColumn({ name: 'author_id' })
 	author: User;
+
+	@ManyToMany(() => Tag)
+	@JoinTable({
+		name: 'article_tags',
+		joinColumn: { name: 'article_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'tag_id', referencedColumnName: 'id' },
+	})
+	tags: Tag[];
 
 	@CreateDateColumn({
 		name: 'created_at',

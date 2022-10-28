@@ -10,6 +10,7 @@ export interface ArticleDto {
 		bio: string;
 		image: string;
 	};
+	tagList: string[];
 }
 
 export interface ArticleResponseDto {

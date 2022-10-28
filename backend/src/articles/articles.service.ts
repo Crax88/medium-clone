@@ -9,11 +9,14 @@ import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { TYPES } from '../types';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
+import { TagsService } from '../tags/tags.service';
+import { Tag } from '../tags/tag.entity';
 
 @injectable()
 export class ArticlesService implements ArticlesServiceInterface {
 	constructor(
 		@inject(TYPES.ArticlesRepository) private articlesRepository: ArticlesRepositoryInterface,
+		@inject(TYPES.TagsService) private tagsService: TagsService,
 	) {}
 
 	async createArticle(
@@ -21,10 +24,17 @@ export class ArticlesService implements ArticlesServiceInterface {
 		userId: number,
 	): Promise<ArticleResponseDto> {
 		const slug = this.createSlug(article.title);
+		const tags: Tag[] = [];
+		if (article.tagList && article.tagList.length) {
+			for (const tag of article.tagList) {
+				tags.push(await this.tagsService.saveTag(tag));
+			}
+		}
 		await this.articlesRepository.createArticle({
 			...article,
 			slug,
 			authorId: userId,
+			tags,
 		});
 		return this.getArticle(slug);
 	}
@@ -48,6 +58,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 			body: article.body || foundArticle.body,
 			slug: article.title ? this.createSlug(article.title) : foundArticle.slug,
 			authorId: userId,
+			tags: [],
 		};
 
 		const result = await this.articlesRepository.updateArticle(slug, toUpdate);
@@ -59,6 +70,15 @@ export class ArticlesService implements ArticlesServiceInterface {
 	}
 
 	async deleteArticle(slug: string, userId: number): Promise<void> {
+		const article = await this.articlesRepository.getArticleRaw(slug);
+		if (!article) {
+			throw new HttpError(404, 'article not found');
+		}
+
+		if (article.authorId !== userId) {
+			throw new HttpError(403, 'not authorized');
+		}
+
 		const result = await this.articlesRepository.deleteArticle(slug);
 		if (!result.affected || result.affected === 0) {
 			throw new HttpError(404, 'article not found');

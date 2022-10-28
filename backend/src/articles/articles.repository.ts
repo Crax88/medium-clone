@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { DeleteResult, Repository, UpdateResult } from 'typeorm';
+import { DeleteResult, QueryBuilder, Repository, SelectQueryBuilder, UpdateResult } from 'typeorm';
 import { TypeormService } from '../shared/services/typeorm.service';
 import { Article } from './article.entity';
 import { ArticlesRepositoryInterface } from './types/articlesRepository.interface';
@@ -7,6 +7,7 @@ import { ArticleDto } from './types/article.dto';
 import { ArticleSaveDto } from './types/articleSave.dto';
 import { TYPES } from '../types';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
+import { Tag } from '../tags/tag.entity';
 
 @injectable()
 export class ArticlesRepository implements ArticlesRepositoryInterface {
@@ -41,8 +42,20 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 				'article.createdAt as createdAt',
 				'article.updatedAt as updatedAt',
 				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
+				'COALESCE(t."tagList", \'{}\') as "tagList"',
 			])
 			.innerJoin('article.author', 'user')
+			.leftJoin(
+				(qb: SelectQueryBuilder<Tag>) => {
+					return qb
+						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
+						.from('tags', 't')
+						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
+						.groupBy('"article_id"');
+				},
+				't',
+				't."articleId" = article.id',
+			)
 			.where('article.slug = :slug', { slug })
 			.getRawOne();
 
@@ -60,10 +73,25 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 				'article.createdAt as createdAt',
 				'article.updatedAt as updatedAt',
 				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
+				'COALESCE(t."tagList", \'{}\') as "tagList"',
 			])
 			.innerJoin('article.author', 'user')
+			.leftJoin(
+				(qb: SelectQueryBuilder<Tag>) => {
+					return qb
+						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
+						.from('tags', 't')
+						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
+						.groupBy('"article_id"');
+				},
+				't',
+				't."articleId" = article.id',
+			)
 			.where(`${this.parameterOrNull('user.username', 'username')}`, {
 				username: this.valueOrNull(query.author, 'string'),
+			})
+			.andWhere(this.parameterOrNull('t."tagList"::text', 'tag', 'ILIKE'), {
+				tag: this.valueOrNull(query.tag, 'string') ? `%${query.tag}%` : null,
 			})
 			.limit(query.limit ? Number(query.limit) : 10)
 			.offset(query.offset ? Number(query.offset) : 0)
@@ -77,8 +105,8 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 		return await this.repository.findOne({ where: { slug } });
 	}
 
-	private parameterOrNull(columnName: string, paramName: string): string {
-		return `(${columnName} = :${paramName} OR COALESCE(:${paramName}, NULL) IS NULL)`;
+	private parameterOrNull(columnName: string, paramName: string, operator = '='): string {
+		return `(${columnName} ${operator} :${paramName} OR COALESCE(:${paramName}, NULL) IS NULL)`;
 	}
 
 	private valueOrNull(value: unknown, type: 'string' | 'number'): number | string | null {

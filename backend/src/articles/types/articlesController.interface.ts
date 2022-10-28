@@ -11,5 +11,14 @@ export interface ArticlesControllerInterface extends BaseController {
 		res: Response,
 		next: NextFunction,
 	) => Promise<void>;
-	deleteArticle: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+	deleteArticle: (
+		req: Request<{ slug: string }>,
+		res: Response,
+		next: NextFunction,
+	) => Promise<void>;
+	favoriteArticle: (
+		req: Request<{ slug: string }>,
+		res: Response,
+		next: NextFunction,
+	) => Promise<void>;
 }

@@ -53,7 +53,7 @@ export class TokensService implements TokensServiceInterface {
 	}
 
 	async removeToken(token: string): Promise<void> {
-		await this.tokensRepository.delete(token);
+		await this.tokensRepository.delete({ token });
 	}
 
 	async findToken(token: string): Promise<Token | null> {

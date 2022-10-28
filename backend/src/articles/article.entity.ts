@@ -47,6 +47,14 @@ export class Article {
 	})
 	tags: Tag[];
 
+	@ManyToMany(() => User)
+	@JoinTable({
+		name: 'article_favorites',
+		joinColumn: { name: 'article_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'user_id', referencedColumnName: 'id' },
+	})
+	favorite: User[];
+
 	@CreateDateColumn({
 		name: 'created_at',
 		nullable: false,

@@ -10,6 +10,8 @@ import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { TYPES } from '../types';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { ParsedQs } from 'qs';
 
 @injectable()
 export class ArticlesContoller extends BaseController implements ArticlesControllerInterface {
@@ -50,6 +52,18 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 				path: '/articles/:slug',
 				method: 'delete',
 				handler: this.deleteArticle,
+				middlewares: [new AuthGuard()],
+			},
+			{
+				path: '/articles/:slug/favorite',
+				method: 'post',
+				handler: this.favoriteArticle,
+				middlewares: [new AuthGuard()],
+			},
+			{
+				path: '/articles/:slug/favorite',
+				method: 'delete',
+				handler: this.favoriteArticle,
 				middlewares: [new AuthGuard()],
 			},
 		]);
@@ -120,10 +134,27 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		}
 	}
 
-	async deleteArticle(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async deleteArticle(
+		req: Request<{ slug: string }>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
 		try {
 			await this.articlesService.deleteArticle(req.params.slug, req.userId);
-			this.ok(res, { article: {} });
+			this.ok(res, {});
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async favoriteArticle(
+		req: Request<{ slug: string }>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const article = await this.articlesService.favoriteArticle(req.params.slug, req.userId);
+			this.ok(res, article);
 		} catch (error) {
 			next(error);
 		}

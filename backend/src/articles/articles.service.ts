@@ -14,6 +14,7 @@ import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
 import { TYPES } from '../types';
+import { User } from '../users/user.entity';
 
 @injectable()
 export class ArticlesService implements ArticlesServiceInterface {
@@ -163,6 +164,25 @@ export class ArticlesService implements ArticlesServiceInterface {
 			.orderBy('article.created_at', 'DESC')
 			.getRawMany();
 		return { articles };
+	}
+
+	async favoriteArticle(slug: string, userId: number): Promise<ArticleResponseDto> {
+		const article = await this.articlesRepository.findOne({
+			where: { slug },
+			relations: {
+				favorite: true,
+			},
+		});
+		if (!article) {
+			throw new HttpError(404, 'article not found');
+		}
+		if (article?.favorite.find((user) => user.id === userId)) {
+			article.favorite = article.favorite.filter((user) => user.id !== userId);
+		} else {
+			article?.favorite.push({ id: userId } as User);
+		}
+		await this.articlesRepository.save(article);
+		return await this.getArticle(slug);
 	}
 
 	private createSlug(title: string): string {

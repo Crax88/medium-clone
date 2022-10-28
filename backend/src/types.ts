@@ -12,4 +12,6 @@ export const TYPES = {
 	ArticlesController: Symbol.for('ArticlesController'),
 	ArticlesService: Symbol.for('ArticlesService'),
 	ArticlesRepository: Symbol.for('ArticlesRepository'),
+	TagsController: Symbol.for('TagsController'),
+	TagsService: Symbol.for('TagsService'),
 };

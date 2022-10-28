@@ -1,5 +1,5 @@
 import { Transform, TransformFnParams, Type } from 'class-transformer';
-import { IsNotEmpty, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export class CreateArticleDto {
 	@IsNotEmpty({ message: 'required' })
@@ -16,6 +16,11 @@ export class CreateArticleDto {
 	@Transform(({ value }: TransformFnParams) => value.trim())
 	@IsString()
 	body: string;
+
+	@IsString({ each: true })
+	@IsArray()
+	@IsOptional()
+	tagList?: string[];
 }
 
 export class CreateArticleRequestDto {

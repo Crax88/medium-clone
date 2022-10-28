@@ -7,6 +7,7 @@ import { ExceptionFilter } from './errors/exception.filter';
 import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
 import { TYPES } from './types';
 import { ArticlesModule } from './articles/articles.module';
+import { TagsModule } from './tags/tags.module';
 export interface IBootsrapReturn {
 	appContainer: Container;
 	app: App;
@@ -18,7 +19,7 @@ async function bootstrap(): Promise<IBootsrapReturn> {
 		.bind<ExceptionFilterInterface>(TYPES.ExceptionFilter)
 		.to(ExceptionFilter)
 		.inSingletonScope();
-	appContainer.load(UsersModule, TokensModule, SharedModule, ArticlesModule);
+	appContainer.load(UsersModule, TokensModule, SharedModule, ArticlesModule, TagsModule);
 
 	const app = appContainer.get<App>(TYPES.Application);
 

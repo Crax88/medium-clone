@@ -11,7 +11,7 @@ export interface ArticlesServiceInterface {
 		userId: number,
 	) => Promise<ArticleResponseDto>;
 	deleteArticle: (slug: string, userId: number) => Promise<void>;
-	getArticle: (slug: string) => Promise<ArticleResponseDto>;
-	getArticles: (query: ArticlesQueryDto) => Promise<ArticlesResponseDto>;
+	getArticle: (slug: string, userId?: number) => Promise<ArticleResponseDto>;
+	getArticles: (query: ArticlesQueryDto, userId?: number) => Promise<ArticlesResponseDto>;
 	favoriteArticle: (slug: string, userId: number) => Promise<ArticleResponseDto>;
 }

@@ -93,7 +93,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		}
 	}
 
-	async getArticle(slug: string): Promise<ArticleResponseDto> {
+	async getArticle(slug: string, userId?: number): Promise<ArticleResponseDto> {
 		const article = await this.articlesRepository
 			.createQueryBuilder('article')
 			.select([
@@ -105,6 +105,10 @@ export class ArticlesService implements ArticlesServiceInterface {
 				'article.updatedAt as updatedAt',
 				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
 				'COALESCE(t."tagList", \'{}\') as "tagList"',
+				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
+				`CASE WHEN ${userId ? userId : null} IS NOT NULL AND ${
+					userId ? userId : null
+				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
 			])
 			.innerJoin('article.author', 'user')
 			.leftJoin(
@@ -117,6 +121,20 @@ export class ArticlesService implements ArticlesServiceInterface {
 				},
 				't',
 				't."articleId" = article.id',
+			)
+			.leftJoin(
+				(qb: SelectQueryBuilder<Article>) => {
+					return qb
+						.select([
+							'af."article_id" as "articleId"',
+							'COUNT(*) as "favoritesCount", array_agg(u.username) as "usernames", array_agg(u.id) as "userIds"',
+						])
+						.from('article_favorites', 'af')
+						.innerJoin('users', 'u', 'af.user_id = u.id')
+						.groupBy('"af"."article_id"');
+				},
+				'af',
+				'af."articleId" = article.id',
 			)
 			.where('article.slug = :slug', { slug })
 			.getRawOne();
@@ -128,7 +146,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		return { article };
 	}
 
-	async getArticles(query: ArticlesQueryDto): Promise<ArticlesResponseDto> {
+	async getArticles(query: ArticlesQueryDto, userId?: number): Promise<ArticlesResponseDto> {
 		const articles = await this.articlesRepository
 			.createQueryBuilder('article')
 			.select([
@@ -140,6 +158,10 @@ export class ArticlesService implements ArticlesServiceInterface {
 				'article.updatedAt as updatedAt',
 				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
 				'COALESCE(t."tagList", \'{}\') as "tagList"',
+				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
+				`CASE WHEN ${userId ? userId : null} IS NOT NULL AND ${
+					userId ? userId : null
+				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
 			])
 			.innerJoin('article.author', 'user')
 			.leftJoin(
@@ -153,16 +175,36 @@ export class ArticlesService implements ArticlesServiceInterface {
 				't',
 				't."articleId" = article.id',
 			)
+			.leftJoin(
+				(qb: SelectQueryBuilder<Article>) => {
+					return qb
+						.select([
+							'af."article_id" as "articleId"',
+							'COUNT(*) as "favoritesCount", array_agg(u.username) as "usernames", array_agg(u.id) as "userIds"',
+						])
+						.from('article_favorites', 'af')
+						.innerJoin('users', 'u', 'af.user_id = u.id')
+						.groupBy('"af"."article_id"');
+				},
+				'af',
+				'af."articleId" = article.id',
+			)
 			.where(`${this.queryHelper.parameterOrNull('user.username', 'username')}`, {
 				username: this.queryHelper.valueOrNull(query.author, 'string'),
 			})
 			.andWhere(this.queryHelper.parameterOrNull('t."tagList"::text', 'tag', 'ILIKE'), {
 				tag: this.queryHelper.valueOrNull(query.tag, 'string') ? `%${query.tag}%` : null,
 			})
+			.andWhere(this.queryHelper.parameterOrNull('af."usernames"::text', 'favorited', 'ILIKE'), {
+				favorited: this.queryHelper.valueOrNull(query.favorited, 'string')
+					? `%${query.favorited}%`
+					: null,
+			})
 			.limit(query.limit ? Number(query.limit) : 10)
 			.offset(query.offset ? Number(query.offset) : 0)
 			.orderBy('article.created_at', 'DESC')
 			.getRawMany();
+
 		return { articles };
 	}
 

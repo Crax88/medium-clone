@@ -75,7 +75,7 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const articles = await this.articlesService.getArticles(req.query);
+			const articles = await this.articlesService.getArticles(req.query, req.userId);
 			this.ok(res, { articles });
 		} catch (error) {
 			next(error);
@@ -97,7 +97,7 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const article = await this.articlesService.getArticle(req.params.slug);
+			const article = await this.articlesService.getArticle(req.params.slug, req.userId);
 			this.ok(res, { article });
 		} catch (error) {
 			next(error);

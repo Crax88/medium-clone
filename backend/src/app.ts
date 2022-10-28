@@ -13,6 +13,7 @@ import { UsersControllerInterface } from './users/types/usersController.interfac
 import { AuthMiddleware } from './shared/services/auth.middleware';
 import { TokensServiceInterface } from './tokens/types/tokensService.interface';
 import { ArticlesControllerInterface } from './articles/types/articlesController.interface';
+import { TagsControllerInterface } from './tags/types/tagsController.interface';
 
 @injectable()
 export class App {
@@ -28,6 +29,7 @@ export class App {
 		@inject(TYPES.UsersController) private usersController: UsersControllerInterface,
 		@inject(TYPES.ArticlesController) private articlesController: ArticlesControllerInterface,
 		@inject(TYPES.TokenService) private tokensService: TokensServiceInterface,
+		@inject(TYPES.TagsController) private tagsController: TagsControllerInterface,
 	) {
 		this.port = Number(this.configService.get('PORT'));
 		this.app = express();
@@ -60,6 +62,7 @@ export class App {
 	private useRoutes(): void {
 		this.app.use('/api', this.usersController.router);
 		this.app.use('/api', this.articlesController.router);
+		this.app.use('/api', this.tagsController.router);
 	}
 
 	private useExceptionFilters(): void {

@@ -20,4 +20,5 @@ export interface ArticleResponseDto {
 
 export interface ArticlesResponseDto {
 	articles: ArticleDto[];
+	articlesCount: number;
 }

@@ -3,15 +3,16 @@ export interface ArticleDto {
 	title: string;
 	description: string;
 	body: string;
-	createAt: string;
+	createdAt: string;
 	updatedAt: string;
 	author: {
 		username: string;
-		bio: string;
-		image: string;
+		bio: string | null;
+		image: string | null;
 	};
 	tagList: string[];
 	favoritesCount: number;
+	favorited: boolean;
 }
 
 export interface ArticleResponseDto {

@@ -66,7 +66,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 			});
-			this.ok(res, user);
+			this.ok(res, { user });
 		} catch (error) {
 			next(error);
 		}
@@ -83,7 +83,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 			});
-			this.ok(res, user);
+			this.ok(res, { user });
 		} catch (error) {
 			next(error);
 		}
@@ -108,7 +108,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 			});
-			this.ok(res, user);
+			this.ok(res, { user });
 		} catch (error) {
 			next(error);
 		}
@@ -117,7 +117,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 	async authenticate(req: Request<{}, {}, {}>, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const { user } = await this.usersService.authenticate(req.userId);
-			this.ok(res, user);
+			this.ok(res, { user });
 		} catch (error) {
 			next(error);
 		}
@@ -130,7 +130,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 	): Promise<void> {
 		try {
 			const { user } = await this.usersService.update(req.userId, req.body);
-			this.ok(res, user);
+			this.ok(res, { user });
 		} catch (error) {
 			next(error);
 		}

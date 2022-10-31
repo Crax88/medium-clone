@@ -4,6 +4,8 @@ import {
 	CreateDateColumn,
 	Entity,
 	JoinColumn,
+	JoinTable,
+	ManyToMany,
 	OneToMany,
 	PrimaryGeneratedColumn,
 	Unique,
@@ -36,6 +38,14 @@ export class User {
 	@OneToMany(() => Article, (article) => article.authorId)
 	@JoinColumn({ name: 'articles' })
 	articles: Article[];
+
+	@ManyToMany(() => User)
+	@JoinTable({
+		name: 'profile_followers',
+		joinColumn: { name: 'following_id', referencedColumnName: 'id' },
+		inverseJoinColumn: { name: 'follower_id', referencedColumnName: 'id' },
+	})
+	followers: User[];
 
 	@CreateDateColumn({
 		name: 'created_at',

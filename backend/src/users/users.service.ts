@@ -12,27 +12,24 @@ import { UserLoginDto } from './types/userLogin.dto';
 import { UserRegisterDto } from './types/userRegister.dto';
 import { UserUpdateDto } from './types/userUpdate.dto';
 import { TYPES } from '../types';
+import { UsersRepositoryInterface } from './types/users.repository.interface';
 
 @injectable()
 export class UsersService implements UsersServiceInterface {
-	private usersRepository: Repository<User>;
-
 	constructor(
 		@inject(TYPES.ConfigService) private configService: ConfigInterface,
 		@inject(TYPES.TokenService) private tokensService: TokensServiceInterface,
-		@inject(TYPES.DatabaseService) databaseService: TypeormService,
-	) {
-		this.usersRepository = databaseService.getRepository(User);
-	}
+		@inject(TYPES.UsersRepository) private usersRepository: UsersRepositoryInterface,
+	) {}
 
 	async register(dto: UserRegisterDto): Promise<AuthResponse> {
-		let candidate = await this.usersRepository.findOneBy({
+		let candidate = await this.usersRepository.findUser({
 			email: dto.email,
 		});
 		if (candidate) {
 			throw new HttpError(400, 'email already taken');
 		}
-		candidate = await this.usersRepository.findOneBy({
+		candidate = await this.usersRepository.findUser({
 			username: dto.username,
 		});
 		if (candidate) {
@@ -41,15 +38,14 @@ export class UsersService implements UsersServiceInterface {
 		const salt = await genSalt(Number(this.configService.get('SALT')));
 		const hashedPasword = await hash(dto.password, salt);
 		dto.password = hashedPasword;
-		const newUser = this.usersRepository.create(dto);
-		await this.usersRepository.save(newUser);
+		const newUser = await this.usersRepository.createUser(dto);
 		const tokens = this.tokensService.generateTokens({ userId: newUser.id });
 		await this.tokensService.saveToken(newUser.id, tokens.refreshToken);
 		return this.buildAuthResponse(newUser, tokens);
 	}
 
 	async login(dto: UserLoginDto): Promise<AuthResponse> {
-		const user = await this.usersRepository.findOneBy({ email: dto.email });
+		const user = await this.usersRepository.findUser({ email: dto.email });
 		if (!user) {
 			throw new HttpError(400, 'invalid email or password');
 		}
@@ -72,7 +68,7 @@ export class UsersService implements UsersServiceInterface {
 		if (!tokenData || !savedToken) {
 			throw new HttpError(401, 'unauthorized');
 		}
-		const user = await this.usersRepository.findOneBy({ id: tokenData.userId });
+		const user = await this.usersRepository.findUser({ id: tokenData.userId });
 		if (!user) {
 			throw new HttpError(401, 'unauthorized');
 		}
@@ -85,7 +81,7 @@ export class UsersService implements UsersServiceInterface {
 		if (!id) {
 			throw new HttpError(401, 'unauthorized');
 		}
-		const user = await this.usersRepository.findOneBy({ id });
+		const user = await this.usersRepository.findUser({ id });
 		if (!user) {
 			throw new HttpError(401, 'unauthorized');
 		}
@@ -109,11 +105,11 @@ export class UsersService implements UsersServiceInterface {
 			const hashedPasword = await hash(toUpdateFields.password, salt);
 			toUpdateFields.password = hashedPasword;
 		}
-		const updateResult = await this.usersRepository.update(id, toUpdateFields);
+		const updateResult = await this.usersRepository.updateUser(id, toUpdateFields);
 		if (!updateResult || updateResult.affected === 0) {
 			throw new HttpError(404, 'user not found');
 		}
-		const user = await this.usersRepository.findOneBy({ id });
+		const user = await this.usersRepository.findUser({ id });
 		if (!user) {
 			throw new HttpError(404, 'user not found');
 		}

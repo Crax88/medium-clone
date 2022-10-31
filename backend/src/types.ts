@@ -8,6 +8,7 @@ export const TYPES = {
 	TokenRepository: Symbol.for('TokenRepository'),
 	UsersController: Symbol.for('UsersController'),
 	UsersService: Symbol.for('UsersService'),
+	UsersRepository: Symbol.for('UsersRepository'),
 	ArticlesController: Symbol.for('ArticlesController'),
 	ArticlesService: Symbol.for('ArticlesService'),
 	TagsController: Symbol.for('TagsController'),

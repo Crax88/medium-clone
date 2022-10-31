@@ -1,31 +1,24 @@
 import { inject, injectable } from 'inversify';
 import slugify from 'slugify';
-import { Repository, SelectQueryBuilder } from 'typeorm';
-import { TypeormService } from '../shared/services/typeorm.service';
 import { HttpError } from '../errors/httpError';
 import { Tag } from '../tags/tag.entity';
-import { Article } from './article.entity';
+import { User } from '../users/user.entity';
 import { ArticlesServiceInterface } from './types/articlesService.interface';
 import { TagsServiceInterface } from '../tags/types/tagsService.interface';
-import { QueryHelperInterface } from '../shared/types/queryHelper.interface';
+import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
 import { ArticleResponseDto, ArticlesResponseDto } from './types/article.dto';
 import { ArticleSaveDto } from './types/articleSave.dto';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
 import { TYPES } from '../types';
-import { User } from '../users/user.entity';
 
 @injectable()
 export class ArticlesService implements ArticlesServiceInterface {
-	private articlesRepository: Repository<Article>;
 	constructor(
-		@inject(TYPES.DatabaseService) databaseService: TypeormService,
 		@inject(TYPES.TagsService) private tagsService: TagsServiceInterface,
-		@inject(TYPES.QueryHelper) private queryHelper: QueryHelperInterface,
-	) {
-		this.articlesRepository = databaseService.getRepository(Article);
-	}
+		@inject(TYPES.ArticlesRepository) private articlesRepository: ArticlesRepositoryInterface,
+	) {}
 
 	async createArticle(
 		{ article }: CreateArticleRequestDto,
@@ -38,14 +31,14 @@ export class ArticlesService implements ArticlesServiceInterface {
 				tags.push(await this.tagsService.saveTag(tag));
 			}
 		}
-		const newArticle = this.articlesRepository.create({
+		await this.articlesRepository.createArticle({
 			...article,
 			slug,
 			authorId: userId,
 			tags,
 		});
-		await this.articlesRepository.save(newArticle);
-		return this.getArticle(slug);
+
+		return this.getArticle(slug, userId);
 	}
 
 	async updateArticle(
@@ -53,7 +46,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		{ article }: UpdateArticleRequestDto,
 		userId: number,
 	): Promise<ArticleResponseDto> {
-		const foundArticle = await this.articlesRepository.findOneBy({ slug });
+		const foundArticle = await this.articlesRepository.getArticle(slug);
 
 		if (!foundArticle) {
 			throw new HttpError(404, 'article not found');
@@ -69,16 +62,16 @@ export class ArticlesService implements ArticlesServiceInterface {
 			slug: article.title ? this.createSlug(article.title) : foundArticle.slug,
 		};
 
-		const result = await this.articlesRepository.update({ slug }, toUpdate);
+		const result = await this.articlesRepository.updateArticle(foundArticle.id, toUpdate);
 
 		if (!result.affected || result.affected === 0) {
 			throw new HttpError(404, 'article not found');
 		}
-		return this.getArticle(toUpdate.slug);
+		return this.getArticle(toUpdate.slug, userId);
 	}
 
 	async deleteArticle(slug: string, userId: number): Promise<void> {
-		const article = await this.articlesRepository.findOneBy({ slug });
+		const article = await this.articlesRepository.getArticle(slug);
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
@@ -87,196 +80,95 @@ export class ArticlesService implements ArticlesServiceInterface {
 			throw new HttpError(403, 'not authorized');
 		}
 
-		const result = await this.articlesRepository.delete({ slug });
+		const result = await this.articlesRepository.deleteArticle(article.id);
 		if (!result.affected || result.affected === 0) {
 			throw new HttpError(404, 'article not found');
 		}
 	}
 
 	async getArticle(slug: string, userId?: number): Promise<ArticleResponseDto> {
-		const article = await this.articlesRepository
-			.createQueryBuilder('article')
-			.select([
-				'article.slug as slug',
-				'article.title as title',
-				'article.description as description',
-				'article.body as body',
-				'article.createdAt as createdAt',
-				'article.updatedAt as updatedAt',
-				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
-				'COALESCE(t."tagList", \'{}\') as "tagList"',
-				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
-				`CASE WHEN ${userId ? userId : null} IS NOT NULL AND ${
-					userId ? userId : null
-				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
-			])
-			.innerJoin('article.author', 'user')
-			.leftJoin(
-				(qb: SelectQueryBuilder<Tag>) => {
-					return qb
-						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
-						.from('tags', 't')
-						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
-						.groupBy('"article_id"');
-				},
-				't',
-				't."articleId" = article.id',
-			)
-			.leftJoin(
-				(qb: SelectQueryBuilder<Article>) => {
-					return qb
-						.select([
-							'af."article_id" as "articleId"',
-							'COUNT(*) as "favoritesCount", array_agg(u.username) as "usernames", array_agg(u.id) as "userIds"',
-						])
-						.from('article_favorites', 'af')
-						.innerJoin('users', 'u', 'af.user_id = u.id')
-						.groupBy('"af"."article_id"');
-				},
-				'af',
-				'af."articleId" = article.id',
-			)
-			.where('article.slug = :slug', { slug })
-			.getRawOne();
-
+		const article = await this.articlesRepository.getArticle(slug);
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
-
-		return { article };
+		return {
+			article: {
+				slug: article.slug,
+				title: article.title,
+				description: article.description,
+				body: article.body,
+				createdAt: article.createdAt,
+				updatedAt: article.updatedAt,
+				favoritesCount: article.favorite.length,
+				favorited: article.favorite.findIndex((favorite) => favorite.id === userId) > -1,
+				tagList: article.tags.map((tag) => tag.tagName),
+				author: {
+					username: article.author.username,
+					bio: article.author.bio,
+					image: article.author.image,
+				},
+			},
+		};
 	}
 
 	async getArticles(query: ArticlesQueryDto, userId?: number): Promise<ArticlesResponseDto> {
-		const articlesQuery = this.articlesRepository
-			.createQueryBuilder('article')
-			.select([
-				'article.slug as slug',
-				'article.title as title',
-				'article.description as description',
-				'article.body as body',
-				'article.createdAt as createdAt',
-				'article.updatedAt as updatedAt',
-				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
-				'COALESCE(t."tagList", \'{}\') as "tagList"',
-				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
-				`CASE WHEN ${userId ? userId : null} IS NOT NULL AND ${
-					userId ? userId : null
-				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
-			])
-			.innerJoin('article.author', 'user')
-			.leftJoin(
-				(qb: SelectQueryBuilder<Tag>) => {
-					return qb
-						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
-						.from('tags', 't')
-						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
-						.groupBy('"article_id"');
-				},
-				't',
-				't."articleId" = article.id',
-			)
-			.leftJoin(
-				(qb: SelectQueryBuilder<Article>) => {
-					return qb
-						.select([
-							'af."article_id" as "articleId"',
-							'COUNT(*) as "favoritesCount", array_agg(u.username) as "usernames", array_agg(u.id) as "userIds"',
-						])
-						.from('article_favorites', 'af')
-						.innerJoin('users', 'u', 'af.user_id = u.id')
-						.groupBy('"af"."article_id"');
-				},
-				'af',
-				'af."articleId" = article.id',
-			)
-			.where(`${this.queryHelper.parameterOrNull('user.username', 'username')}`, {
-				username: this.queryHelper.valueOrNull(query.author, 'string'),
-			})
-			.andWhere(this.queryHelper.parameterOrNull('t."tagList"::text', 'tag', 'ILIKE'), {
-				tag: this.queryHelper.valueOrNull(query.tag, 'string') ? `%${query.tag}%` : null,
-			})
-			.andWhere(this.queryHelper.parameterOrNull('af."usernames"::text', 'favorited', 'ILIKE'), {
-				favorited: this.queryHelper.valueOrNull(query.favorited, 'string')
-					? `%${query.favorited}%`
-					: null,
-			})
-			.limit(query.limit ? Number(query.limit) : 10)
-			.offset(query.offset ? Number(query.offset) : 0)
-			.orderBy('article.created_at', 'DESC');
-
-		const articlesCount = await articlesQuery.getCount();
-		const articles = await articlesQuery.getRawMany();
-
-		return { articles, articlesCount };
+		const { articles, articlesCount } = await this.articlesRepository.getArticles(query);
+		return {
+			articlesCount,
+			articles: articles.map((article) => {
+				return {
+					slug: article.slug,
+					title: article.title,
+					description: article.description,
+					body: article.body,
+					createdAt: article.createdAt,
+					updatedAt: article.updatedAt,
+					favoritesCount: article.favorite.length,
+					favorited: article.favorite.findIndex((favorite) => favorite.id === userId) > -1,
+					tagList: article.tags.map((tag) => tag.tagName),
+					author: {
+						username: article.author.username,
+						bio: article.author.bio,
+						image: article.author.image,
+					},
+				};
+			}),
+		};
 	}
 
 	async getFeed(
 		query: Pick<ArticlesQueryDto, 'limit' | 'offset'>,
 		userId: number,
 	): Promise<ArticlesResponseDto> {
-		const articlesQuery = await this.articlesRepository
-			.createQueryBuilder('article')
-			.select([
-				'article.slug as slug',
-				'article.title as title',
-				'article.description as description',
-				'article.body as body',
-				'article.createdAt as createdAt',
-				'article.updatedAt as updatedAt',
-				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
-				'COALESCE(t."tagList", \'{}\') as "tagList"',
-				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
-				`CASE WHEN ${userId ? userId : null} IS NOT NULL AND ${
-					userId ? userId : null
-				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
-			])
-			.innerJoin('article.author', 'user')
-			.leftJoin(
-				(qb: SelectQueryBuilder<Tag>) => {
-					return qb
-						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
-						.from('tags', 't')
-						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
-						.groupBy('"article_id"');
-				},
-				't',
-				't."articleId" = article.id',
-			)
-			.leftJoin(
-				(qb: SelectQueryBuilder<Article>) => {
-					return qb
-						.select([
-							'af."article_id" as "articleId"',
-							'COUNT(*) as "favoritesCount", array_agg(u.username) as "usernames", array_agg(u.id) as "userIds"',
-						])
-						.from('article_favorites', 'af')
-						.innerJoin('users', 'u', 'af.user_id = u.id')
-						.groupBy('"af"."article_id"');
-				},
-				'af',
-				'af."articleId" = article.id',
-			)
-			.where(
-				'article.author_id IN (SELECT following_id FROM profile_followers WHERE follower_id = :userId)',
-				{ userId },
-			)
-			.limit(query.limit ? Number(query.limit) : 10)
-			.offset(query.offset ? Number(query.offset) : 0)
-			.orderBy('article.created_at', 'DESC');
-
-		const articlesCount = await articlesQuery.getCount();
-		const articles = await articlesQuery.getRawMany();
-
-		return { articles, articlesCount };
+		const { articles } = await this.articlesRepository.getArticles(query);
+		const filteredArticles = articles.filter((article) =>
+			article.author.followers.find((follower) => follower.id === userId),
+		);
+		return {
+			articlesCount: filteredArticles.length,
+			articles: filteredArticles.map((article) => {
+				return {
+					slug: article.slug,
+					title: article.title,
+					description: article.description,
+					body: article.body,
+					createdAt: article.createdAt,
+					updatedAt: article.updatedAt,
+					favoritesCount: article.favorite.length,
+					favorited: article.favorite.findIndex((favorite) => favorite.id === userId) > -1,
+					tagList: article.tags.map((tag) => tag.tagName),
+					author: {
+						username: article.author.username,
+						bio: article.author.bio,
+						image: article.author.image,
+					},
+				};
+			}),
+		};
 	}
 
 	async favoriteArticle(slug: string, userId: number): Promise<ArticleResponseDto> {
-		const article = await this.articlesRepository.findOne({
-			where: { slug },
-			relations: {
-				favorite: true,
-			},
-		});
+		const article = await this.articlesRepository.getArticle(slug);
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
@@ -285,7 +177,8 @@ export class ArticlesService implements ArticlesServiceInterface {
 		} else {
 			article?.favorite.push({ id: userId } as User);
 		}
-		await this.articlesRepository.save(article);
+		console.log(article);
+		await this.articlesRepository.saveArticle(article);
 		return await this.getArticle(slug);
 	}
 

@@ -30,6 +30,7 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 				path: '/articles/feed',
 				method: 'get',
 				handler: this.getFeed,
+				middlewares: [new AuthGuard()],
 			},
 			{
 				path: '/articles/:slug',
@@ -82,9 +83,13 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		}
 	}
 
-	async getFeed(req: Request, res: Response, next: NextFunction): Promise<void> {
+	async getFeed(
+		req: Request<{}, {}, Pick<ArticlesQueryDto, 'limit' | 'offset'>>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
 		try {
-			const articles = await this.articlesService.getArticles({});
+			const articles = await this.articlesService.getFeed(req.query, req.userId);
 			this.ok(res, { articles });
 		} catch (error) {
 			next(error);

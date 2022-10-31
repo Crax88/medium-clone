@@ -1,12 +1,12 @@
 export interface CommentDto {
 	id: number;
 	body: string;
-	createAt: string;
+	createdAt: string;
 	updatedAt: string;
 	author: {
 		username: string;
-		bio: string;
-		image: string;
+		bio: string | null;
+		image: string | null;
 		following: boolean;
 	};
 }

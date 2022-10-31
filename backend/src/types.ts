@@ -19,4 +19,5 @@ export const TYPES = {
 	ProfilesRepository: Symbol.for('ProfilesRepository'),
 	CommentsController: Symbol.for('CommentsController'),
 	CommentsService: Symbol.for('CommentsService'),
+	CommentsRepository: Symbol.for('CommentsRepository'),
 };

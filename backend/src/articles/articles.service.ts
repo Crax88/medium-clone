@@ -140,10 +140,13 @@ export class ArticlesService implements ArticlesServiceInterface {
 		query: Pick<ArticlesQueryDto, 'limit' | 'offset'>,
 		userId: number,
 	): Promise<ArticlesResponseDto> {
-		const { articles, articlesCount } = await this.articlesRepository.getArticles(query);
+		const { articles } = await this.articlesRepository.getArticles(query);
+		const filteredArticles = articles.filter((article) =>
+			article.author.followers.find((follower) => follower.id === userId),
+		);
 		return {
-			articlesCount,
-			articles: articles.map((article) => {
+			articlesCount: filteredArticles.length,
+			articles: filteredArticles.map((article) => {
 				return {
 					slug: article.slug,
 					title: article.title,

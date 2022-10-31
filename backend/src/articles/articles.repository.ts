@@ -35,7 +35,7 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 	): Promise<{ articles: Article[]; articlesCount: number }> {
 		const [articles, articlesCount] = await this.repository.findAndCount({
 			relations: {
-				author: true,
+				author: { followers: true },
 				tags: true,
 				favorite: true,
 			},

@@ -9,6 +9,7 @@ import { TYPES } from './types';
 import { ArticlesModule } from './articles/articles.module';
 import { TagsModule } from './tags/tags.module';
 import { ProfilesModule } from './profiles/profiles.module';
+import { CommetnsModule } from './comments/comments.module';
 export interface IBootsrapReturn {
 	appContainer: Container;
 	app: App;
@@ -27,6 +28,7 @@ async function bootstrap(): Promise<IBootsrapReturn> {
 		ArticlesModule,
 		TagsModule,
 		ProfilesModule,
+		CommetnsModule,
 	);
 
 	const app = appContainer.get<App>(TYPES.Application);

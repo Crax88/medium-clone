@@ -15,6 +15,7 @@ import { TokensServiceInterface } from './tokens/types/tokensService.interface';
 import { ArticlesControllerInterface } from './articles/types/articlesController.interface';
 import { TagsControllerInterface } from './tags/types/tagsController.interface';
 import { ProfilesControllerInterface } from './profiles/types/profilesController.interface';
+import { CommentsControllerInterface } from './comments/types/commentsController.interface';
 
 @injectable()
 export class App {
@@ -32,6 +33,7 @@ export class App {
 		@inject(TYPES.TokenService) private tokensService: TokensServiceInterface,
 		@inject(TYPES.TagsController) private tagsController: TagsControllerInterface,
 		@inject(TYPES.ProfilesController) private profilesController: ProfilesControllerInterface,
+		@inject(TYPES.CommentsController) private commentsController: CommentsControllerInterface,
 	) {
 		this.port = Number(this.configService.get('PORT'));
 		this.app = express();
@@ -67,6 +69,7 @@ export class App {
 		this.app.use('/api', this.tagsController.router);
 		this.app.use('/api', this.tagsController.router);
 		this.app.use('/api', this.profilesController.router);
+		this.app.use('/api', this.commentsController.router);
 	}
 
 	private useExceptionFilters(): void {

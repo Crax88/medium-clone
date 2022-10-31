@@ -14,4 +14,6 @@ export const TYPES = {
 	QueryHelper: Symbol.for('QueryHelper'),
 	ProfilesController: Symbol.for('ProfilesController'),
 	ProfilesService: Symbol.for('ProfilesService'),
+	CommentsController: Symbol.for('CommentsController'),
+	CommentsService: Symbol.for('CommentsService'),
 };

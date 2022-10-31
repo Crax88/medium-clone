@@ -7,10 +7,12 @@ import {
 	JoinTable,
 	ManyToMany,
 	ManyToOne,
+	OneToMany,
 	PrimaryGeneratedColumn,
 	Unique,
 	UpdateDateColumn,
 } from 'typeorm';
+import { Comment } from '../comments/comment.entity';
 import { Tag } from '../tags/tag.entity';
 import { User } from '../users/user.entity';
 
@@ -38,6 +40,10 @@ export class Article {
 	@ManyToOne(() => User, (user) => user.articles, { nullable: false })
 	@JoinColumn({ name: 'author_id' })
 	author: User;
+
+	@OneToMany(() => Comment, (comment) => comment.articleId)
+	@JoinColumn({ name: 'comments' })
+	comments: Comment[];
 
 	@ManyToMany(() => Tag)
 	@JoinTable({

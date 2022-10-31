@@ -12,6 +12,7 @@ import {
 	UpdateDateColumn,
 } from 'typeorm';
 import { Article } from '../articles/article.entity';
+import { Comment } from '../comments/comment.entity';
 
 @Entity('users')
 export class User {
@@ -38,6 +39,10 @@ export class User {
 	@OneToMany(() => Article, (article) => article.authorId)
 	@JoinColumn({ name: 'articles' })
 	articles: Article[];
+
+	@OneToMany(() => Comment, (comment) => comment.authorId)
+	@JoinColumn({ name: 'comments' })
+	comments: Comment[];
 
 	@ManyToMany(() => User)
 	@JoinTable({

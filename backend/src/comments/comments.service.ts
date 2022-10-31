@@ -47,7 +47,7 @@ export class CommentsService implements CommentsServiceInterface {
 			throw new HttpError(401, 'comment not found');
 		}
 		if (comment.authorId !== userId) {
-			throw new HttpError(403, 'can\t delete others comment');
+			throw new HttpError(403, "can't delete others comment");
 		}
 		const result = await this.commentsRepository.delete(comment.id);
 		if (!result.affected || result.affected === 0) {

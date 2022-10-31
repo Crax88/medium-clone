@@ -2,6 +2,8 @@ import 'reflect-metadata';
 import { injectable, inject } from 'inversify';
 import { Server } from 'node:http';
 import express, { Express } from 'express';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
 import { TYPES } from './types';
@@ -59,6 +61,15 @@ export class App {
 	private useMiddlewares(): void {
 		this.app.use(json());
 		this.app.use(cookieParser());
+		this.app.use(helmet());
+		this.app.use(
+			rateLimit({
+				windowMs: 15 * 60 * 1000,
+				max: 100,
+				standardHeaders: true,
+				legacyHeaders: false,
+			}),
+		);
 		const authMiddleware = new AuthMiddleware(this.tokensService);
 		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}

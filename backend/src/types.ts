@@ -5,6 +5,7 @@ export const TYPES = {
 	ExceptionFilter: Symbol.for('ExceptionFilter'),
 	DatabaseService: Symbol.for('DatabaseService'),
 	TokenService: Symbol.for('TokenService'),
+	TokenRepository: Symbol.for('TokenRepository'),
 	UsersController: Symbol.for('UsersController'),
 	UsersService: Symbol.for('UsersService'),
 	ArticlesController: Symbol.for('ArticlesController'),

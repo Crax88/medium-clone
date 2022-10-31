@@ -208,6 +208,64 @@ export class ArticlesService implements ArticlesServiceInterface {
 		return { articles };
 	}
 
+	async getFeed(
+		query: Pick<ArticlesQueryDto, 'limit' | 'offset'>,
+		userId: number,
+	): Promise<ArticlesResponseDto> {
+		const articles = await this.articlesRepository
+			.createQueryBuilder('article')
+			.select([
+				'article.slug as slug',
+				'article.title as title',
+				'article.description as description',
+				'article.body as body',
+				'article.createdAt as createdAt',
+				'article.updatedAt as updatedAt',
+				'json_build_object(\'username\',"user"."username",\'bio\',"user"."bio",\'image\',"user"."image") as author',
+				'COALESCE(t."tagList", \'{}\') as "tagList"',
+				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
+				`CASE WHEN ${userId ? userId : null} IS NOT NULL AND ${
+					userId ? userId : null
+				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
+			])
+			.innerJoin('article.author', 'user')
+			.leftJoin(
+				(qb: SelectQueryBuilder<Tag>) => {
+					return qb
+						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
+						.from('tags', 't')
+						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
+						.groupBy('"article_id"');
+				},
+				't',
+				't."articleId" = article.id',
+			)
+			.leftJoin(
+				(qb: SelectQueryBuilder<Article>) => {
+					return qb
+						.select([
+							'af."article_id" as "articleId"',
+							'COUNT(*) as "favoritesCount", array_agg(u.username) as "usernames", array_agg(u.id) as "userIds"',
+						])
+						.from('article_favorites', 'af')
+						.innerJoin('users', 'u', 'af.user_id = u.id')
+						.groupBy('"af"."article_id"');
+				},
+				'af',
+				'af."articleId" = article.id',
+			)
+			.where(
+				'article.author_id IN (SELECT following_id FROM profile_followers WHERE follower_id = :userId)',
+				{ userId },
+			)
+			.limit(query.limit ? Number(query.limit) : 10)
+			.offset(query.offset ? Number(query.offset) : 0)
+			.orderBy('article.created_at', 'DESC')
+			.getRawMany();
+
+		return { articles };
+	}
+
 	async favoriteArticle(slug: string, userId: number): Promise<ArticleResponseDto> {
 		const article = await this.articlesRepository.findOne({
 			where: { slug },

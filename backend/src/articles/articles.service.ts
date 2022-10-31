@@ -147,7 +147,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 	}
 
 	async getArticles(query: ArticlesQueryDto, userId?: number): Promise<ArticlesResponseDto> {
-		const articles = await this.articlesRepository
+		const articlesQuery = this.articlesRepository
 			.createQueryBuilder('article')
 			.select([
 				'article.slug as slug',
@@ -202,17 +202,19 @@ export class ArticlesService implements ArticlesServiceInterface {
 			})
 			.limit(query.limit ? Number(query.limit) : 10)
 			.offset(query.offset ? Number(query.offset) : 0)
-			.orderBy('article.created_at', 'DESC')
-			.getRawMany();
+			.orderBy('article.created_at', 'DESC');
 
-		return { articles };
+		const articlesCount = await articlesQuery.getCount();
+		const articles = await articlesQuery.getRawMany();
+
+		return { articles, articlesCount };
 	}
 
 	async getFeed(
 		query: Pick<ArticlesQueryDto, 'limit' | 'offset'>,
 		userId: number,
 	): Promise<ArticlesResponseDto> {
-		const articles = await this.articlesRepository
+		const articlesQuery = await this.articlesRepository
 			.createQueryBuilder('article')
 			.select([
 				'article.slug as slug',
@@ -260,10 +262,12 @@ export class ArticlesService implements ArticlesServiceInterface {
 			)
 			.limit(query.limit ? Number(query.limit) : 10)
 			.offset(query.offset ? Number(query.offset) : 0)
-			.orderBy('article.created_at', 'DESC')
-			.getRawMany();
+			.orderBy('article.created_at', 'DESC');
 
-		return { articles };
+		const articlesCount = await articlesQuery.getCount();
+		const articles = await articlesQuery.getRawMany();
+
+		return { articles, articlesCount };
 	}
 
 	async favoriteArticle(slug: string, userId: number): Promise<ArticleResponseDto> {

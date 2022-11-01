@@ -1,1 +1,3 @@
-export type TagsDto = string[];
+export interface TagsDto {
+	tags: string[];
+}

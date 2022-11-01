@@ -25,6 +25,6 @@ export class TagsService implements TagsServiceInterface {
 	}
 
 	buildPopularTagsResponse(tags: Tag[]): TagsDto {
-		return tags.map((tag) => tag.tagName);
+		return { tags: tags.map((tag) => tag.tagName) };
 	}
 }

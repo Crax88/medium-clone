@@ -1,30 +1,24 @@
 import { inject, injectable } from 'inversify';
-import { Repository } from 'typeorm';
-import { TypeormService } from '../shared/services/typeorm.service';
 import { HttpError } from '../errors/httpError';
-import { Article } from '../articles/article.entity';
 import { CommentsServiceInterface } from './types/commentsService.interface';
 import { CommentsRepositoryInterface } from './types/comments.repository.interface';
+import { ArticlesRepositoryInterface } from '../articles/types/articles.repository.interface';
 import { CommentResponseDto, CommentsResponseDto } from './types/comment.dto';
 import { CreateCommentRequestDto } from './types/createComment.dto';
 import { TYPES } from '../types';
 
 @injectable()
 export class CommentsService implements CommentsServiceInterface {
-	private articlesRepository: Repository<Article>;
-
 	constructor(
-		@inject(TYPES.DatabaseService) databaseService: TypeormService,
+		@inject(TYPES.ArticlesRepository) private articlesRepository: ArticlesRepositoryInterface,
 		@inject(TYPES.CommentsRepository) private commentsRepository: CommentsRepositoryInterface,
-	) {
-		this.articlesRepository = databaseService.getRepository(Article);
-	}
+	) {}
 	async createComment(
 		slug: string,
 		{ comment }: CreateCommentRequestDto,
 		userId: number,
 	): Promise<CommentResponseDto> {
-		const article = await this.articlesRepository.findOneBy({ slug });
+		const article = await this.articlesRepository.getArticle(slug);
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
@@ -50,7 +44,7 @@ export class CommentsService implements CommentsServiceInterface {
 	}
 
 	async deleteComment(slug: string, commentId: number, userId: number): Promise<void> {
-		const article = await this.articlesRepository.findOneBy({ slug });
+		const article = await this.articlesRepository.getArticle(slug);
 		if (!article) {
 			throw new HttpError(401, 'article not found');
 		}
@@ -68,7 +62,7 @@ export class CommentsService implements CommentsServiceInterface {
 	}
 
 	async getComments(slug: string, userId?: number): Promise<CommentsResponseDto> {
-		const article = await this.articlesRepository.findOneBy({ slug });
+		const article = await this.articlesRepository.getArticle(slug);
 		if (!article) {
 			throw new HttpError(401, 'article not found');
 		}

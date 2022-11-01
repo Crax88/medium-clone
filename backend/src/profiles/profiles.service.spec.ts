@@ -1,6 +1,5 @@
 import 'reflect-metadata';
 import { Container } from 'inversify';
-import { hash } from 'bcryptjs';
 import { HttpError } from '../errors/httpError';
 import { ProfilesService } from './profiles.service';
 import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';

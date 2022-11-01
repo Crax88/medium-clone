@@ -92,6 +92,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
+
 		return {
 			article: {
 				slug: article.slug,
@@ -179,7 +180,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 			article?.favorite.push({ id: userId } as User);
 		}
 		await this.articlesRepository.saveArticle(article);
-		return await this.getArticle(slug);
+		return await this.getArticle(slug, userId);
 	}
 
 	private createSlug(title: string): string {

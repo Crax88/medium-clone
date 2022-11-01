@@ -3,6 +3,7 @@ import slugify from 'slugify';
 import { HttpError } from '../errors/httpError';
 import { Tag } from '../tags/tag.entity';
 import { User } from '../users/user.entity';
+import { Article } from './article.entity';
 import { ArticlesServiceInterface } from './types/articlesService.interface';
 import { TagsServiceInterface } from '../tags/types/tagsService.interface';
 import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
@@ -91,6 +92,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
+
 		return {
 			article: {
 				slug: article.slug,
@@ -100,8 +102,8 @@ export class ArticlesService implements ArticlesServiceInterface {
 				createdAt: article.createdAt,
 				updatedAt: article.updatedAt,
 				favoritesCount: article.favorite.length,
-				favorited: article.favorite.findIndex((favorite) => favorite.id === userId) > -1,
-				tagList: article.tags.map((tag) => tag.tagName),
+				favorited: article.favorite.findIndex((favorite: User) => favorite.id === userId) > -1,
+				tagList: article.tags.map((tag: Tag) => tag.tagName),
 				author: {
 					username: article.author.username,
 					bio: article.author.bio,
@@ -115,7 +117,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 		const { articles, articlesCount } = await this.articlesRepository.getArticles(query);
 		return {
 			articlesCount,
-			articles: articles.map((article) => {
+			articles: articles.map((article: Article) => {
 				return {
 					slug: article.slug,
 					title: article.title,
@@ -141,12 +143,12 @@ export class ArticlesService implements ArticlesServiceInterface {
 		userId: number,
 	): Promise<ArticlesResponseDto> {
 		const { articles } = await this.articlesRepository.getArticles(query);
-		const filteredArticles = articles.filter((article) =>
-			article.author.followers.find((follower) => follower.id === userId),
+		const filteredArticles = articles.filter((article: Article) =>
+			article.author.followers.find((follower: User) => follower.id === userId),
 		);
 		return {
 			articlesCount: filteredArticles.length,
-			articles: filteredArticles.map((article) => {
+			articles: filteredArticles.map((article: Article) => {
 				return {
 					slug: article.slug,
 					title: article.title,
@@ -155,8 +157,8 @@ export class ArticlesService implements ArticlesServiceInterface {
 					createdAt: article.createdAt,
 					updatedAt: article.updatedAt,
 					favoritesCount: article.favorite.length,
-					favorited: article.favorite.findIndex((favorite) => favorite.id === userId) > -1,
-					tagList: article.tags.map((tag) => tag.tagName),
+					favorited: article.favorite.findIndex((favorite: User) => favorite.id === userId) > -1,
+					tagList: article.tags.map((tag: Tag) => tag.tagName),
 					author: {
 						username: article.author.username,
 						bio: article.author.bio,
@@ -172,14 +174,13 @@ export class ArticlesService implements ArticlesServiceInterface {
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
-		if (article?.favorite.find((user) => user.id === userId)) {
-			article.favorite = article.favorite.filter((user) => user.id !== userId);
+		if (article?.favorite.find((user: User) => user.id === userId)) {
+			article.favorite = article.favorite.filter((user: User) => user.id !== userId);
 		} else {
 			article?.favorite.push({ id: userId } as User);
 		}
-		console.log(article);
 		await this.articlesRepository.saveArticle(article);
-		return await this.getArticle(slug);
+		return await this.getArticle(slug, userId);
 	}
 
 	private createSlug(title: string): string {

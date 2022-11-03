@@ -1,5 +1,10 @@
-import { AuthResponse } from '../../users/types/authResponse.interface';
-
 export interface ProfileDto {
-	profile: Pick<AuthResponse['user'], 'username' | 'bio' | 'image'> & { following: boolean };
+	username: string;
+	bio: string | null;
+	image: string | null;
+	following: boolean;
+}
+
+export interface ProfileResponseDto {
+	profile: ProfileDto;
 }

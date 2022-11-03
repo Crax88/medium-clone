@@ -12,4 +12,9 @@ export interface ProfilesControllerInterface extends BaseController {
 		res: Response,
 		next: NextFunction,
 	) => Promise<void>;
+	unfollowProfile: (
+		req: Request<{ username: string }>,
+		res: Response,
+		next: NextFunction,
+	) => Promise<void>;
 }

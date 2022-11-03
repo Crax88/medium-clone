@@ -1,7 +1,7 @@
-import { Tag } from '../tag.entity';
+import { TagDto } from './tags.dto';
 
 export interface TagsRepositoryInterface {
-	saveTag: (tagName: string) => Promise<Tag>;
-	getTags: () => Promise<Tag[]>;
-	getTag: (tagName: string) => Promise<Tag | null>;
+	saveTag: (tagName: string) => Promise<TagDto>;
+	getTags: () => Promise<TagDto[]>;
+	getTag: (tagName: string) => Promise<TagDto | null>;
 }

@@ -1,78 +1,190 @@
 import { inject, injectable } from 'inversify';
-import { DeleteResult, In, Repository, UpdateResult } from 'typeorm';
+import { Repository, SelectQueryBuilder } from 'typeorm';
 import { TypeormService } from '../shared/services/typeorm.service';
 import { Article } from './article.entity';
+import { Tag } from '../tags/tag.entity';
 import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
 import { ArticleSaveDto } from './types/articleSave.dto';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
+import { ArticleDto } from './types/article.dto';
+import { QueryHelperInterface } from '../shared/types/queryHelper.interface';
 import { TYPES } from '../types';
 
 @injectable()
 export class ArticlesRepository implements ArticlesRepositoryInterface {
 	private repository: Repository<Article>;
 
-	constructor(@inject(TYPES.DatabaseService) databaseService: TypeormService) {
+	constructor(
+		@inject(TYPES.DatabaseService) databaseService: TypeormService,
+		@inject(TYPES.QueryHelper) private queryHelper: QueryHelperInterface,
+	) {
 		this.repository = databaseService.getRepository(Article);
 	}
 
-	async createArticle(dto: ArticleSaveDto): Promise<Article> {
+	async createArticle(dto: ArticleSaveDto): Promise<void> {
 		const newArticle = this.repository.create(dto);
 		await this.repository.save(newArticle);
-		return newArticle;
 	}
 
-	async updateArticle(articleId: number, dto: Omit<ArticleSaveDto, 'tags'>): Promise<UpdateResult> {
-		const result = await this.repository.update(articleId, dto);
-		return result;
+	async updateArticle(slug: string, dto: Omit<ArticleSaveDto, 'tags'>): Promise<void> {
+		await this.repository.update({ slug }, dto);
 	}
 
-	async deleteArticle(id: number): Promise<DeleteResult> {
-		return await this.repository.delete({ id });
+	async deleteArticle(slug: string): Promise<void> {
+		await this.repository.delete({ slug });
 	}
 
 	async getArticles(
 		query: ArticlesQueryDto,
-	): Promise<{ articles: Article[]; articlesCount: number }> {
-		const [articles, articlesCount] = await this.repository.findAndCount({
-			relations: {
-				author: { followers: true },
-				tags: true,
-				favorite: true,
-			},
-			where: {
-				author: {
-					username: query.author ? query.author : undefined,
+	): Promise<{ articles: ArticleDto[]; articlesCount: number }> {
+		const articlesQuery = this.repository
+			.createQueryBuilder('a')
+			.select([
+				'a.slug as slug',
+				'a.title as title',
+				'a.description as description',
+				'a.body as body',
+				'a.created_at as createdAt',
+				'a.updated_at as updatedAt',
+				'json_build_object(\'username\',"u"."username",\'bio\',"u"."bio",\'image\',"u"."image", \'following\', COALESCE(pf.follower_id::bool, false)) as author',
+				'COALESCE(t."tagList", \'{}\') as "tagList"',
+				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
+				`CASE WHEN ${query.userId ? query.userId : null} IS NOT NULL AND ${
+					query.userId ? query.userId : null
+				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
+			])
+			.innerJoin('users', 'u', 'u.id = a.author_id')
+			.leftJoin(
+				(qb: SelectQueryBuilder<Tag>) => {
+					return qb
+						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
+						.from('tags', 't')
+						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
+						.groupBy('"article_id"');
 				},
-				tags: {
-					tagName: query.tag ? In([query.tag]) : undefined,
+				't',
+				't."articleId" = a.id',
+			)
+			.leftJoin(
+				(qb: SelectQueryBuilder<Article>) => {
+					return qb
+						.select([
+							'af."article_id" as "articleId"',
+							'COUNT(*) as "favoritesCount"',
+							'array_agg(u.username) as "usernames"',
+							'array_agg(u.id) as "userIds"',
+						])
+						.from('article_favorites', 'af')
+						.innerJoin('users', 'u', 'af.user_id = u.id')
+						.groupBy('"af"."article_id"');
 				},
-				favorite: {
-					username: query.favorited,
-				},
-			},
-			skip: query.offset ? Number(query.offset) : 0,
-			take: query.limit ? Number(query.limit) : 10,
-			order: {
-				createdAt: 'DESC',
-			},
-		});
+				'af',
+				'af."articleId" = a.id',
+			)
+			.leftJoin(
+				'profile_followers',
+				'pf',
+				`pf.following_id = a.author_id AND CASE WHEN ${
+					query.followerId ? query.followerId : null
+				} IS NOT NULL THEN ${
+					query.followerId ? query.followerId : null
+				} = pf.follower_id ELSE false END`,
+			)
+			.where(`${this.queryHelper.parameterOrNull('u.username', 'username')}`, {
+				username: this.queryHelper.valueOrNull(query.author, 'string'),
+			})
+			.andWhere(this.queryHelper.parameterOrNull('t."tagList"::text', 'tag', 'ILIKE'), {
+				tag: this.queryHelper.valueOrNull(query.tag, 'string') ? `%${query.tag}%` : null,
+			})
+			.andWhere(this.queryHelper.parameterOrNull('af."usernames"::text', 'favorited', 'ILIKE'), {
+				favorited: this.queryHelper.valueOrNull(query.favorited, 'string')
+					? `%${query.favorited}%`
+					: null,
+			})
+			.andWhere(this.queryHelper.parameterOrNull('pf.follower_id', 'follower'), {
+				follower: this.queryHelper.valueOrNull(query.followerId, 'number'),
+			})
+			.orderBy('a.created_at', 'DESC');
+
+		const articlesCount = await articlesQuery.getCount();
+		const articles = await articlesQuery
+			.limit(query.limit ? Number(query.limit) : 10)
+			.offset(query.offset ? Number(query.offset) : 0)
+			.getRawMany();
+
 		return { articles, articlesCount };
 	}
 
-	async getArticle(slug: string): Promise<Article | null> {
-		const article = await this.repository.findOne({
-			where: { slug },
-			relations: {
-				author: true,
-				favorite: true,
-				tags: true,
-			},
-		});
+	async getArticle(slug: string, currentUserId?: number): Promise<ArticleDto | null> {
+		const article = await this.repository
+			.createQueryBuilder('a')
+			.select([
+				'a.slug as slug',
+				'a.title as title',
+				'a.description as description',
+				'a.body as body',
+				'a.created_at as createdAt',
+				'a.updated_at as updatedAt',
+				'json_build_object(\'username\',"u"."username",\'bio\',"u"."bio",\'image\',"u"."image", \'following\', COALESCE(pf.follower_id::bool, false)) as author',
+				'COALESCE(t."tagList", \'{}\') as "tagList"',
+				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
+				`CASE WHEN ${currentUserId ? currentUserId : null} IS NOT NULL AND ${
+					currentUserId ? currentUserId : null
+				}=ANY(af."userIds") THEN true ELSE false END as favorited`,
+			])
+			.innerJoin('users', 'u', 'u.id = a.author_id')
+			.leftJoin(
+				(qb: SelectQueryBuilder<Tag>) => {
+					return qb
+						.select(['at."article_id" as "articleId"', 'array_agg(t.tag_name) as "tagList"'])
+						.from('tags', 't')
+						.innerJoin('article_tags', 'at', 'at."tag_id" = t.id')
+						.groupBy('"article_id"');
+				},
+				't',
+				't."articleId" = a.id',
+			)
+			.leftJoin(
+				(qb: SelectQueryBuilder<Article>) => {
+					return qb
+						.select([
+							'af."article_id" as "articleId"',
+							'COUNT(*) as "favoritesCount"',
+							'array_agg(u.username) as "usernames"',
+							'array_agg(u.id) as "userIds"',
+						])
+						.from('article_favorites', 'af')
+						.innerJoin('users', 'u', 'af.user_id = u.id')
+						.groupBy('"af"."article_id"');
+				},
+				'af',
+				'af."articleId" = a.id',
+			)
+			.leftJoin(
+				'profile_followers',
+				'pf',
+				`pf.following_id = a.author_id AND CASE WHEN ${
+					currentUserId ? currentUserId : null
+				} IS NOT NULL THEN ${currentUserId ? currentUserId : null} = pf.follower_id ELSE false END`,
+				{ userId: currentUserId },
+			)
+			.where('a.slug = :slug', { slug })
+			.getRawOne();
 
 		return article;
 	}
 
-	async saveArticle(article: Article): Promise<Article> {
-		return await this.repository.save(article);
+	async favoriteArticle(slug: string, currentUserId: number): Promise<void> {
+		await this.repository.query(
+			'INSERT INTO article_favorites (article_id, user_id) VALUES ((SELECT id FROM articles WHERE slug = $1), $2)',
+			[slug, currentUserId],
+		);
+	}
+
+	async unfavoriteArticle(slug: string, currentUserId: number): Promise<void> {
+		await this.repository.query(
+			'DELETE FROM article_favorites WHERE article_id = (SELECT id FROM articles WHERE slug = $1) AND user_id = $2',
+			[slug, currentUserId],
+		);
 	}
 }

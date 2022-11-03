@@ -1,18 +1,15 @@
 import { inject, injectable } from 'inversify';
-import { Repository } from 'typeorm';
 import { hash, genSalt, compare } from 'bcryptjs';
-import { TypeormService } from '../shared/services/typeorm.service';
-import { User } from './user.entity';
 import { HttpError } from '../errors/httpError';
 import { ConfigInterface } from '../common/types/config.interface';
-import { TokensServiceInterface } from '../tokens/types/tokensService.interface';
-import { UsersServiceInterface } from './types/usersService.interface';
-import { AuthResponse } from './types/authResponse.interface';
-import { UserLoginDto } from './types/userLogin.dto';
-import { UserRegisterDto } from './types/userRegister.dto';
-import { UserUpdateDto } from './types/userUpdate.dto';
-import { TYPES } from '../types';
+import { TokensServiceInterface } from '../tokens/types/tokens.service.interface';
+import { UsersServiceInterface } from './types/users.service.interface';
 import { UsersRepositoryInterface } from './types/users.repository.interface';
+import { UserLoginRequestDto } from './types/userLogin.dto';
+import { UserRegisterRequestDto } from './types/userRegister.dto';
+import { UserUpdateDto } from './types/userUpdate.dto';
+import { UserDto, UserResponseDto } from './types/user.dto';
+import { TYPES } from '../types';
 
 @injectable()
 export class UsersService implements UsersServiceInterface {
@@ -22,7 +19,7 @@ export class UsersService implements UsersServiceInterface {
 		@inject(TYPES.UsersRepository) private usersRepository: UsersRepositoryInterface,
 	) {}
 
-	async register(dto: UserRegisterDto): Promise<AuthResponse> {
+	async register({ user: dto }: UserRegisterRequestDto): Promise<UserResponseDto> {
 		let candidate = await this.usersRepository.findUser({
 			email: dto.email,
 		});
@@ -38,13 +35,17 @@ export class UsersService implements UsersServiceInterface {
 		const salt = await genSalt(Number(this.configService.get('SALT')));
 		const hashedPasword = await hash(dto.password, salt);
 		dto.password = hashedPasword;
-		const newUser = await this.usersRepository.createUser(dto);
-		const tokens = this.tokensService.generateTokens({ userId: newUser.id });
-		await this.tokensService.saveToken(newUser.id, tokens.refreshToken);
-		return this.buildAuthResponse(newUser, tokens);
+		await this.usersRepository.createUser(dto);
+		const user = await this.usersRepository.findUser({ username: dto.username });
+		if (!user) {
+			throw new HttpError(500, 'Error receiving user info');
+		}
+		const tokens = this.tokensService.generateTokens({ userId: user.id });
+		await this.tokensService.saveToken(user.id, tokens.refreshToken);
+		return this.buildAuthResponse(user, tokens);
 	}
 
-	async login(dto: UserLoginDto): Promise<AuthResponse> {
+	async login({ user: dto }: UserLoginRequestDto): Promise<UserResponseDto> {
 		const user = await this.usersRepository.findUser({ email: dto.email });
 		if (!user) {
 			throw new HttpError(400, 'invalid email or password');
@@ -58,7 +59,7 @@ export class UsersService implements UsersServiceInterface {
 		return this.buildAuthResponse(user, tokens);
 	}
 
-	async refresh(token: string): Promise<AuthResponse> {
+	async refresh(token: string): Promise<UserResponseDto> {
 		if (!token) {
 			throw new HttpError(401, 'unauthorized');
 		}
@@ -77,7 +78,7 @@ export class UsersService implements UsersServiceInterface {
 		return this.buildAuthResponse(user, tokens);
 	}
 
-	async authenticate(id: number): Promise<AuthResponse> {
+	async authenticate(id: number): Promise<UserResponseDto> {
 		if (!id) {
 			throw new HttpError(401, 'unauthorized');
 		}
@@ -93,11 +94,37 @@ export class UsersService implements UsersServiceInterface {
 		await this.tokensService.removeToken(token);
 	}
 
-	async update(id: number, dto: UserUpdateDto): Promise<AuthResponse> {
-		const toUpdateFields: UserUpdateDto = {};
+	async update(currentUserId: number, { user: dto }: UserUpdateDto): Promise<UserResponseDto> {
+		const savedUser = await this.usersRepository.findUser({ id: currentUserId });
+		if (!savedUser) {
+			throw new HttpError(404, 'user not found');
+		}
+
+		if (dto.username) {
+			const existedUsername = await this.usersRepository.findUser({ username: dto.username });
+			if (existedUsername && existedUsername.id !== currentUserId) {
+				throw new HttpError(400, 'username already taken');
+			}
+		}
+
+		if (dto.email) {
+			const existedEmail = await this.usersRepository.findUser({ email: dto.email });
+			if (existedEmail && existedEmail.id !== currentUserId) {
+				throw new HttpError(400, 'username already taken');
+			}
+		}
+
+		const toUpdateFields: UserUpdateDto['user'] = {};
+
 		for (const key in dto) {
-			if (dto[key as keyof UserUpdateDto]) {
-				toUpdateFields[key as keyof UserUpdateDto] = dto[key as keyof UserUpdateDto];
+			if (
+				dto[key as keyof UserUpdateDto['user']] !== undefined &&
+				dto[key as keyof UserUpdateDto['user']] !== null &&
+				dto[key as keyof UserUpdateDto['user']] !== ''
+			) {
+				toUpdateFields[key as keyof UserUpdateDto['user']] = dto[
+					key as keyof UserUpdateDto['user']
+				] as string;
 			}
 		}
 		if (toUpdateFields.password) {
@@ -105,22 +132,15 @@ export class UsersService implements UsersServiceInterface {
 			const hashedPasword = await hash(toUpdateFields.password, salt);
 			toUpdateFields.password = hashedPasword;
 		}
-		const updateResult = await this.usersRepository.updateUser(id, toUpdateFields);
-		if (!updateResult || updateResult.affected === 0) {
-			throw new HttpError(404, 'user not found');
-		}
-		const user = await this.usersRepository.findUser({ id });
-		if (!user) {
-			throw new HttpError(404, 'user not found');
-		}
-		const tokens = this.tokensService.generateTokens({ userId: user.id });
-		return this.buildAuthResponse(user, tokens);
+		await this.usersRepository.updateUser(currentUserId, toUpdateFields);
+		const tokens = this.tokensService.generateTokens({ userId: currentUserId });
+		return this.buildAuthResponse({ ...savedUser, ...toUpdateFields }, tokens);
 	}
 
 	private buildAuthResponse(
-		user: User,
+		user: UserDto,
 		tokens: { refreshToken: string; accessToken: string },
-	): AuthResponse {
+	): UserResponseDto {
 		return {
 			user: {
 				email: user.email,

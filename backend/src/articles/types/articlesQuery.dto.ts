@@ -4,5 +4,6 @@ export interface ArticlesQueryDto {
 	author?: string;
 	tag?: string;
 	favorited?: string;
-	followed?: string[];
+	followerId?: number;
+	userId?: number;
 }

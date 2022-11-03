@@ -2,8 +2,8 @@ import { ContainerModule, interfaces } from 'inversify';
 import { ArticlesContoller } from './articles.controller';
 import { ArticlesService } from './articles.service';
 import { ArticlesRepository } from './articles.repository';
-import { ArticlesControllerInterface } from './types/articlesController.interface';
-import { ArticlesServiceInterface } from './types/articlesService.interface';
+import { ArticlesControllerInterface } from './types/articles.controller.interface';
+import { ArticlesServiceInterface } from './types/articles.service.interface';
 import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
 import { TYPES } from '../types';
 

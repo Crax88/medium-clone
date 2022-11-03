@@ -1,6 +1,6 @@
 import { ClassConstructor, plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
-import e, { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import { MiddlewareInterface } from './types/middleware.interface';
 import { ValidationErrorsInterface } from './types/validationErrors.interface';
 

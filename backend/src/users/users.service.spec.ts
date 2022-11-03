@@ -69,7 +69,7 @@ describe('UsersService', () => {
 			.mockImplementationOnce((userId, token) => ({ id: 1, userId, token }));
 
 		const userData = { username: 'user', email: 'user@test.com', password: '12345' };
-		const registerResult = await usersService.register(userData);
+		const registerResult = await usersService.register({ user: userData });
 		expect(registerResult.user.username).toEqual('user');
 		expect(registerResult.user.email).toEqual(userData.email);
 		expect(registerResult.user.username).toEqual(userData.username);
@@ -89,7 +89,7 @@ describe('UsersService', () => {
 
 		const userData = { username: 'user', email: 'user@test.com', password: '12345' };
 		expect(async () => {
-			await usersService.register(userData);
+			await usersService.register({ user: userData });
 		}).rejects.toThrow(HttpError);
 	});
 
@@ -117,7 +117,7 @@ describe('UsersService', () => {
 			.mockImplementationOnce((userId, token) => ({ id: 1, userId, token }));
 
 		const userData = { email: 'user@test.com', password };
-		const loginResult = await usersService.login(userData);
+		const loginResult = await usersService.login({ user: userData });
 		expect(loginResult.user.username).toEqual('user');
 		expect(loginResult.user.email).toEqual(userData.email);
 		expect(loginResult.user.token).toEqual(accessToken);
@@ -132,7 +132,7 @@ describe('UsersService', () => {
 
 		const userData = { email: 'user@test.com', password: '12345' };
 		expect(async () => {
-			await usersService.login(userData);
+			await usersService.login({ user: userData });
 		}).rejects.toThrow(HttpError);
 	});
 
@@ -149,7 +149,7 @@ describe('UsersService', () => {
 
 		const userData = { email: 'user@test.com', password: 'wrongPassword' };
 		expect(async () => {
-			await usersService.login(userData);
+			await usersService.login({ user: userData });
 		}).rejects.toThrow(HttpError);
 	});
 
@@ -201,7 +201,7 @@ describe('UsersService', () => {
 			.mockImplementationOnce((userId, token) => ({ id: 1, userId, token }));
 
 		const userData = { email: 'user@test.com', password: '54321', username: 'user1' };
-		const updateResult = await usersService.update(1, userData);
+		const updateResult = await usersService.update(1, { user: userData });
 		expect(updateResult.user.username).toEqual(userData.username);
 		expect(updateResult.user.email).toEqual(userData.email);
 		expect(updateResult.user.token).toEqual(accessToken);
@@ -216,7 +216,7 @@ describe('UsersService', () => {
 
 		const userData = { email: 'user@test.com', username: 'user1' };
 		expect(async () => {
-			await usersService.update(1, userData);
+			await usersService.update(1, { user: userData });
 		}).rejects.toThrow(HttpError);
 	});
 

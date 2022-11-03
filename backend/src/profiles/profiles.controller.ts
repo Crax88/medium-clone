@@ -3,7 +3,7 @@ import { inject, injectable } from 'inversify';
 import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { AuthGuard } from '../shared/services/auth.guard';
-import { ProfilesControllerInterface } from './types/profilesController.interface';
+import { ProfilesControllerInterface } from './types/profiles.controller.interface';
 import { ProfilesServiceInterface } from './types/profiles.service.interface';
 import { TYPES } from '../types';
 

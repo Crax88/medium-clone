@@ -6,14 +6,16 @@ import { ArticlesRepositoryInterface } from '../articles/types/articles.reposito
 import { CommentsRepositoryInterface } from './types/comments.repository.interface';
 import { CommentsServiceInterface } from './types/comments.service.interface';
 import { TYPES } from '../types';
+import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
 
 const ArticlesRepositoryMock: ArticlesRepositoryInterface = {
 	createArticle: jest.fn(),
 	deleteArticle: jest.fn(),
 	getArticle: jest.fn(),
 	getArticles: jest.fn(),
-	saveArticle: jest.fn(),
 	updateArticle: jest.fn(),
+	favoriteArticle: jest.fn(),
+	unfavoriteArticle: jest.fn(),
 };
 
 const CommentsRepositoryMock: CommentsRepositoryInterface = {
@@ -21,12 +23,20 @@ const CommentsRepositoryMock: CommentsRepositoryInterface = {
 	deleteComment: jest.fn(),
 	getComment: jest.fn(),
 	getComments: jest.fn(),
+	getCommentLast: jest.fn(),
+};
+
+const UsersRepositoryMock: UsersRepositoryInterface = {
+	createUser: jest.fn(),
+	findUser: jest.fn(),
+	updateUser: jest.fn(),
 };
 
 const container = new Container();
 let articlesRepository: ArticlesRepositoryInterface;
 let commentsRepository: CommentsRepositoryInterface;
 let commentsService: CommentsServiceInterface;
+let usersRepository: UsersRepositoryInterface;
 
 beforeAll(() => {
 	container
@@ -36,10 +46,14 @@ beforeAll(() => {
 		.bind<CommentsRepositoryInterface>(TYPES.CommentsRepository)
 		.toConstantValue(CommentsRepositoryMock);
 	container.bind<CommentsServiceInterface>(TYPES.CommentsService).to(CommentsService);
+	container
+		.bind<UsersRepositoryInterface>(TYPES.UsersRepository)
+		.toConstantValue(UsersRepositoryMock);
 
 	articlesRepository = container.get<ArticlesRepositoryInterface>(TYPES.ArticlesRepository);
 	commentsRepository = container.get<CommentsRepositoryInterface>(TYPES.CommentsRepository);
 	commentsService = container.get<CommentsServiceInterface>(TYPES.CommentsService);
+	usersRepository = container.get<UsersRepositoryInterface>(TYPES.UsersRepository);
 });
 
 describe('CommentsService', () => {
@@ -53,29 +67,21 @@ describe('CommentsService', () => {
 		}));
 		commentsRepository.createComment = jest
 			.fn()
-			.mockImplementationOnce((dto, userId, articleId) => ({
-				id: 1,
-				body: dto.body,
-				articleId,
-				authorId: userId,
-				createdAt: new Date().toISOString(),
-				updateddAt: new Date().toISOString(),
-			}));
+			.mockImplementationOnce((dto, userId, articleId) => {
+				return;
+			});
 
-		commentsRepository.getComment = jest.fn().mockImplementationOnce((commentId) => ({
-			id: commentId,
+		commentsRepository.getCommentLast = jest.fn().mockImplementationOnce((slug, userId) => ({
+			id: 1,
 			body: commentData.body,
-			articleId: 1,
 			author: {
-				id: 1,
 				username: 'user',
-				email: 'email@mail.com',
 				bio: 'bio',
 				image: 'someImage',
-				followers: [],
+				following: false,
 			},
 			createdAt: new Date().toISOString(),
-			updateddAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString(),
 		}));
 
 		const commentResult = await commentsService.createComment(
@@ -83,12 +89,17 @@ describe('CommentsService', () => {
 			{ comment: commentData },
 			1,
 		);
-		expect(commentResult.comment.body).toEqual(commentData.body);
+		expect(commentResult).toHaveProperty('comment');
+		expect(commentResult.comment).toHaveProperty('id');
+		expect(commentResult.comment).toHaveProperty('body');
+		expect(commentResult.comment).toHaveProperty('createdAt');
+		expect(commentResult.comment).toHaveProperty('updatedAt');
 		expect(commentResult.comment).toHaveProperty('author');
-		expect(commentResult.comment.author.bio).toEqual('bio');
-		expect(commentResult.comment.author.username).toEqual('user');
-		expect(commentResult.comment.author.image).toEqual('someImage');
-		expect(commentResult.comment.author.following).toEqual(false);
+		expect(commentResult.comment.author).toHaveProperty('username');
+		expect(commentResult.comment.author).toHaveProperty('image');
+		expect(commentResult.comment.author).toHaveProperty('bio');
+		expect(commentResult.comment.author).toHaveProperty('following');
+		expect(commentResult.comment.body).toEqual(commentData.body);
 	});
 
 	it('Create comment, Throws if article not found', async () => {
@@ -110,30 +121,29 @@ describe('CommentsService', () => {
 		commentsRepository.getComment = jest.fn().mockImplementationOnce((commentId) => ({
 			id: commentId,
 			body: 'the comment',
-			articleId: 1,
-			authorId: 1,
 			author: {
-				id: 1,
 				username: 'user',
-				email: 'email@mail.com',
 				bio: 'bio',
 				image: 'someImage',
-				followers: [],
+				following: false,
 			},
 			createdAt: new Date().toISOString(),
 			updateddAt: new Date().toISOString(),
+		}));
+
+		usersRepository.findUser = jest.fn().mockImplementationOnce(() => ({
+			username: 'user',
+			bio: 'bio',
+			image: 'image',
 		}));
 
 		commentsRepository.deleteComment = jest.fn().mockImplementationOnce((commentId) => ({
 			affected: 1,
 		}));
 
-		const deleteResult = await commentsService.deleteComment('the-title', 1, 1);
-		expect(deleteResult).toBe(undefined);
-		expect(articlesRepository.getArticle).toBeCalledTimes(1);
-		expect(articlesRepository.getArticle).toBeCalledWith('the-title');
+		await commentsService.deleteComment('the-title', 1, 1);
+
 		expect(commentsRepository.deleteComment).toBeCalledTimes(1);
-		expect(commentsRepository.deleteComment).toBeCalledWith(1);
 	});
 
 	it('Delete comment, Throws if article not found', async () => {
@@ -194,47 +204,45 @@ describe('CommentsService', () => {
 			description: 'description',
 			body: 'mega body',
 		}));
-		commentsRepository.getComments = jest.fn().mockImplementationOnce((articleId) => [
+		commentsRepository.getComments = jest.fn().mockImplementationOnce((slug, userId) => [
 			{
 				id: 1,
 				body: 'the comment',
-				articleId,
-				authorId: 1,
 				author: {
-					id: 1,
 					username: 'user',
 					email: 'email@mail.com',
 					bio: 'bio',
 					image: 'someImage',
-					followers: [],
+					following: false,
 				},
 				createdAt: new Date().toISOString(),
-				updateddAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
 			},
 			{
 				id: 2,
 				body: 'the comment2',
-				articleId,
-				authorId: 2,
 				author: {
-					id: 2,
 					username: 'user2',
-					email: 'email2@mail.com',
 					bio: 'bio2',
 					image: 'someImage2',
-					followers: [{ id: 1 }],
+					following: false,
 				},
 				createdAt: new Date().toISOString(),
-				updateddAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString(),
 			},
 		]);
 
 		const commentsResult = await commentsService.getComments('the-title', 1);
 		expect(commentsResult).toHaveProperty('comments');
-		expect(commentsResult.comments.length).toBe(2);
+		expect(commentsResult.comments[0]).toHaveProperty('id');
+		expect(commentsResult.comments[0]).toHaveProperty('body');
+		expect(commentsResult.comments[0]).toHaveProperty('createdAt');
+		expect(commentsResult.comments[0]).toHaveProperty('updatedAt');
 		expect(commentsResult.comments[0]).toHaveProperty('author');
-		expect(commentsResult.comments[0].author.username).toBeDefined();
-		expect(commentsResult.comments[1].author.following).toBe(true);
+		expect(commentsResult.comments[0].author).toHaveProperty('username');
+		expect(commentsResult.comments[0].author).toHaveProperty('image');
+		expect(commentsResult.comments[0].author).toHaveProperty('bio');
+		expect(commentsResult.comments[0].author).toHaveProperty('following');
 	});
 
 	it('Get comments, Throws if article not found', async () => {

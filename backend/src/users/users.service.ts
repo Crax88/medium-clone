@@ -5,8 +5,8 @@ import { ConfigInterface } from '../common/types/config.interface';
 import { TokensServiceInterface } from '../tokens/types/tokens.service.interface';
 import { UsersServiceInterface } from './types/users.service.interface';
 import { UsersRepositoryInterface } from './types/users.repository.interface';
-import { UserLoginDto } from './types/userLogin.dto';
-import { UserRegisterDto } from './types/userRegister.dto';
+import { UserLoginDto, UserLoginRequestDto } from './types/userLogin.dto';
+import { UserRegisterDto, UserRegisterRequestDto } from './types/userRegister.dto';
 import { UserUpdateDto } from './types/userUpdate.dto';
 import { UserDto, UserResponseDto } from './types/user.dto';
 import { TYPES } from '../types';
@@ -19,7 +19,7 @@ export class UsersService implements UsersServiceInterface {
 		@inject(TYPES.UsersRepository) private usersRepository: UsersRepositoryInterface,
 	) {}
 
-	async register(dto: UserRegisterDto): Promise<UserResponseDto> {
+	async register({ user: dto }: UserRegisterRequestDto): Promise<UserResponseDto> {
 		let candidate = await this.usersRepository.findUser({
 			email: dto.email,
 		});
@@ -45,7 +45,7 @@ export class UsersService implements UsersServiceInterface {
 		return this.buildAuthResponse(user, tokens);
 	}
 
-	async login(dto: UserLoginDto): Promise<UserResponseDto> {
+	async login({ user: dto }: UserLoginRequestDto): Promise<UserResponseDto> {
 		const user = await this.usersRepository.findUser({ email: dto.email });
 		if (!user) {
 			throw new HttpError(400, 'invalid email or password');
@@ -94,7 +94,7 @@ export class UsersService implements UsersServiceInterface {
 		await this.tokensService.removeToken(token);
 	}
 
-	async update(currentUserId: number, dto: UserUpdateDto): Promise<UserResponseDto> {
+	async update(currentUserId: number, { user: dto }: UserUpdateDto): Promise<UserResponseDto> {
 		const savedUser = await this.usersRepository.findUser({ id: currentUserId });
 		if (!savedUser) {
 			throw new HttpError(404, 'user not found');
@@ -114,15 +114,17 @@ export class UsersService implements UsersServiceInterface {
 			}
 		}
 
-		const toUpdateFields: UserUpdateDto = {};
+		const toUpdateFields: UserUpdateDto['user'] = {};
 
 		for (const key in dto) {
 			if (
-				dto[key as keyof UserUpdateDto] !== undefined &&
-				dto[key as keyof UserUpdateDto] !== null &&
-				dto[key as keyof UserUpdateDto] !== ''
+				dto[key as keyof UserUpdateDto['user']] !== undefined &&
+				dto[key as keyof UserUpdateDto['user']] !== null &&
+				dto[key as keyof UserUpdateDto['user']] !== ''
 			) {
-				toUpdateFields[key as keyof UserUpdateDto] = dto[key as keyof UserUpdateDto] as string;
+				toUpdateFields[key as keyof UserUpdateDto['user']] = dto[
+					key as keyof UserUpdateDto['user']
+				] as string;
 			}
 		}
 		if (toUpdateFields.password) {

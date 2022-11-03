@@ -1,4 +1,5 @@
-import { IsEmail, IsNotEmpty, Matches, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsEmail, IsNotEmpty, Matches, MinLength, ValidateNested } from 'class-validator';
 
 export class UserRegisterDto {
 	@IsEmail({}, { message: 'invalid format' })
@@ -14,4 +15,10 @@ export class UserRegisterDto {
 	@MinLength(3, { message: 'at least 3 characters' })
 	@IsNotEmpty({ message: 'is required' })
 	username: string;
+}
+
+export class UserRegisterRequestDto {
+	@ValidateNested()
+	@Type(() => UserRegisterDto)
+	user: UserRegisterDto;
 }

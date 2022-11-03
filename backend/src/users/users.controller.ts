@@ -5,8 +5,8 @@ import { LoggerInterface } from '../common/types/logger.interface';
 import { ValidationMiddleware } from '../common/validation.middleware';
 import { AuthGuard } from '../shared/services/auth.guard';
 import { TYPES } from '../types';
-import { UserLoginDto } from './types/userLogin.dto';
-import { UserRegisterDto } from './types/userRegister.dto';
+import { UserLoginDto, UserLoginRequestDto } from './types/userLogin.dto';
+import { UserRegisterDto, UserRegisterRequestDto } from './types/userRegister.dto';
 import { UsersControllerInterface } from './types/users.controller.interface';
 import { UsersServiceInterface } from './types/users.service.interface';
 import { UserUpdateDto } from './types/userUpdate.dto';
@@ -56,7 +56,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 	}
 
 	async register(
-		req: Request<{}, {}, UserRegisterDto>,
+		req: Request<{}, {}, UserRegisterRequestDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
@@ -73,7 +73,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 	}
 
 	async login(
-		req: Request<{}, {}, UserLoginDto>,
+		req: Request<{}, {}, UserLoginRequestDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {

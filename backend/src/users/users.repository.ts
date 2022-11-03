@@ -29,7 +29,7 @@ export class UsersRepository implements UsersRepositoryInterface {
 		await this.repository.save(newUser);
 	}
 
-	async updateUser(userId: number, dto: UserUpdateDto): Promise<void> {
+	async updateUser(userId: number, dto: UserUpdateDto['user']): Promise<void> {
 		await this.repository.update(userId, dto as User);
 	}
 }

@@ -27,7 +27,7 @@ export class TagsController extends BaseController implements TagsControllerInte
 	async getPopularTags(req: Request, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const popularTags = await this.tagsService.getPopularTags();
-			this.ok(res, { tags: this.tagsService.buildPopularTagsResponse(popularTags) });
+			this.ok(res, this.tagsService.buildPopularTagsResponse(popularTags));
 		} catch (error) {
 			next(error);
 		}

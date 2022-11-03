@@ -24,7 +24,7 @@ export class CommentsService implements CommentsServiceInterface {
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}
-		await this.commentsRepository.createComment(comment, userId, article.id);
+		await this.commentsRepository.createComment(comment, userId, slug);
 		const savedComment = await this.commentsRepository.getCommentLast(slug, userId);
 		if (!savedComment) {
 			throw new HttpError(404, 'comment not found');
@@ -50,7 +50,7 @@ export class CommentsService implements CommentsServiceInterface {
 		if (comment.author.username !== user.username) {
 			throw new HttpError(403, "can't delete others comment");
 		}
-		await this.commentsRepository.deleteComment(comment.id);
+		await this.commentsRepository.deleteComment(commentId);
 	}
 
 	async getComments(slug: string, userId?: number): Promise<CommentsResponseDto> {
@@ -58,7 +58,7 @@ export class CommentsService implements CommentsServiceInterface {
 		if (!article) {
 			throw new HttpError(401, 'article not found');
 		}
-		const comments = await this.commentsRepository.getComments(article.id, userId);
+		const comments = await this.commentsRepository.getComments(slug, userId);
 
 		return { comments };
 	}

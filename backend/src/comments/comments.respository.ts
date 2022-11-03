@@ -15,11 +15,12 @@ export class CommentsRepository implements CommentsRepositoryInterface {
 		this.repository = databaseService.getRepository(Comment);
 	}
 
-	async createComment(dto: CreateCommentDto, userId: number, articleId: number): Promise<void> {
+	async createComment(dto: CreateCommentDto, userId: number, slug: string): Promise<void> {
+		const article = await this.repository.query('SELECT id FROM articles WHERE slug = $1', [slug]);
 		const newComment = this.repository.create({
 			body: dto.body,
 			authorId: userId,
-			articleId: articleId,
+			articleId: article[0].id,
 		});
 		await this.repository.save(newComment);
 	}
@@ -28,17 +29,18 @@ export class CommentsRepository implements CommentsRepositoryInterface {
 		await this.repository.delete(commentId);
 	}
 
-	async getComments(articleId: number, currentUserId?: number): Promise<CommentDto[]> {
+	async getComments(slug: string, currentUserId?: number): Promise<CommentDto[]> {
 		const comments = await this.repository
 			.createQueryBuilder('c')
 			.select([
-				'c.id',
-				'c.body',
-				'c.created_at',
-				'c.updated_at',
+				'c.id as id',
+				'c.body as body',
+				'c.created_at as "createdAt"',
+				'c.updated_at as "updatedAt"',
 				"jsonb_build_object('username', u.username, 'image', u.image, 'bio', u.image, 'following', COALESCE(pf.follower_id::bool, false) ) as author",
 			])
 			.innerJoin('users', 'u', 'u.id = c.author_id')
+			.innerJoin('articles', 'a', 'a.id = c.article_id')
 			.leftJoin(
 				'profile_followers',
 				'pf',
@@ -47,7 +49,7 @@ export class CommentsRepository implements CommentsRepositoryInterface {
 				} IS NOT NULL THEN ${currentUserId ? currentUserId : null} = pf.follower_id ELSE false END`,
 				{ userId: currentUserId },
 			)
-			.where('c.article_id = :articleId', { articleId })
+			.where('a.slug = :slug', { slug })
 			.getRawMany();
 
 		return comments;
@@ -64,7 +66,7 @@ export class CommentsRepository implements CommentsRepositoryInterface {
 				"jsonb_build_object('username', u.username, 'image', u.image, 'bio', u.image, 'following', false) as author",
 			])
 			.innerJoin('users', 'u', 'u.id = c.author_id')
-			.innerJoin('artciles', 'a', 'a.id = c.article_id')
+			.innerJoin('articles', 'a', 'a.id = c.article_id')
 			.where('a.slug = :slug', { slug })
 			.andWhere('c.author_id = :userId', { userId: currentUserId })
 			.orderBy('c.created_at', 'DESC')
@@ -88,7 +90,9 @@ export class CommentsRepository implements CommentsRepositoryInterface {
 			.leftJoin(
 				'profile_followers',
 				'pf',
-				'pf.following_id = c.author_id AND CASE WHEN :userId IS NOT NULL THEN :userId = pf.follower_id ELSE false END',
+				`pf.following_id = c.author_id AND CASE WHEN ${
+					currentUserId ? currentUserId : null
+				} IS NOT NULL THEN ${currentUserId ? currentUserId : null} = pf.follower_id ELSE false END`,
 				{ userId: currentUserId },
 			)
 			.where('c.id = :commentId', { commentId })

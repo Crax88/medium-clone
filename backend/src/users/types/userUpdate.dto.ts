@@ -1,7 +1,5 @@
-export interface UserUpdateDto {
-	email?: string;
-	bio?: string;
-	password?: string;
-	image?: string;
-	username?: string;
-}
+import { UserDto } from './user.dto';
+
+export type UserUpdateDto = {
+	user: Partial<Pick<UserDto, 'username' | 'bio' | 'image' | 'email' | 'password'>>;
+};

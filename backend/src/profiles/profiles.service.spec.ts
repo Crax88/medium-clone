@@ -3,7 +3,7 @@ import { Container } from 'inversify';
 import { HttpError } from '../errors/httpError';
 import { ProfilesService } from './profiles.service';
 import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';
-import { ProfilesServiceInterface } from './types/profilesService.interface';
+import { ProfilesServiceInterface } from './types/profiles.service.interface';
 import { TYPES } from '../types';
 
 const ProfilesRepositoryMock: ProfilesRepositoryInterface = {

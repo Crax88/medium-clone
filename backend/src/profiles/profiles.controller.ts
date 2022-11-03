@@ -1,12 +1,11 @@
 import { Request, Response, NextFunction } from 'express';
 import { inject, injectable } from 'inversify';
-import { ParsedQs } from 'qs';
 import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { AuthGuard } from '../shared/services/auth.guard';
+import { ProfilesControllerInterface } from './types/profiles.controller.interface';
+import { ProfilesServiceInterface } from './types/profiles.service.interface';
 import { TYPES } from '../types';
-import { ProfilesControllerInterface } from './types/profilesController.interface';
-import { ProfilesServiceInterface } from './types/profilesService.interface';
 
 @injectable()
 export class ProfilesController extends BaseController implements ProfilesControllerInterface {
@@ -30,7 +29,7 @@ export class ProfilesController extends BaseController implements ProfilesContro
 			{
 				path: '/profiles/:username/follow',
 				method: 'delete',
-				handler: this.followProfile,
+				handler: this.unfollowProfile,
 				middlewares: [new AuthGuard()],
 			},
 		]);
@@ -56,6 +55,19 @@ export class ProfilesController extends BaseController implements ProfilesContro
 	): Promise<void> {
 		try {
 			const result = await this.profilesService.followProfile(req.params.username, req.userId);
+			this.ok(res, result);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async unfollowProfile(
+		req: Request<{ username: string }>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const result = await this.profilesService.unfollowProfile(req.params.username, req.userId);
 			this.ok(res, result);
 		} catch (error) {
 			next(error);

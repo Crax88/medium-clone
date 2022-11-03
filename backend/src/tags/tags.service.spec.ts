@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { TagsService } from './tags.service';
 import { TagsRepositoryInterface } from './types/tags.repository.interface';
-import { TagsServiceInterface } from './types/tagsService.interface';
+import { TagsServiceInterface } from './types/tags.service.interface';
 import { TYPES } from '../types';
 
 const TagsRepositoryMock: TagsRepositoryInterface = {

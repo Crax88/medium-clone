@@ -5,8 +5,8 @@ import { ParsedQs } from 'qs';
 import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { TYPES } from '../types';
-import { TagsControllerInterface } from './types/tagsController.interface';
-import { TagsServiceInterface } from './types/tagsService.interface';
+import { TagsControllerInterface } from './types/tags.controller.interface';
+import { TagsServiceInterface } from './types/tags.service.interface';
 
 @injectable()
 export class TagsController extends BaseController implements TagsControllerInterface {

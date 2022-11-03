@@ -14,7 +14,7 @@ import { UsersControllerInterface } from './users/types/users.controller.interfa
 import { AuthMiddleware } from './shared/services/auth.middleware';
 import { TokensServiceInterface } from './tokens/types/tokensService.interface';
 import { ArticlesControllerInterface } from './articles/types/articlesController.interface';
-import { TagsControllerInterface } from './tags/types/tagsController.interface';
+import { TagsControllerInterface } from './tags/types/tags.controller.interface';
 import { ProfilesControllerInterface } from './profiles/types/profiles.controller.interface';
 import { CommentsControllerInterface } from './comments/types/commentsController.interface';
 import { TYPES } from './types';

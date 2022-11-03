@@ -5,7 +5,7 @@ import { Tag } from '../tags/tag.entity';
 import { User } from '../users/user.entity';
 import { Article } from './article.entity';
 import { ArticlesServiceInterface } from './types/articlesService.interface';
-import { TagsServiceInterface } from '../tags/types/tagsService.interface';
+import { TagsServiceInterface } from '../tags/types/tags.service.interface';
 import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
 import { ArticleResponseDto, ArticlesResponseDto } from './types/article.dto';
 import { ArticleSaveDto } from './types/articleSave.dto';

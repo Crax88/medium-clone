@@ -2,8 +2,8 @@ import { ContainerModule, interfaces } from 'inversify';
 import { CommentsController } from './comments.controller';
 import { CommentsService } from './comments.service';
 import { CommentsRepository } from './comments.respository';
-import { CommentsControllerInterface } from './types/commentsController.interface';
-import { CommentsServiceInterface } from './types/commentsService.interface';
+import { CommentsControllerInterface } from './types/comments.controller.interface';
+import { CommentsServiceInterface } from './types/comments.service.interface';
 import { CommentsRepositoryInterface } from './types/comments.repository.interface';
 import { TYPES } from '../types';
 

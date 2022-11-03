@@ -4,12 +4,12 @@ import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { ValidationMiddleware } from '../common/validation.middleware';
 import { AuthGuard } from '../shared/services/auth.guard';
-import { TYPES } from '../types';
-import { UserLoginDto } from './types/userLogin.dto';
-import { UserRegisterDto } from './types/userRegister.dto';
-import { UsersControllerInterface } from './types/usersController.interface';
-import { UsersServiceInterface } from './types/usersService.interface';
+import { UsersControllerInterface } from './types/users.controller.interface';
+import { UsersServiceInterface } from './types/users.service.interface';
+import { UserLoginRequestDto } from './types/userLogin.dto';
+import { UserRegisterRequestDto } from './types/userRegister.dto';
 import { UserUpdateDto } from './types/userUpdate.dto';
+import { TYPES } from '../types';
 
 @injectable()
 export class UsersController extends BaseController implements UsersControllerInterface {
@@ -23,13 +23,13 @@ export class UsersController extends BaseController implements UsersControllerIn
 				path: '/users',
 				method: 'post',
 				handler: this.register,
-				middlewares: [new ValidationMiddleware(UserRegisterDto)],
+				middlewares: [new ValidationMiddleware(UserRegisterRequestDto)],
 			},
 			{
 				path: '/users/login',
 				method: 'post',
 				handler: this.login,
-				middlewares: [new ValidationMiddleware(UserLoginDto)],
+				middlewares: [new ValidationMiddleware(UserLoginRequestDto)],
 			},
 			{
 				path: '/users/refresh',
@@ -56,7 +56,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 	}
 
 	async register(
-		req: Request<{}, {}, UserRegisterDto>,
+		req: Request<{}, {}, UserRegisterRequestDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {
@@ -73,7 +73,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 	}
 
 	async login(
-		req: Request<{}, {}, UserLoginDto>,
+		req: Request<{}, {}, UserLoginRequestDto>,
 		res: Response,
 		next: NextFunction,
 	): Promise<void> {

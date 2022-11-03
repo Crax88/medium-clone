@@ -5,11 +5,11 @@ import { TokensModule } from './tokens/tokens.module';
 import { SharedModule } from './shared/shared.module';
 import { ExceptionFilter } from './errors/exception.filter';
 import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
-import { TYPES } from './types';
 import { ArticlesModule } from './articles/articles.module';
 import { TagsModule } from './tags/tags.module';
 import { ProfilesModule } from './profiles/profiles.module';
 import { CommetnsModule } from './comments/comments.module';
+import { TYPES } from './types';
 export interface IBootsrapReturn {
 	appContainer: Container;
 	app: App;

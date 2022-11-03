@@ -2,8 +2,8 @@ import { ContainerModule, interfaces } from 'inversify';
 import { TagsController } from './tags.controller';
 import { TagsService } from './tags.service';
 import { TagsRepository } from './tags.repository';
-import { TagsControllerInterface } from './types/tagsController.interface';
-import { TagsServiceInterface } from './types/tagsService.interface';
+import { TagsControllerInterface } from './types/tags.controller.interface';
+import { TagsServiceInterface } from './types/tags.service.interface';
 import { TagsRepositoryInterface } from './types/tags.repository.interface';
 import { TYPES } from '../types';
 

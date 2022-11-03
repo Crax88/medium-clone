@@ -3,9 +3,9 @@ import { Container } from 'inversify';
 import { ArticlesService } from './articles.service';
 import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
 import { TagsRepositoryInterface } from '../tags/types/tags.repository.interface';
-import { ArticlesServiceInterface } from './types/articlesService.interface';
+import { ArticlesServiceInterface } from './types/articles.service.interface';
 import { TYPES } from '../types';
-import { TagsServiceInterface } from '../tags/types/tagsService.interface';
+import { TagsServiceInterface } from '../tags/types/tags.service.interface';
 import { TagsService } from '../tags/tags.service';
 import { HttpError } from '../errors/httpError';
 

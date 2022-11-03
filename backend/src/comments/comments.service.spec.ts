@@ -4,7 +4,7 @@ import { HttpError } from '../errors/httpError';
 import { CommentsService } from './comments.service';
 import { ArticlesRepositoryInterface } from '../articles/types/articles.repository.interface';
 import { CommentsRepositoryInterface } from './types/comments.repository.interface';
-import { CommentsServiceInterface } from './types/commentsService.interface';
+import { CommentsServiceInterface } from './types/comments.service.interface';
 import { TYPES } from '../types';
 
 const ArticlesRepositoryMock: ArticlesRepositoryInterface = {

@@ -6,18 +6,18 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
-import { TYPES } from './types';
 import { LoggerInterface } from './common/types/logger.interface';
 import { ConfigInterface } from './common/types/config.interface';
 import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
 import { TypeormService } from './shared/services/typeorm.service';
-import { UsersControllerInterface } from './users/types/usersController.interface';
+import { UsersControllerInterface } from './users/types/users.controller.interface';
 import { AuthMiddleware } from './shared/services/auth.middleware';
-import { TokensServiceInterface } from './tokens/types/tokensService.interface';
-import { ArticlesControllerInterface } from './articles/types/articlesController.interface';
-import { TagsControllerInterface } from './tags/types/tagsController.interface';
-import { ProfilesControllerInterface } from './profiles/types/profilesController.interface';
-import { CommentsControllerInterface } from './comments/types/commentsController.interface';
+import { TokensServiceInterface } from './tokens/types/tokens.service.interface';
+import { ArticlesControllerInterface } from './articles/types/articles.controller.interface';
+import { TagsControllerInterface } from './tags/types/tags.controller.interface';
+import { ProfilesControllerInterface } from './profiles/types/profiles.controller.interface';
+import { CommentsControllerInterface } from './comments/types/comments.controller.interface';
+import { TYPES } from './types';
 
 @injectable()
 export class App {

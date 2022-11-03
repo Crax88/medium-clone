@@ -76,8 +76,8 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const articles = await this.articlesService.getArticles(req.query, req.userId);
-			this.ok(res, { articles });
+			const result = await this.articlesService.getArticles(req.query, req.userId);
+			this.ok(res, result);
 		} catch (error) {
 			next(error);
 		}
@@ -89,8 +89,8 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const articles = await this.articlesService.getFeed(req.query, req.userId);
-			this.ok(res, { articles });
+			const result = await this.articlesService.getFeed(req.query, req.userId);
+			this.ok(res, result);
 		} catch (error) {
 			next(error);
 		}
@@ -102,8 +102,8 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const article = await this.articlesService.getArticle(req.params.slug, req.userId);
-			this.ok(res, { article });
+			const result = await this.articlesService.getArticle(req.params.slug, req.userId);
+			this.ok(res, result);
 		} catch (error) {
 			next(error);
 		}
@@ -115,8 +115,8 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const article = await this.articlesService.createArticle(req.body, req.userId);
-			this.ok(res, { article });
+			const result = await this.articlesService.createArticle(req.body, req.userId);
+			this.ok(res, result);
 		} catch (error) {
 			next(error);
 		}
@@ -128,12 +128,12 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const article = await this.articlesService.updateArticle(
+			const result = await this.articlesService.updateArticle(
 				req.params.slug,
 				req.body,
 				req.userId,
 			);
-			this.ok(res, { article });
+			this.ok(res, result);
 		} catch (error) {
 			next(error);
 		}
@@ -158,8 +158,8 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const article = await this.articlesService.favoriteArticle(req.params.slug, req.userId);
-			this.ok(res, article);
+			const result = await this.articlesService.favoriteArticle(req.params.slug, req.userId);
+			this.ok(res, result);
 		} catch (error) {
 			next(error);
 		}
@@ -171,8 +171,8 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 		next: NextFunction,
 	): Promise<void> {
 		try {
-			const article = await this.articlesService.unfavoriteArticle(req.params.slug, req.userId);
-			this.ok(res, article);
+			const result = await this.articlesService.unfavoriteArticle(req.params.slug, req.userId);
+			this.ok(res, result);
 		} catch (error) {
 			next(error);
 		}

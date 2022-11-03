@@ -23,13 +23,13 @@ export class UsersController extends BaseController implements UsersControllerIn
 				path: '/users',
 				method: 'post',
 				handler: this.register,
-				middlewares: [new ValidationMiddleware(UserRegisterDto)],
+				middlewares: [new ValidationMiddleware(UserRegisterRequestDto)],
 			},
 			{
 				path: '/users/login',
 				method: 'post',
 				handler: this.login,
-				middlewares: [new ValidationMiddleware(UserLoginDto)],
+				middlewares: [new ValidationMiddleware(UserLoginRequestDto)],
 			},
 			{
 				path: '/users/refresh',

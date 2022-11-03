@@ -8,14 +8,16 @@ import { TYPES } from '../types';
 import { TagsServiceInterface } from '../tags/types/tags.service.interface';
 import { TagsService } from '../tags/tags.service';
 import { HttpError } from '../errors/httpError';
+import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
 
 const ArticlesRepositoryMock: ArticlesRepositoryInterface = {
 	createArticle: jest.fn(),
 	deleteArticle: jest.fn(),
 	getArticle: jest.fn(),
 	getArticles: jest.fn(),
-	saveArticle: jest.fn(),
 	updateArticle: jest.fn(),
+	favoriteArticle: jest.fn(),
+	unfavoriteArticle: jest.fn(),
 };
 
 const TagsRepositoryMock: TagsRepositoryInterface = {
@@ -24,10 +26,17 @@ const TagsRepositoryMock: TagsRepositoryInterface = {
 	saveTag: jest.fn(),
 };
 
+const UsersRepositoryMock: UsersRepositoryInterface = {
+	createUser: jest.fn(),
+	findUser: jest.fn(),
+	updateUser: jest.fn(),
+};
+
 const container = new Container();
 let articlesRepository: ArticlesRepositoryInterface;
 let tagsRepository: TagsRepositoryInterface;
 let articlesService: ArticlesServiceInterface;
+let usersRepository: UsersRepositoryInterface;
 
 beforeAll(() => {
 	container.bind<ArticlesServiceInterface>(TYPES.ArticlesService).to(ArticlesService);
@@ -36,10 +45,14 @@ beforeAll(() => {
 		.toConstantValue(ArticlesRepositoryMock);
 	container.bind<TagsRepositoryInterface>(TYPES.TagsRepository).toConstantValue(TagsRepositoryMock);
 	container.bind<TagsServiceInterface>(TYPES.TagsService).to(TagsService);
+	container
+		.bind<UsersRepositoryInterface>(TYPES.UsersRepository)
+		.toConstantValue(UsersRepositoryMock);
 
 	articlesRepository = container.get<ArticlesRepositoryInterface>(TYPES.ArticlesRepository);
 	tagsRepository = container.get<TagsRepositoryInterface>(TYPES.TagsRepository);
 	articlesService = container.get<ArticlesServiceInterface>(TYPES.ArticlesService);
+	usersRepository = container.get<UsersRepositoryInterface>(TYPES.UsersRepository);
 });
 
 beforeEach(() => {
@@ -54,26 +67,31 @@ describe('ArticlesService', () => {
 			description: 'description',
 			tagList: ['javascript'],
 		};
+		let slug = '';
 		tagsRepository.getTag = jest.fn().mockImplementationOnce((tagName) => ({
 			id: 1,
 			tagName,
 		}));
-		articlesRepository.createArticle = jest.fn().mockImplementationOnce((dto) => ({
-			...dto,
-			id: 1,
-		}));
+		articlesRepository.createArticle = jest.fn().mockImplementationOnce((dto) => {
+			slug = dto.slug;
+			return {
+				...dto,
+				id: 1,
+			};
+		});
 
 		articlesRepository.getArticle = jest.fn().mockImplementationOnce((slug) => ({
 			...articleData,
-			tags: [{ id: 1, tagName: 'javascript' }],
-			id: 1,
-			favorite: [],
+			tagList: ['php', 'java'],
+			slug,
 			author: {
-				id: 1,
 				username: 'user',
 				bio: 'bio',
 				image: 'image',
+				following: false,
 			},
+			favorited: false,
+			favoritesCount: 0,
 		}));
 
 		const articleResult = await articlesService.createArticle(
@@ -82,16 +100,20 @@ describe('ArticlesService', () => {
 			},
 			1,
 		);
-		expect(articlesRepository.createArticle).toHaveBeenCalledTimes(1);
 		expect(articleResult).toHaveProperty('article');
-		expect(articleResult.article.slug).not.toEqual(articleData.title);
-		expect(articleResult.article.title).toEqual(articleData.title);
-		expect(articleResult.article.description).toEqual(articleData.description);
-		expect(articleResult.article.body).toEqual(articleData.body);
+		expect(articleResult.article).toHaveProperty('slug');
+		expect(articleResult.article.slug).toEqual(slug);
+		expect(articleResult.article).toHaveProperty('title');
+		expect(articleResult.article).toHaveProperty('description');
+		expect(articleResult.article).toHaveProperty('body');
 		expect(articleResult.article).toHaveProperty('author');
-		expect(articleResult.article.author.username).toEqual('user');
-		expect(articleResult.article.favorited).toEqual(false);
-		expect(articleResult.article.favoritesCount).toEqual(0);
+		expect(articleResult.article).toHaveProperty('favorited');
+		expect(articleResult.article).toHaveProperty('favoritesCount');
+		expect(articleResult.article).toHaveProperty('tagList');
+		expect(articleResult.article.author).toHaveProperty('username');
+		expect(articleResult.article.author).toHaveProperty('bio');
+		expect(articleResult.article.author).toHaveProperty('image');
+		expect(articleResult.article.author).toHaveProperty('following');
 	});
 
 	it('Update article', async () => {
@@ -109,33 +131,42 @@ describe('ArticlesService', () => {
 					description: 'prev description',
 					body: 'prev body',
 					slug: 'the-slug',
+					tagList: [],
 					authorId: 1,
 					author: {
 						id: 1,
 						username: 'user',
 						bio: 'bio',
 						image: 'image',
+						following: false,
 					},
-					favorite: [],
-					tags: [{ id: 1, tagName: 'php' }],
+					favorited: false,
+					favoritesCount: 0,
 				};
 			}
 			return {
 				id: 1,
 				...articleData,
 				slug: 'new slug',
+				tagList: [],
 				author: {
 					id: 1,
 					username: 'user',
 					bio: 'bio',
 					image: 'image',
+					following: false,
 				},
-				favorite: [],
-				tags: [{ id: 1, tagName: 'php' }],
+				favorited: false,
+				favoritesCount: 0,
 			};
 		});
 		articlesRepository.updateArticle = jest.fn().mockImplementationOnce((articleId, dto) => ({
 			affected: 1,
+		}));
+		usersRepository.findUser = jest.fn().mockImplementationOnce(() => ({
+			username: 'user',
+			bio: 'bio',
+			image: 'image',
 		}));
 
 		const articleResult = await articlesService.updateArticle(
@@ -149,16 +180,19 @@ describe('ArticlesService', () => {
 			},
 			1,
 		);
-		expect(articlesRepository.updateArticle).toHaveBeenCalledTimes(1);
 		expect(articleResult).toHaveProperty('article');
-		expect(articleResult.article.slug).not.toEqual(articleData.title);
-		expect(articleResult.article.title).not.toEqual('the-slug');
-		expect(articleResult.article.description).toEqual(articleData.description);
-		expect(articleResult.article.body).toEqual(articleData.body);
+		expect(articleResult.article).toHaveProperty('slug');
+		expect(articleResult.article).toHaveProperty('title');
+		expect(articleResult.article).toHaveProperty('description');
+		expect(articleResult.article).toHaveProperty('body');
 		expect(articleResult.article).toHaveProperty('author');
-		expect(articleResult.article.author.username).toEqual('user');
-		expect(articleResult.article.favorited).toEqual(false);
-		expect(articleResult.article.favoritesCount).toEqual(0);
+		expect(articleResult.article).toHaveProperty('favorited');
+		expect(articleResult.article).toHaveProperty('favoritesCount');
+		expect(articleResult.article).toHaveProperty('tagList');
+		expect(articleResult.article.author).toHaveProperty('username');
+		expect(articleResult.article.author).toHaveProperty('bio');
+		expect(articleResult.article.author).toHaveProperty('image');
+		expect(articleResult.article.author).toHaveProperty('following');
 	});
 
 	it('Update article, Throws if article not found', () => {
@@ -220,10 +254,15 @@ describe('ArticlesService', () => {
 		articlesRepository.deleteArticle = jest.fn().mockImplementationOnce((articleId) => ({
 			affected: 1,
 		}));
+		usersRepository.findUser = jest.fn().mockImplementationOnce(() => ({
+			username: 'user',
+			bio: 'bio',
+			image: 'image',
+		}));
 
 		const articleResult = await articlesService.deleteArticle('the-slug', 1);
 		expect(articlesRepository.deleteArticle).toHaveBeenCalledTimes(1);
-		expect(articlesRepository.deleteArticle).toHaveBeenCalledWith(1);
+		expect(articlesRepository.deleteArticle).toHaveBeenCalledWith('the-slug');
 		expect(articleResult).toBeUndefined();
 	});
 
@@ -271,9 +310,11 @@ describe('ArticlesService', () => {
 						username: 'user',
 						bio: 'bio',
 						image: 'image',
+						following: false,
 					},
-					favorite: [{ id: 3 }, { id: 4 }],
-					tags: [{ id: 1, tagName: 'php' }],
+					favorited: false,
+					favoritesCount: 0,
+					tagList: [],
 				},
 				{
 					id: 2,
@@ -287,9 +328,11 @@ describe('ArticlesService', () => {
 						username: 'user2',
 						bio: 'bio2',
 						image: 'image2',
+						following: false,
 					},
-					favorite: [{ id: 1 }],
-					tags: [{ id: 1, tagName: 'php' }],
+					favorited: false,
+					favoritesCount: 0,
+					tagList: [],
 				},
 			],
 			articlesCount: 2,
@@ -299,13 +342,18 @@ describe('ArticlesService', () => {
 
 		expect(articlesResult).toHaveProperty('articles');
 		expect(articlesResult).toHaveProperty('articlesCount');
-		expect(articlesResult.articlesCount).toEqual(2);
-		expect(articlesResult.articles.length).toEqual(2);
-		expect(articlesResult.articles.length).toEqual(2);
-		expect(articlesResult.articles[0].favorited).toEqual(false);
-		expect(articlesResult.articles[0].favoritesCount).toEqual(2);
-		expect(articlesResult.articles[1].favorited).toEqual(true);
-		expect(articlesResult.articles[1].favoritesCount).toEqual(1);
+		expect(articlesResult.articles[0]).toHaveProperty('slug');
+		expect(articlesResult.articles[0]).toHaveProperty('title');
+		expect(articlesResult.articles[0]).toHaveProperty('description');
+		expect(articlesResult.articles[0]).toHaveProperty('body');
+		expect(articlesResult.articles[0]).toHaveProperty('author');
+		expect(articlesResult.articles[0]).toHaveProperty('favorited');
+		expect(articlesResult.articles[0]).toHaveProperty('favoritesCount');
+		expect(articlesResult.articles[0]).toHaveProperty('tagList');
+		expect(articlesResult.articles[0].author).toHaveProperty('username');
+		expect(articlesResult.articles[0].author).toHaveProperty('bio');
+		expect(articlesResult.articles[0].author).toHaveProperty('image');
+		expect(articlesResult.articles[0].author).toHaveProperty('following');
 	});
 
 	it('Get feed', async () => {
@@ -317,16 +365,16 @@ describe('ArticlesService', () => {
 					description: 'description1',
 					body: 'body1',
 					slug: 'slug1',
-					authorId: 1,
 					author: {
-						id: 1,
+						id: 2,
 						username: 'user',
 						bio: 'bio',
 						image: 'image',
-						followers: [{ id: 1 }],
+						following: false,
 					},
-					favorite: [{ id: 3 }, { id: 4 }],
-					tags: [{ id: 1, tagName: 'php' }],
+					favoritesCount: 0,
+					favorited: false,
+					tagList: [],
 				},
 				{
 					id: 2,
@@ -334,16 +382,16 @@ describe('ArticlesService', () => {
 					description: 'description2',
 					body: 'body2',
 					slug: 'slug2',
-					authorId: 2,
 					author: {
 						id: 2,
-						username: 'user2',
-						bio: 'bio2',
-						image: 'image2',
-						followers: [],
+						username: 'user',
+						bio: 'bio',
+						image: 'image',
+						following: false,
 					},
-					favorite: [{ id: 1 }],
-					tags: [{ id: 1, tagName: 'php' }],
+					favoritesCount: 0,
+					favorited: false,
+					tagList: [],
 				},
 			],
 			articlesCount: 2,
@@ -353,11 +401,18 @@ describe('ArticlesService', () => {
 
 		expect(articlesResult).toHaveProperty('articles');
 		expect(articlesResult).toHaveProperty('articlesCount');
-		expect(articlesResult.articlesCount).toEqual(1);
-		expect(articlesResult.articles.length).toEqual(1);
-		expect(articlesResult.articles.length).toEqual(1);
-		expect(articlesResult.articles[0].favorited).toEqual(false);
-		expect(articlesResult.articles[0].favoritesCount).toEqual(2);
+		expect(articlesResult.articles[0]).toHaveProperty('slug');
+		expect(articlesResult.articles[0]).toHaveProperty('title');
+		expect(articlesResult.articles[0]).toHaveProperty('description');
+		expect(articlesResult.articles[0]).toHaveProperty('body');
+		expect(articlesResult.articles[0]).toHaveProperty('author');
+		expect(articlesResult.articles[0]).toHaveProperty('favorited');
+		expect(articlesResult.articles[0]).toHaveProperty('favoritesCount');
+		expect(articlesResult.articles[0]).toHaveProperty('tagList');
+		expect(articlesResult.articles[0].author).toHaveProperty('username');
+		expect(articlesResult.articles[0].author).toHaveProperty('bio');
+		expect(articlesResult.articles[0].author).toHaveProperty('image');
+		expect(articlesResult.articles[0].author).toHaveProperty('following');
 	});
 
 	it('Get article', async () => {
@@ -367,24 +422,34 @@ describe('ArticlesService', () => {
 			description: 'description1',
 			body: 'body1',
 			slug: 'slug1',
-			authorId: 2,
 			author: {
 				id: 2,
 				username: 'user',
 				bio: 'bio',
 				image: 'image',
+				following: false,
 			},
-			favorite: [{ id: 1 }, { id: 4 }],
-			tags: [{ id: 1, tagName: 'php' }],
+			favoritesCount: 0,
+			favorited: false,
+			tagList: [],
 		}));
 
 		const searchSlug = 'slug1';
-		const articlesResult = await articlesService.getArticle(searchSlug, 1);
+		const articleResult = await articlesService.getArticle(searchSlug, 1);
 
-		expect(articlesResult).toHaveProperty('article');
-		expect(articlesResult.article.slug).toEqual(searchSlug);
-		expect(articlesResult.article.favorited).toEqual(true);
-		expect(articlesResult.article.favoritesCount).toEqual(2);
+		expect(articleResult).toHaveProperty('article');
+		expect(articleResult.article.slug).toEqual(searchSlug);
+		expect(articleResult.article).toHaveProperty('title');
+		expect(articleResult.article).toHaveProperty('description');
+		expect(articleResult.article).toHaveProperty('body');
+		expect(articleResult.article).toHaveProperty('author');
+		expect(articleResult.article).toHaveProperty('favorited');
+		expect(articleResult.article).toHaveProperty('favoritesCount');
+		expect(articleResult.article).toHaveProperty('tagList');
+		expect(articleResult.article.author).toHaveProperty('username');
+		expect(articleResult.article.author).toHaveProperty('bio');
+		expect(articleResult.article.author).toHaveProperty('image');
+		expect(articleResult.article.author).toHaveProperty('following');
 	});
 
 	it('Get article, Throws if article not found', () => {
@@ -408,9 +473,11 @@ describe('ArticlesService', () => {
 				username: 'user',
 				bio: 'bio',
 				image: 'image',
+				following: false,
 			},
-			favorite: [{ id: 5 }],
-			tags: [{ id: 1, tagName: 'php' }],
+			favoritesCount: 0,
+			favorited: false,
+			tagList: [],
 		};
 
 		articlesRepository.getArticle = jest.fn().mockImplementation(() => {
@@ -420,7 +487,7 @@ describe('ArticlesService', () => {
 		const favoriteResult = await articlesService.favoriteArticle('slug1', 1);
 
 		expect(favoriteResult).toHaveProperty('article');
-		expect(favoriteResult.article.favoritesCount).toEqual(2);
+		expect(favoriteResult.article.favoritesCount).toEqual(1);
 		expect(favoriteResult.article.favorited).toEqual(true);
 	});
 
@@ -437,19 +504,21 @@ describe('ArticlesService', () => {
 				username: 'user',
 				bio: 'bio',
 				image: 'image',
+				following: false,
 			},
-			favorite: [{ id: 5 }, { id: 1 }],
-			tags: [{ id: 1, tagName: 'php' }],
+			favoritesCount: 1,
+			favorited: true,
+			tagList: [],
 		};
 
-		articlesRepository.getArticle = jest.fn().mockImplementation(() => {
+		articlesRepository.getArticle = jest.fn().mockImplementationOnce(() => {
 			return savedArticle;
 		});
 
-		const favoriteResult = await articlesService.favoriteArticle('slug1', 1);
-
+		const favoriteResult = await articlesService.unfavoriteArticle('slug1', 1);
+		console.log(favoriteResult);
 		expect(favoriteResult).toHaveProperty('article');
-		expect(favoriteResult.article.favoritesCount).toEqual(1);
+		expect(favoriteResult.article.favoritesCount).toEqual(0);
 		expect(favoriteResult.article.favorited).toEqual(false);
 	});
 

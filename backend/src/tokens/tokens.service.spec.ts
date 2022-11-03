@@ -100,18 +100,14 @@ describe('TokenService', () => {
 
 	it('Saves token', async () => {
 		tokenRepository.saveToken = jest.fn().mockImplementationOnce((userId, token) => {
-			return {
-				id: 1,
-				userId,
-				token,
-			};
+			return;
 		});
 		const userId = 1;
 		const token = 'fhdshfkdhsfhdskfd';
-		const savedToken = await tokenService.saveToken(userId, token);
-		expect(savedToken.id).toEqual(1);
-		expect(savedToken.userId).toEqual(userId);
-		expect(savedToken.token).toEqual(token);
+		await tokenService.saveToken(userId, token);
+
+		expect(tokenRepository.saveToken).toBeCalledTimes(1);
+		expect(tokenRepository.saveToken).toBeCalledWith(userId, token);
 	});
 
 	it('Finds token', async () => {
@@ -124,9 +120,12 @@ describe('TokenService', () => {
 		});
 		const token = 'nfdhdshfds';
 		const foundToken = await tokenService.findToken(token);
-		expect(foundToken?.token).toEqual(token);
+		expect(foundToken).not.toBe(null);
 		expect(foundToken).toHaveProperty('id');
-		expect(foundToken).toHaveProperty('userId');
+		expect(foundToken).toHaveProperty('token');
+		expect(foundToken?.token).toEqual(token);
+		expect(foundToken?.token).not.toEqual(null);
+		expect(foundToken?.userId).not.toEqual(null);
 	});
 
 	it('Removes token', async () => {

@@ -8,7 +8,8 @@ import { TYPES } from '../types';
 
 const ProfilesRepositoryMock: ProfilesRepositoryInterface = {
 	getProfile: jest.fn(),
-	saveProfile: jest.fn(),
+	followProfile: jest.fn(),
+	unfollowProfile: jest.fn(),
 };
 
 const container = new Container();
@@ -32,8 +33,7 @@ describe('ProfilesService', () => {
 			bio: 'bio',
 			image: 'http://pics.com/1',
 			username: username,
-			password: 'fdfdslfldsjfklds',
-			followers: [],
+			following: false,
 		}));
 
 		const profileName = 'user';
@@ -51,12 +51,12 @@ describe('ProfilesService', () => {
 			bio: 'bio',
 			image: 'http://pics.com/1',
 			username: username,
-			password: 'fdfdslfldsjfklds',
-			followers: [{ id: 2 }],
+			following: true,
 		}));
 
 		const profileName = 'user';
 		const profileResult = await profilesService.getProfile(profileName, 2);
+		expect(profileResult).toHaveProperty('profile');
 		expect(profileResult.profile.username).toEqual('user');
 		expect(profileResult.profile.bio).toEqual('bio');
 		expect(profileResult.profile.image).toEqual('http://pics.com/1');
@@ -78,12 +78,18 @@ describe('ProfilesService', () => {
 			bio: 'bio',
 			image: 'http://pics.com/1',
 			username: username,
-			password: 'fdfdslfldsjfklds',
-			followers: [],
+			following: false,
 		}));
+
+		profilesRepository.followProfile = jest
+			.fn()
+			.mockImplementationOnce((profileName, followerId) => {
+				return;
+			});
 
 		const profileName = 'user';
 		const profileResult = await profilesService.followProfile(profileName, 2);
+		expect(profileResult).toHaveProperty('profile');
 		expect(profileResult.profile.username).toEqual('user');
 		expect(profileResult.profile.bio).toEqual('bio');
 		expect(profileResult.profile.image).toEqual('http://pics.com/1');
@@ -105,12 +111,18 @@ describe('ProfilesService', () => {
 			bio: 'bio',
 			image: 'http://pics.com/1',
 			username: username,
-			password: 'fdfdslfldsjfklds',
-			followers: [{ id: 2 }],
+			following: true,
 		}));
 
+		profilesRepository.unfollowProfile = jest
+			.fn()
+			.mockImplementationOnce((profileName, followerId) => {
+				return;
+			});
+
 		const profileName = 'user';
-		const profileResult = await profilesService.followProfile(profileName, 2);
+		const profileResult = await profilesService.unfollowProfile(profileName, 2);
+		expect(profileResult).toHaveProperty('profile');
 		expect(profileResult.profile.username).toEqual('user');
 		expect(profileResult.profile.bio).toEqual('bio');
 		expect(profileResult.profile.image).toEqual('http://pics.com/1');

@@ -3,8 +3,8 @@ import { Repository } from 'typeorm';
 import { TypeormService } from '../shared/services/typeorm.service';
 import { Tag } from './tag.entity';
 import { TagsRepositoryInterface } from './types/tags.repository.interface';
-import { TYPES } from '../types';
 import { TagDto } from './types/tags.dto';
+import { TYPES } from '../types';
 
 @injectable()
 export class TagsRepository implements TagsRepositoryInterface {

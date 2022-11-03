@@ -4,12 +4,12 @@ import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { ValidationMiddleware } from '../common/validation.middleware';
 import { AuthGuard } from '../shared/services/auth.guard';
-import { TYPES } from '../types';
-import { UserLoginDto, UserLoginRequestDto } from './types/userLogin.dto';
-import { UserRegisterDto, UserRegisterRequestDto } from './types/userRegister.dto';
 import { UsersControllerInterface } from './types/users.controller.interface';
 import { UsersServiceInterface } from './types/users.service.interface';
+import { UserLoginRequestDto } from './types/userLogin.dto';
+import { UserRegisterRequestDto } from './types/userRegister.dto';
 import { UserUpdateDto } from './types/userUpdate.dto';
+import { TYPES } from '../types';
 
 @injectable()
 export class UsersController extends BaseController implements UsersControllerInterface {

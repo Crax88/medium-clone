@@ -2,9 +2,9 @@ import { inject, injectable } from 'inversify';
 import { sign, verify } from 'jsonwebtoken';
 import { ConfigInterface } from '../common/types/config.interface';
 import { TokensServiceInterface } from './types/tokens.service.interface';
+import { TokensRepositoryInterface } from './types/tokens.repository.interface';
 import { TokenPayloadDto } from './types/tokenPayload.dto';
 import { TokenDto, TokensDto } from './types/tokens.dto';
-import { TokensRepositoryInterface } from './types/tokens.repository.interface';
 import { TYPES } from '../types';
 
 @injectable()

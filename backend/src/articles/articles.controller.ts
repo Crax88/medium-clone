@@ -8,10 +8,8 @@ import { ArticlesServiceInterface } from './types/articles.service.interface';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
-import { TYPES } from '../types';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
-import { ParamsDictionary } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
+import { TYPES } from '../types';
 
 @injectable()
 export class ArticlesContoller extends BaseController implements ArticlesControllerInterface {

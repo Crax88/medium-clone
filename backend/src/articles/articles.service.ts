@@ -1,20 +1,17 @@
 import { inject, injectable } from 'inversify';
 import slugify from 'slugify';
 import { HttpError } from '../errors/httpError';
-import { Tag } from '../tags/tag.entity';
-import { User } from '../users/user.entity';
-import { Article } from './article.entity';
 import { ArticlesServiceInterface } from './types/articles.service.interface';
 import { TagsServiceInterface } from '../tags/types/tags.service.interface';
 import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
+import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
 import { ArticleResponseDto, ArticlesResponseDto } from './types/article.dto';
 import { ArticleSaveDto } from './types/articleSave.dto';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
-import { TYPES } from '../types';
 import { TagDto } from '../tags/types/tags.dto';
-import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
+import { TYPES } from '../types';
 
 @injectable()
 export class ArticlesService implements ArticlesServiceInterface {

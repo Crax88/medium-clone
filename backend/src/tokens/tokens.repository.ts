@@ -1,5 +1,5 @@
 import { inject, injectable } from 'inversify';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { TypeormService } from '../shared/services/typeorm.service';
 import { Token } from './token.entity';
 import { TokensRepositoryInterface } from './types/tokens.repository.interface';

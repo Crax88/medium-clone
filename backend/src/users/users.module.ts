@@ -1,8 +1,8 @@
 import { ContainerModule, interfaces } from 'inversify';
-import { UsersControllerInterface } from './types/usersController.interface';
+import { UsersControllerInterface } from './types/users.controller.interface';
 import { UsersController } from './users.controller';
 import { UsersRepository } from './users.repository';
-import { UsersServiceInterface } from './types/usersService.interface';
+import { UsersServiceInterface } from './types/users.service.interface';
 import { UsersService } from './users.service';
 import { UsersRepositoryInterface } from './types/users.repository.interface';
 import { TYPES } from '../types';

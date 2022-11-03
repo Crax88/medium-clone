@@ -7,8 +7,8 @@ import { AuthGuard } from '../shared/services/auth.guard';
 import { TYPES } from '../types';
 import { UserLoginDto } from './types/userLogin.dto';
 import { UserRegisterDto } from './types/userRegister.dto';
-import { UsersControllerInterface } from './types/usersController.interface';
-import { UsersServiceInterface } from './types/usersService.interface';
+import { UsersControllerInterface } from './types/users.controller.interface';
+import { UsersServiceInterface } from './types/users.service.interface';
 import { UserUpdateDto } from './types/userUpdate.dto';
 
 @injectable()

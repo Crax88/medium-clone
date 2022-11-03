@@ -49,12 +49,23 @@ beforeAll(() => {
 
 describe('UsersService', () => {
 	it('Registers new user', async () => {
-		usersRepository.createUser = jest.fn().mockImplementationOnce((dto) => ({
-			id: 1,
-			email: dto.email,
-			username: dto.username,
-			password: 'fdfdslfldsjfklds',
-		}));
+		usersRepository.createUser = jest.fn().mockImplementation((dto) => {
+			return;
+		});
+		let count = 0;
+		usersRepository.findUser = jest.fn().mockImplementation((dto) => {
+			console.log(count);
+			if (count < 2) {
+				count++;
+				return null;
+			}
+			return {
+				id: 1,
+				email: 'user@test.com',
+				username: 'user',
+				password: 'fdfdslfldsjfklds',
+			};
+		});
 
 		const accessToken = 'accesTokenHash';
 		const refreshToken = 'resfreshTokenHash';

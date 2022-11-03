@@ -1,8 +1,7 @@
-import { DeleteResult } from 'typeorm';
-import { Token } from '../token.entity';
+import { TokenDto } from './tokens.dto';
 
 export interface TokensRepositoryInterface {
-	saveToken: (userId: number, token: string) => Promise<Token>;
-	deleteToken: (token: string) => Promise<DeleteResult>;
-	findToken: (token: string) => Promise<Token | null>;
+	saveToken: (userId: number, token: string) => Promise<void>;
+	deleteToken: (token: string) => Promise<void>;
+	findToken: (token: string) => Promise<TokenDto | null>;
 }

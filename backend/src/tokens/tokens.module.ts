@@ -1,6 +1,6 @@
 import { ContainerModule, interfaces } from 'inversify';
 import { TokensService } from './tokens.service';
-import { TokensServiceInterface } from './types/tokensService.interface';
+import { TokensServiceInterface } from './types/tokens.service.interface';
 import { TokensRepositoryInterface } from './types/tokens.repository.interface';
 import { TokensRepository } from './tokens.repository';
 import { TYPES } from '../types';

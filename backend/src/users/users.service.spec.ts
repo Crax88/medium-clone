@@ -5,7 +5,7 @@ import { UsersService } from './users.service';
 import { ConfigInterface } from '../common/types/config.interface';
 import { UsersServiceInterface } from './types/users.service.interface';
 import { UsersRepositoryInterface } from './types/users.repository.interface';
-import { TokensServiceInterface } from '../tokens/types/tokensService.interface';
+import { TokensServiceInterface } from '../tokens/types/tokens.service.interface';
 import { HttpError } from '../errors/httpError';
 import { TYPES } from '../types';
 

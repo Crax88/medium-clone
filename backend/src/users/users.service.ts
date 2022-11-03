@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify';
 import { hash, genSalt, compare } from 'bcryptjs';
 import { HttpError } from '../errors/httpError';
 import { ConfigInterface } from '../common/types/config.interface';
-import { TokensServiceInterface } from '../tokens/types/tokensService.interface';
+import { TokensServiceInterface } from '../tokens/types/tokens.service.interface';
 import { UsersServiceInterface } from './types/users.service.interface';
 import { UsersRepositoryInterface } from './types/users.repository.interface';
 import { UserLoginDto } from './types/userLogin.dto';

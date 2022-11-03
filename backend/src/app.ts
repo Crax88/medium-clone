@@ -12,7 +12,7 @@ import { ExceptionFilterInterface } from './common/types/exceptionFilter.interfa
 import { TypeormService } from './shared/services/typeorm.service';
 import { UsersControllerInterface } from './users/types/users.controller.interface';
 import { AuthMiddleware } from './shared/services/auth.middleware';
-import { TokensServiceInterface } from './tokens/types/tokensService.interface';
+import { TokensServiceInterface } from './tokens/types/tokens.service.interface';
 import { ArticlesControllerInterface } from './articles/types/articlesController.interface';
 import { TagsControllerInterface } from './tags/types/tags.controller.interface';
 import { ProfilesControllerInterface } from './profiles/types/profiles.controller.interface';

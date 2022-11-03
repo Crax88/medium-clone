@@ -1,10 +1,9 @@
 import { inject, injectable } from 'inversify';
 import { sign, verify } from 'jsonwebtoken';
-import { Token } from './token.entity';
 import { ConfigInterface } from '../common/types/config.interface';
-import { TokensServiceInterface } from './types/tokensService.interface';
+import { TokensServiceInterface } from './types/tokens.service.interface';
 import { TokenPayloadDto } from './types/tokenPayload.dto';
-import { TokensDto } from './types/tokens.dto';
+import { TokenDto, TokensDto } from './types/tokens.dto';
 import { TokensRepositoryInterface } from './types/tokens.repository.interface';
 import { TYPES } from '../types';
 
@@ -43,16 +42,15 @@ export class TokensService implements TokensServiceInterface {
 		}
 	}
 
-	async saveToken(userId: number, token: string): Promise<Token> {
-		const savedToken = await this.tokensRepository.saveToken(userId, token);
-		return savedToken;
+	async saveToken(userId: number, token: string): Promise<void> {
+		await this.tokensRepository.saveToken(userId, token);
 	}
 
 	async removeToken(token: string): Promise<void> {
 		await this.tokensRepository.deleteToken(token);
 	}
 
-	async findToken(token: string): Promise<Token | null> {
+	async findToken(token: string): Promise<TokenDto | null> {
 		const foundToken = await this.tokensRepository.findToken(token);
 		return foundToken;
 	}

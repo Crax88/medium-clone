@@ -1,7 +1,7 @@
 import { inject } from 'inversify';
 import { Request, Response, NextFunction } from 'express';
 import { MiddlewareInterface } from '../../common/types/middleware.interface';
-import { TokensServiceInterface } from '../../tokens/types/tokensService.interface';
+import { TokensServiceInterface } from '../../tokens/types/tokens.service.interface';
 import { TYPES } from '../../types';
 
 export class AuthMiddleware implements MiddlewareInterface {

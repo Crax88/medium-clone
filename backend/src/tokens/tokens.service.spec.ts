@@ -2,7 +2,7 @@ import 'reflect-metadata';
 import { Container } from 'inversify';
 import { ConfigInterface } from '../common/types/config.interface';
 import { TokensRepositoryInterface } from './types/tokens.repository.interface';
-import { TokensServiceInterface } from './types/tokensService.interface';
+import { TokensServiceInterface } from './types/tokens.service.interface';
 import { TokensService } from './tokens.service';
 import { TYPES } from '../types';
 

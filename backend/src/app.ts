@@ -16,7 +16,7 @@ import { TokensServiceInterface } from './tokens/types/tokens.service.interface'
 import { ArticlesControllerInterface } from './articles/types/articlesController.interface';
 import { TagsControllerInterface } from './tags/types/tags.controller.interface';
 import { ProfilesControllerInterface } from './profiles/types/profiles.controller.interface';
-import { CommentsControllerInterface } from './comments/types/commentsController.interface';
+import { CommentsControllerInterface } from './comments/types/comments.controller.interface';
 import { TYPES } from './types';
 
 @injectable()

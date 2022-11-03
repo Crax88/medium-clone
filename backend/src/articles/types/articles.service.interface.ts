@@ -18,4 +18,5 @@ export interface ArticlesServiceInterface {
 		userId: number,
 	) => Promise<ArticlesResponseDto>;
 	favoriteArticle: (slug: string, userId: number) => Promise<ArticleResponseDto>;
+	unfavoriteArticle: (slug: string, userId: number) => Promise<ArticleResponseDto>;
 }

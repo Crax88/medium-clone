@@ -1,13 +1,15 @@
-import { DeleteResult, UpdateResult } from 'typeorm';
-import { Article } from '../article.entity';
+import { ArticleDto } from './article.dto';
 import { ArticleSaveDto } from './articleSave.dto';
 import { ArticlesQueryDto } from './articlesQuery.dto';
 
 export interface ArticlesRepositoryInterface {
-	createArticle: (dto: ArticleSaveDto) => Promise<Article>;
-	updateArticle: (articleId: number, dto: Omit<ArticleSaveDto, 'tags'>) => Promise<UpdateResult>;
-	saveArticle: (article: Article) => Promise<Article>;
-	deleteArticle: (id: number) => Promise<DeleteResult>;
-	getArticles: (query: ArticlesQueryDto) => Promise<{ articles: Article[]; articlesCount: number }>;
-	getArticle: (slug: string) => Promise<Article | null>;
+	createArticle: (dto: ArticleSaveDto) => Promise<void>;
+	updateArticle: (slug: string, dto: Omit<ArticleSaveDto, 'tags'>) => Promise<void>;
+	deleteArticle: (slug: string) => Promise<void>;
+	getArticles: (
+		query: ArticlesQueryDto,
+	) => Promise<{ articles: ArticleDto[]; articlesCount: number }>;
+	getArticle: (slug: string, currentUserId?: number) => Promise<ArticleDto | null>;
+	favoriteArticle: (slug: string, currentUserId: number) => Promise<void>;
+	unfavoriteArticle: (slug: string, currentUserId: number) => Promise<void>;
 }

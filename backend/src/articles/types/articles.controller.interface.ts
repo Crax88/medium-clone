@@ -21,4 +21,9 @@ export interface ArticlesControllerInterface extends BaseController {
 		res: Response,
 		next: NextFunction,
 	) => Promise<void>;
+	unfavoriteArticle: (
+		req: Request<{ slug: string }>,
+		res: Response,
+		next: NextFunction,
+	) => Promise<void>;
 }

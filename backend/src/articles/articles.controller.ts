@@ -3,8 +3,8 @@ import { NextFunction, Request, Response } from 'express';
 import { BaseController } from '../common/base.controller';
 import { ValidationMiddleware } from '../common/validation.middleware';
 import { AuthGuard } from '../shared/services/auth.guard';
-import { ArticlesControllerInterface } from './types/articlesController.interface';
-import { ArticlesServiceInterface } from './types/articlesService.interface';
+import { ArticlesControllerInterface } from './types/articles.controller.interface';
+import { ArticlesServiceInterface } from './types/articles.service.interface';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
@@ -64,7 +64,7 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 			{
 				path: '/articles/:slug/favorite',
 				method: 'delete',
-				handler: this.favoriteArticle,
+				handler: this.unfavoriteArticle,
 				middlewares: [new AuthGuard()],
 			},
 		]);
@@ -159,6 +159,19 @@ export class ArticlesContoller extends BaseController implements ArticlesControl
 	): Promise<void> {
 		try {
 			const article = await this.articlesService.favoriteArticle(req.params.slug, req.userId);
+			this.ok(res, article);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	async unfavoriteArticle(
+		req: Request<{ slug: string }>,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const article = await this.articlesService.unfavoriteArticle(req.params.slug, req.userId);
 			this.ok(res, article);
 		} catch (error) {
 			next(error);

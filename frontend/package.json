@@ -1,0 +1,21 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "Medium clone frontend with React, Typescript and Webpack",
+  "main": "src/index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Crax88/medium-clone.git"
+  },
+  "homepage": "https://github.com/Crax88/medium-clone#readme",
+  "keywords": [
+    "React",
+    "Webpack",
+    "Typescript"
+  ],
+  "author": "N. Trafilkin",
+  "license": "MIT"
+}

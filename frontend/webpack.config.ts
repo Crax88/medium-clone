@@ -3,6 +3,7 @@ import { Configuration } from "webpack";
 import { Configuration as DevServerConfiguration } from "webpack-dev-server";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
 
 export interface WebpackConfiguration extends Configuration {
   devServer?: DevServerConfiguration;
@@ -21,12 +22,18 @@ export interface WebpackConfigurationGenerator {
 }
 
 function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
+  console.log("Build starts mode: " + env.env);
+
+  const isDevMode = env.env && env.env === "development";
+
+  process.env.NODE_ENV = isDevMode ? "development" : "production";
+
   return {
-    mode: "development",
+    mode: isDevMode ? "development" : "production",
     entry: resolve(__dirname, "src", "index.tsx"),
     output: {
       path: resolve(__dirname, "dist"),
-      filename: "bundle.js",
+      filename: isDevMode ? "[name].js" : "[name].[chunkhash:8].js",
     },
     module: {
       rules: [
@@ -58,6 +65,11 @@ function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
         title: "Conduit",
       }),
       new CleanWebpackPlugin(),
+      new BundleAnalyzerPlugin({
+        analyzerMode: "disabled",
+        generateStatsFile: true,
+        statsFilename: "../stats.json",
+      }),
     ],
     devServer: {
       static: join(__dirname, "./src"),
@@ -67,7 +79,7 @@ function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
       open: true,
     },
     stats: "errors-only",
-    devtool: "cheap-module-source-map",
+    devtool: isDevMode ? "cheap-module-source-map" : "source-map",
   };
 }
 

@@ -1,3 +1,9 @@
+import "./styles.css";
+
 export const App = () => {
-  return <h1>Hello from App</h1>;
+  return (
+    <div>
+      <h1>Hello from App!</h1>
+    </div>
+  );
 };

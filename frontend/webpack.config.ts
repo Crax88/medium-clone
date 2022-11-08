@@ -4,6 +4,8 @@ import { Configuration as DevServerConfiguration } from "webpack-dev-server";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import { CleanWebpackPlugin } from "clean-webpack-plugin";
 import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import CssMinimizerPlugin from "css-minimizer-webpack-plugin";
 
 export interface WebpackConfiguration extends Configuration {
   devServer?: DevServerConfiguration;
@@ -22,8 +24,6 @@ export interface WebpackConfigurationGenerator {
 }
 
 function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
-  console.log("Build starts mode: " + env.env);
-
   const isDevMode = env.env && env.env === "development";
 
   process.env.NODE_ENV = isDevMode ? "development" : "production";
@@ -33,7 +33,17 @@ function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
     entry: resolve(__dirname, "src", "index.tsx"),
     output: {
       path: resolve(__dirname, "dist"),
-      filename: isDevMode ? "[name].js" : "[name].[chunkhash:8].js",
+      filename: isDevMode ? "[name].js" : "[name].[contenthash:8].js",
+    },
+    resolve: {
+      extensions: [".tsx", ".ts", ".js", ".jsx"],
+    },
+    devServer: {
+      static: join(__dirname, "./src"),
+      port: 3000,
+      hot: true,
+      compress: true,
+      open: true,
     },
     module: {
       rules: [
@@ -44,7 +54,7 @@ function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
         },
         {
           test: /\.css$/,
-          use: ["style-loader", "css-loader"],
+          use: [MiniCssExtractPlugin.loader, "css-loader"],
         },
         {
           test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
@@ -55,9 +65,6 @@ function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
           type: "asset/inline",
         },
       ],
-    },
-    resolve: {
-      extensions: [".tsx", ".ts", ".js", ".jsx"],
     },
     plugins: [
       new HtmlWebpackPlugin({
@@ -70,16 +77,40 @@ function webpackConfig(env: Env, argv: Argv): WebpackConfiguration {
         generateStatsFile: true,
         statsFilename: "../stats.json",
       }),
+      new MiniCssExtractPlugin({
+        filename: "styles/[name].[hash].css",
+      }),
     ],
-    devServer: {
-      static: join(__dirname, "./src"),
-      port: 3000,
-      hot: true,
-      compress: true,
-      open: true,
-    },
-    stats: "errors-only",
+    stats: "errors-warnings",
     devtool: isDevMode ? "cheap-module-source-map" : "source-map",
+    performance: {
+      hints: "warning",
+      maxAssetSize: 100 * 1024,
+      maxEntrypointSize: 100 * 1024,
+    },
+    optimization: {
+      minimizer: [new CssMinimizerPlugin()],
+      moduleIds: "hashed",
+      runtimeChunk: {
+        name: "manifest",
+      },
+      minimize: true,
+      splitChunks: {
+        cacheGroups: {
+          vendor: {
+            name: "vendor",
+            test: /[\\/]node_modules[\\/]/,
+            chunks: "all",
+          },
+          common: {
+            name: "components",
+            test: /[\\/]src[\\/]components[\\/]/,
+            chunks: "all",
+            minSize: 0,
+          },
+        },
+      },
+    },
   };
 }
 

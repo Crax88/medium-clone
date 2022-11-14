@@ -7,5 +7,7 @@
 	"printWidth": 100,
 	"endOfLine": "auto",
 	"tabWidth": 2,
-	"jsxSingleQuote": false
+	"jsxSingleQuote": false,
+	"quoteProps": "as-needed",
+	"singleAttributePerLine": true
 }

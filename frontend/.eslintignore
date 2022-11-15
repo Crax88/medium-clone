@@ -1,3 +1,6 @@
-webpack*.ts
-*.css
-*.html
+package.json
+/build
+/public
+node_modules
+config
+webpack.config.ts

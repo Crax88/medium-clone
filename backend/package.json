@@ -9,8 +9,11 @@
 		"start": "node dist.main.js",
 		"start:dev": "nodemon -L ./src/main.ts",
 		"test": "jest",
+		"lint:fixAll": "npm run lint:fix && npm run format:fix",
 		"lint": "eslint ./src/**",
-		"lint:fix": "eslint ./src/** --fix"
+		"lint:fix": "eslint ./src/** --fix",
+		"format": "prettier --check ./src/**",
+		"format:fix": "prettier --write ./src/**"
 	},
 	"repository": {
 		"type": "git",

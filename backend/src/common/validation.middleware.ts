@@ -22,7 +22,7 @@ export class ValidationMiddleware implements MiddlewareInterface {
 	private transformErrors(errors: ValidationError[]): ValidationErrorsInterface {
 		return errors.reduce<ValidationErrorsInterface>((acc, cur) => {
 			if (cur.children && cur.children.length) {
-				cur.children.forEach((nested) => {
+				cur.children.forEach((nested: ValidationError) => {
 					acc[nested.property] = [];
 					for (const key in nested?.constraints) {
 						acc[nested.property].push(nested.constraints[key]);

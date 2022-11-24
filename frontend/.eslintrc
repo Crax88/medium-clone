@@ -3,7 +3,7 @@
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"project": "./tsconfig.json",
-		"tsconfigRootDir": ".",
+		"tsconfigRootDir": "./",
 		"ecmaVersion": 2020,
 		"sourceType": "module",
 		"ecmaFeatures": {
@@ -24,7 +24,14 @@
 		"prettier",
 		"plugin:prettier/recommended"
 	],
-	"plugins": ["react", "react-hooks", "jsx-a11y", "import", "@typescript-eslint", "prettier"],
+	"plugins": [
+		"react",
+		"react-hooks",
+		"jsx-a11y",
+		"import",
+		"@typescript-eslint",
+		"prettier"
+	],
 	"rules": {
 		"react-hooks/rules-of-hooks": "error",
 		"react-hooks/exhaustive-deps": "error",
@@ -45,9 +52,17 @@
 		"react/jsx-first-prop-new-line": [1, "multiline"],
 		"react/jsx-max-props-per-line": [1],
 		"react/jsx-closing-bracket-location": [2, "tag-aligned"],
-		"max-len": ["error", { "ignoreComments": true }],
+		"max-len": [
+			"error",
+			{
+				"ignoreComments": true,
+				"code": 80,
+				"ignoreTemplateLiterals": true,
+				"tabWidth": 2
+			}
+		],
 		"no-console": "warn",
-		"no-unused-vars": "error",
+		"no-unused-vars": "off",
 		"import/no-unresolved": "off",
 		"@typescript-eslint/no-unused-vars": ["error"],
 		"@typescript-eslint/no-var-requires": "off",
@@ -62,7 +77,7 @@
 				"useTabs": true,
 				"semi": true,
 				"bracketSpacing": true,
-				"printWidth": 100,
+				"printWidth": 80,
 				"endOfLine": "auto",
 				"tabWidth": 2,
 				"jsxSingleQuote": false,
@@ -81,15 +96,16 @@
 			},
 			"node": {
 				"extensions": [".js", ".jsx", ".ts", ".tsx"]
+			},
+			"typescript": {
+				"alwaysTryTypes": true,
+				"paths": "./tsconfig.json"
 			}
-			// "typescript": {
-			// 	"alwaysTryTypes": true,
-			// 	"paths": "./tsconfig.json"
-			// }
 		},
 		"import/parsers": {
 			"@typescript-eslint/parser": [".ts", ".tsx"]
-		}
+		},
+		"import/ignore": ["node_modules"]
 	},
 	"env": {
 		"browser": true,

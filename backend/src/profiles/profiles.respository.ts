@@ -1,10 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { Repository } from 'typeorm';
+
 import { TypeormService } from '../shared/services/typeorm.service';
-import { User } from '../users/user.entity';
-import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';
-import { ProfileDto } from './types/profile.dto';
 import { TYPES } from '../types';
+import { User } from '../users/user.entity';
+
+import { ProfileDto } from './types/profile.dto';
+import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';
 
 @injectable()
 export class ProfilesRepository implements ProfilesRepositoryInterface {

@@ -1,9 +1,11 @@
 import { inject, injectable } from 'inversify';
+
 import { HttpError } from '../errors/httpError';
-import { ProfilesServiceInterface } from './types/profiles.service.interface';
-import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';
-import { ProfileResponseDto } from './types/profile.dto';
 import { TYPES } from '../types';
+
+import { ProfileResponseDto } from './types/profile.dto';
+import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';
+import { ProfilesServiceInterface } from './types/profiles.service.interface';
 
 @injectable()
 export class ProfilesService implements ProfilesServiceInterface {

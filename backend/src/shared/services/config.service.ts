@@ -1,7 +1,8 @@
 import { inject, injectable } from 'inversify';
+
+import { AppConfigInterface, AppConfigKey } from '../../common/types/appConfig.interface';
 import { ConfigInterface } from '../../common/types/config.interface';
 import { LoggerInterface } from '../../common/types/logger.interface';
-import { AppConfigInterface, AppConfigKey } from '../../common/types/appConfig.interface';
 import { TYPES } from '../../types';
 
 type a = keyof AppConfigInterface;

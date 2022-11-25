@@ -1,8 +1,10 @@
 import 'reflect-metadata';
+
 import { inject, injectable } from 'inversify';
 import { DataSource, ObjectLiteral, ObjectType, Repository } from 'typeorm';
-import { LoggerInterface } from '../../common/types/logger.interface';
+
 import { ConfigInterface } from '../../common/types/config.interface';
+import { LoggerInterface } from '../../common/types/logger.interface';
 import { TYPES } from '../../types';
 
 @injectable()

@@ -1,4 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
+
 import { MiddlewareInterface } from '../../common/types/middleware.interface';
 import { HttpError } from '../../errors/httpError';
 

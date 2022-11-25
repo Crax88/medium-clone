@@ -1,4 +1,5 @@
 import { injectable } from 'inversify';
+
 import { QueryHelperInterface } from '../types/queryHelper.interface';
 
 @injectable()

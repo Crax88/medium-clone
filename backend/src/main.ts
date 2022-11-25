@@ -1,14 +1,15 @@
 import { Container } from 'inversify';
-import { App } from './app';
-import { UsersModule } from './users/users.module';
-import { TokensModule } from './tokens/tokens.module';
-import { SharedModule } from './shared/shared.module';
-import { ExceptionFilter } from './errors/exception.filter';
-import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
+
 import { ArticlesModule } from './articles/articles.module';
-import { TagsModule } from './tags/tags.module';
-import { ProfilesModule } from './profiles/profiles.module';
 import { CommetnsModule } from './comments/comments.module';
+import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
+import { ExceptionFilter } from './errors/exception.filter';
+import { ProfilesModule } from './profiles/profiles.module';
+import { SharedModule } from './shared/shared.module';
+import { TagsModule } from './tags/tags.module';
+import { TokensModule } from './tokens/tokens.module';
+import { UsersModule } from './users/users.module';
+import { App } from './app';
 import { TYPES } from './types';
 export interface IBootsrapReturn {
 	appContainer: Container;

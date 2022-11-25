@@ -1,7 +1,7 @@
 {
 	"root": true,
 	"parser": "@typescript-eslint/parser",
-	"plugins": ["@typescript-eslint"],
+	"plugins": ["@typescript-eslint", "simple-import-sort"],
 	"extends": [
 		"eslint:recommended",
 		"plugin:@typescript-eslint/eslint-recommended",
@@ -13,6 +13,8 @@
 		"@typescript-eslint/ban-types": "off",
 		"@typescript-eslint/no-unused-vars": ["off"],
 		"@typescript-eslint/explicit-function-return-type": ["error"],
+		"simple-import-sort/imports": "error",
+		"simple-import-sort/exports": "error",
 		"prettier/prettier": [
 			"error",
 			{
@@ -25,5 +27,26 @@
 				"endOfLine": "auto"
 			}
 		]
-	}
+	},
+	"overrides": [
+		// override "simple-import-sort" config
+		{
+			"files": ["*.js", "*.jsx", "*.ts", "*.tsx"],
+			"rules": {
+				"simple-import-sort/imports": [
+					"error",
+					{
+						"groups": [
+							["reflect-metadata"],
+							["^@?\\w"],
+							["^(/.*|$)"],
+							["^\\u0000"],
+							["^\\.\\.(?!/?$)", "^\\.\\./?$"],
+							["^\\./(?=.*/)(?!/?$)", "^\\.(?!/?$)", "^\\./?$"]
+						]
+					}
+				]
+			}
+		}
+	]
 }

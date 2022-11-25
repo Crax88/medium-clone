@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+
 import {
 	Column,
 	CreateDateColumn,
@@ -12,6 +13,7 @@ import {
 	Unique,
 	UpdateDateColumn,
 } from 'typeorm';
+
 import { Comment } from '../comments/comment.entity';
 import { Tag } from '../tags/tag.entity';
 import { User } from '../users/user.entity';

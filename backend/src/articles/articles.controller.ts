@@ -1,15 +1,17 @@
-import { injectable, inject } from 'inversify';
 import { NextFunction, Request, Response } from 'express';
+import { inject, injectable } from 'inversify';
+
 import { BaseController } from '../common/base.controller';
+import { LoggerInterface } from '../common/types/logger.interface';
 import { ValidationMiddleware } from '../common/validation.middleware';
 import { AuthGuard } from '../shared/services/auth.guard';
+import { TYPES } from '../types';
+
 import { ArticlesControllerInterface } from './types/articles.controller.interface';
 import { ArticlesServiceInterface } from './types/articles.service.interface';
-import { LoggerInterface } from '../common/types/logger.interface';
+import { ArticlesQueryDto } from './types/articlesQuery.dto';
 import { CreateArticleRequestDto } from './types/createArticle.dto';
 import { UpdateArticleRequestDto } from './types/updateArticle.dto';
-import { ArticlesQueryDto } from './types/articlesQuery.dto';
-import { TYPES } from '../types';
 
 @injectable()
 export class ArticlesContoller extends BaseController implements ArticlesControllerInterface {

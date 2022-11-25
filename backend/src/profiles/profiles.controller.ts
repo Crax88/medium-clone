@@ -1,11 +1,13 @@
-import { Request, Response, NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
+
 import { BaseController } from '../common/base.controller';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { AuthGuard } from '../shared/services/auth.guard';
+import { TYPES } from '../types';
+
 import { ProfilesControllerInterface } from './types/profiles.controller.interface';
 import { ProfilesServiceInterface } from './types/profiles.service.interface';
-import { TYPES } from '../types';
 
 @injectable()
 export class ProfilesController extends BaseController implements ProfilesControllerInterface {

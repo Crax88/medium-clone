@@ -24,7 +24,7 @@ export class TypeormService {
 			database: this.configService.get('DB_NAME'),
 			entities:
 				this.configService.get('NODE_ENV') === 'production'
-					? ['dist/**/*.entity.js']
+					? ['./**/*.entity.js']
 					: ['src/**/*.entity.{ts,js}'],
 			migrations:
 				this.configService.get('NODE_ENV') === 'production'

@@ -10,6 +10,7 @@ import { UserRegisterRequestDto } from './types/userRegister.dto';
 import { UserUpdateDto } from './types/userUpdate.dto';
 import { UserDto, UserResponseDto } from './types/user.dto';
 import { TYPES } from '../types';
+import { ValidationError } from '../errors/validationError';
 
 @injectable()
 export class UsersService implements UsersServiceInterface {
@@ -24,13 +25,13 @@ export class UsersService implements UsersServiceInterface {
 			email: dto.email,
 		});
 		if (candidate) {
-			throw new HttpError(400, 'email already taken');
+			throw new ValidationError({ email: ['already exists'] });
 		}
 		candidate = await this.usersRepository.findUser({
 			username: dto.username,
 		});
 		if (candidate) {
-			throw new HttpError(400, 'username already taken');
+			throw new ValidationError({ username: ['already exists'] });
 		}
 		const salt = await genSalt(Number(this.configService.get('SALT')));
 		const hashedPasword = await hash(dto.password, salt);
@@ -103,14 +104,14 @@ export class UsersService implements UsersServiceInterface {
 		if (dto.username) {
 			const existedUsername = await this.usersRepository.findUser({ username: dto.username });
 			if (existedUsername && existedUsername.id !== currentUserId) {
-				throw new HttpError(400, 'username already taken');
+				throw new ValidationError({ username: ['username already taken'] });
 			}
 		}
 
 		if (dto.email) {
 			const existedEmail = await this.usersRepository.findUser({ email: dto.email });
 			if (existedEmail && existedEmail.id !== currentUserId) {
-				throw new HttpError(400, 'username already taken');
+				throw new ValidationError({ email: ['email already taken'] });
 			}
 		}
 

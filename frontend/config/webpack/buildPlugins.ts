@@ -6,13 +6,17 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import { BuildOptions } from './types';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
-export const buildPlugins = (options: BuildOptions): webpack.WebpackPluginInstance[] => {
+export const buildPlugins = (
+	options: BuildOptions,
+): webpack.WebpackPluginInstance[] => {
 	const plugins = [
 		new HtmlWebpackPlugin({
 			template: options.pathes.html,
 			title: options.title,
 		}),
-		new CopyWebpackPlugin({ patterns: [{ from: options.pathes.assets, to: '.' }] }),
+		new CopyWebpackPlugin({
+			patterns: [{ from: options.pathes.assets, to: '.' }],
+		}),
 		new webpack.ProgressPlugin(),
 		new MiniCssExtractPlugin({
 			filename: 'css/[name].[contenthash:8].css',

@@ -1,10 +1,13 @@
 import 'reflect-metadata';
+
 import { Container } from 'inversify';
+
 import { ConfigInterface } from '../common/types/config.interface';
+import { TYPES } from '../types';
+
 import { TokensRepositoryInterface } from './types/tokens.repository.interface';
 import { TokensServiceInterface } from './types/tokens.service.interface';
 import { TokensService } from './tokens.service';
-import { TYPES } from '../types';
 
 const ConfigServiceMock: ConfigInterface = {
 	get: jest.fn(),

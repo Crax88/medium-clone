@@ -1,10 +1,13 @@
 import 'reflect-metadata';
+
+import { NextFunction, Request, Response } from 'express';
 import { inject, injectable } from 'inversify';
-import { Request, Response, NextFunction } from 'express';
-import { HttpError } from './httpError';
+
 import { ExceptionFilterInterface } from '../common/types/exceptionFilter.interface';
 import { LoggerInterface } from '../common/types/logger.interface';
 import { TYPES } from '../types';
+
+import { HttpError } from './httpError';
 import { ValidationError } from './validationError';
 
 @injectable()

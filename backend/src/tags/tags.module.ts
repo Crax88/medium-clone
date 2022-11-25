@@ -1,11 +1,13 @@
 import { ContainerModule, interfaces } from 'inversify';
-import { TagsController } from './tags.controller';
-import { TagsService } from './tags.service';
-import { TagsRepository } from './tags.repository';
-import { TagsControllerInterface } from './types/tags.controller.interface';
-import { TagsServiceInterface } from './types/tags.service.interface';
-import { TagsRepositoryInterface } from './types/tags.repository.interface';
+
 import { TYPES } from '../types';
+
+import { TagsControllerInterface } from './types/tags.controller.interface';
+import { TagsRepositoryInterface } from './types/tags.repository.interface';
+import { TagsServiceInterface } from './types/tags.service.interface';
+import { TagsController } from './tags.controller';
+import { TagsRepository } from './tags.repository';
+import { TagsService } from './tags.service';
 
 export const TagsModule = new ContainerModule((bind: interfaces.Bind) => {
 	bind<TagsServiceInterface>(TYPES.TagsService).to(TagsService).inSingletonScope();

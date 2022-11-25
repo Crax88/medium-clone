@@ -1,11 +1,13 @@
 import { inject, injectable } from 'inversify';
 import { sign, verify } from 'jsonwebtoken';
+
 import { ConfigInterface } from '../common/types/config.interface';
-import { TokensServiceInterface } from './types/tokens.service.interface';
-import { TokensRepositoryInterface } from './types/tokens.repository.interface';
+import { TYPES } from '../types';
+
 import { TokenPayloadDto } from './types/tokenPayload.dto';
 import { TokenDto, TokensDto } from './types/tokens.dto';
-import { TYPES } from '../types';
+import { TokensRepositoryInterface } from './types/tokens.repository.interface';
+import { TokensServiceInterface } from './types/tokens.service.interface';
 
 @injectable()
 export class TokensService implements TokensServiceInterface {

@@ -1,5 +1,6 @@
+import { NextFunction, Request, Response } from 'express';
 import { inject } from 'inversify';
-import { Request, Response, NextFunction } from 'express';
+
 import { MiddlewareInterface } from '../../common/types/middleware.interface';
 import { TokensServiceInterface } from '../../tokens/types/tokens.service.interface';
 import { TYPES } from '../../types';

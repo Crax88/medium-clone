@@ -1,11 +1,13 @@
 import { ContainerModule, interfaces } from 'inversify';
-import { ProfilesController } from './profiles.controller';
-import { ProfilesService } from './profiles.service';
-import { ProfilesRepository } from './profiles.respository';
-import { ProfilesControllerInterface } from './types/profiles.controller.interface';
-import { ProfilesServiceInterface } from './types/profiles.service.interface';
-import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';
+
 import { TYPES } from '../types';
+
+import { ProfilesControllerInterface } from './types/profiles.controller.interface';
+import { ProfilesRepositoryInterface } from './types/profiles.repository.interface';
+import { ProfilesServiceInterface } from './types/profiles.service.interface';
+import { ProfilesController } from './profiles.controller';
+import { ProfilesRepository } from './profiles.respository';
+import { ProfilesService } from './profiles.service';
 
 export const ProfilesModule = new ContainerModule((bind: interfaces.Bind) => {
 	bind<ProfilesControllerInterface>(TYPES.ProfilesController)

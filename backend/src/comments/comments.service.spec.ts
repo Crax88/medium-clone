@@ -1,12 +1,15 @@
 import 'reflect-metadata';
+
 import { Container } from 'inversify';
-import { HttpError } from '../errors/httpError';
-import { CommentsService } from './comments.service';
+
 import { ArticlesRepositoryInterface } from '../articles/types/articles.repository.interface';
-import { CommentsRepositoryInterface } from './types/comments.repository.interface';
-import { CommentsServiceInterface } from './types/comments.service.interface';
+import { HttpError } from '../errors/httpError';
 import { TYPES } from '../types';
 import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
+
+import { CommentsRepositoryInterface } from './types/comments.repository.interface';
+import { CommentsServiceInterface } from './types/comments.service.interface';
+import { CommentsService } from './comments.service';
 
 const ArticlesRepositoryMock: ArticlesRepositoryInterface = {
 	createArticle: jest.fn(),

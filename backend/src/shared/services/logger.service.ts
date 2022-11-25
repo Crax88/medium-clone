@@ -1,5 +1,6 @@
 import { injectable } from 'inversify';
 import winston, { Logger, LoggerOptions } from 'winston';
+
 import { LoggerInterface } from '../../common/types/logger.interface';
 
 const levels = {

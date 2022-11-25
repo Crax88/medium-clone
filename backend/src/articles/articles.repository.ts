@@ -1,14 +1,16 @@
 import { inject, injectable } from 'inversify';
 import { Repository, SelectQueryBuilder } from 'typeorm';
+
 import { TypeormService } from '../shared/services/typeorm.service';
-import { Article } from './article.entity';
+import { QueryHelperInterface } from '../shared/types/queryHelper.interface';
 import { Tag } from '../tags/tag.entity';
+import { TYPES } from '../types';
+
+import { ArticleDto } from './types/article.dto';
 import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
 import { ArticleSaveDto } from './types/articleSave.dto';
 import { ArticlesQueryDto } from './types/articlesQuery.dto';
-import { ArticleDto } from './types/article.dto';
-import { QueryHelperInterface } from '../shared/types/queryHelper.interface';
-import { TYPES } from '../types';
+import { Article } from './article.entity';
 
 @injectable()
 export class ArticlesRepository implements ArticlesRepositoryInterface {

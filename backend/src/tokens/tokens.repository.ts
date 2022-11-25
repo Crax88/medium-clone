@@ -1,10 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { Repository } from 'typeorm';
+
 import { TypeormService } from '../shared/services/typeorm.service';
-import { Token } from './token.entity';
-import { TokensRepositoryInterface } from './types/tokens.repository.interface';
 import { TYPES } from '../types';
+
 import { TokenDto } from './types/tokens.dto';
+import { TokensRepositoryInterface } from './types/tokens.repository.interface';
+import { Token } from './token.entity';
 
 @injectable()
 export class TokensRepository implements TokensRepositoryInterface {

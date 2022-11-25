@@ -1,11 +1,13 @@
 import { inject, injectable } from 'inversify';
 import { Repository } from 'typeorm';
+
 import { TypeormService } from '../shared/services/typeorm.service';
-import { Comment } from './comment.entity';
+import { TYPES } from '../types';
+
+import { CommentDto } from './types/comment.dto';
 import { CommentsRepositoryInterface } from './types/comments.repository.interface';
 import { CreateCommentDto } from './types/createComment.dto';
-import { CommentDto } from './types/comment.dto';
-import { TYPES } from '../types';
+import { Comment } from './comment.entity';
 
 @injectable()
 export class CommentsRepository implements CommentsRepositoryInterface {

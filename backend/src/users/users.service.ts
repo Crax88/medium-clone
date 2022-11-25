@@ -1,16 +1,18 @@
+import { compare, genSalt, hash } from 'bcryptjs';
 import { inject, injectable } from 'inversify';
-import { hash, genSalt, compare } from 'bcryptjs';
-import { HttpError } from '../errors/httpError';
+
 import { ConfigInterface } from '../common/types/config.interface';
+import { HttpError } from '../errors/httpError';
+import { ValidationError } from '../errors/validationError';
 import { TokensServiceInterface } from '../tokens/types/tokens.service.interface';
-import { UsersServiceInterface } from './types/users.service.interface';
-import { UsersRepositoryInterface } from './types/users.repository.interface';
+import { TYPES } from '../types';
+
+import { UserDto, UserResponseDto } from './types/user.dto';
 import { UserLoginRequestDto } from './types/userLogin.dto';
 import { UserRegisterRequestDto } from './types/userRegister.dto';
+import { UsersRepositoryInterface } from './types/users.repository.interface';
+import { UsersServiceInterface } from './types/users.service.interface';
 import { UserUpdateDto } from './types/userUpdate.dto';
-import { UserDto, UserResponseDto } from './types/user.dto';
-import { TYPES } from '../types';
-import { ValidationError } from '../errors/validationError';
 
 @injectable()
 export class UsersService implements UsersServiceInterface {

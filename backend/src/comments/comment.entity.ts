@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+
 import {
 	Column,
 	CreateDateColumn,
@@ -8,8 +9,9 @@ import {
 	PrimaryGeneratedColumn,
 	UpdateDateColumn,
 } from 'typeorm';
-import { User } from '../users/user.entity';
+
 import { Article } from '../articles/article.entity';
+import { User } from '../users/user.entity';
 
 @Entity('comments')
 export class Comment {

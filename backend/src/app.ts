@@ -1,22 +1,24 @@
 import 'reflect-metadata';
-import { injectable, inject } from 'inversify';
-import { Server } from 'node:http';
-import express, { Express } from 'express';
-import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
+
 import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
-import { LoggerInterface } from './common/types/logger.interface';
+import express, { Express } from 'express';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import { inject, injectable } from 'inversify';
+import { Server } from 'node:http';
+
+import { ArticlesControllerInterface } from './articles/types/articles.controller.interface';
+import { CommentsControllerInterface } from './comments/types/comments.controller.interface';
 import { ConfigInterface } from './common/types/config.interface';
 import { ExceptionFilterInterface } from './common/types/exceptionFilter.interface';
-import { TypeormService } from './shared/services/typeorm.service';
-import { UsersControllerInterface } from './users/types/users.controller.interface';
-import { AuthMiddleware } from './shared/services/auth.middleware';
-import { TokensServiceInterface } from './tokens/types/tokens.service.interface';
-import { ArticlesControllerInterface } from './articles/types/articles.controller.interface';
-import { TagsControllerInterface } from './tags/types/tags.controller.interface';
+import { LoggerInterface } from './common/types/logger.interface';
 import { ProfilesControllerInterface } from './profiles/types/profiles.controller.interface';
-import { CommentsControllerInterface } from './comments/types/comments.controller.interface';
+import { AuthMiddleware } from './shared/services/auth.middleware';
+import { TypeormService } from './shared/services/typeorm.service';
+import { TagsControllerInterface } from './tags/types/tags.controller.interface';
+import { TokensServiceInterface } from './tokens/types/tokens.service.interface';
+import { UsersControllerInterface } from './users/types/users.controller.interface';
 import { TYPES } from './types';
 
 @injectable()

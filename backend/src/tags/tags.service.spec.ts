@@ -1,9 +1,12 @@
 import 'reflect-metadata';
+
 import { Container } from 'inversify';
-import { TagsService } from './tags.service';
+
+import { TYPES } from '../types';
+
 import { TagsRepositoryInterface } from './types/tags.repository.interface';
 import { TagsServiceInterface } from './types/tags.service.interface';
-import { TYPES } from '../types';
+import { TagsService } from './tags.service';
 
 const TagsRepositoryMock: TagsRepositoryInterface = {
 	getTag: jest.fn(),

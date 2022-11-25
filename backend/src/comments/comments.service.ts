@@ -1,12 +1,14 @@
 import { inject, injectable } from 'inversify';
-import { HttpError } from '../errors/httpError';
-import { CommentsServiceInterface } from './types/comments.service.interface';
-import { CommentsRepositoryInterface } from './types/comments.repository.interface';
+
 import { ArticlesRepositoryInterface } from '../articles/types/articles.repository.interface';
-import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
-import { CommentResponseDto, CommentsResponseDto } from './types/comment.dto';
-import { CreateCommentRequestDto } from './types/createComment.dto';
+import { HttpError } from '../errors/httpError';
 import { TYPES } from '../types';
+import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
+
+import { CommentResponseDto, CommentsResponseDto } from './types/comment.dto';
+import { CommentsRepositoryInterface } from './types/comments.repository.interface';
+import { CommentsServiceInterface } from './types/comments.service.interface';
+import { CreateCommentRequestDto } from './types/createComment.dto';
 
 @injectable()
 export class CommentsService implements CommentsServiceInterface {

@@ -1,10 +1,12 @@
 import { inject, injectable } from 'inversify';
 import { Repository } from 'typeorm';
+
 import { TypeormService } from '../shared/services/typeorm.service';
-import { Tag } from './tag.entity';
-import { TagsRepositoryInterface } from './types/tags.repository.interface';
-import { TagDto } from './types/tags.dto';
 import { TYPES } from '../types';
+
+import { TagDto } from './types/tags.dto';
+import { TagsRepositoryInterface } from './types/tags.repository.interface';
+import { Tag } from './tag.entity';
 
 @injectable()
 export class TagsRepository implements TagsRepositoryInterface {

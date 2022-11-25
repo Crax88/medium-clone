@@ -1,8 +1,10 @@
 import { inject, injectable } from 'inversify';
-import { TagsServiceInterface } from './types/tags.service.interface';
-import { TagsRepositoryInterface } from './types/tags.repository.interface';
-import { TagDto, TagsResponseDto } from './types/tags.dto';
+
 import { TYPES } from '../types';
+
+import { TagDto, TagsResponseDto } from './types/tags.dto';
+import { TagsRepositoryInterface } from './types/tags.repository.interface';
+import { TagsServiceInterface } from './types/tags.service.interface';
 
 @injectable()
 export class TagsService implements TagsServiceInterface {

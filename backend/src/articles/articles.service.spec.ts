@@ -1,14 +1,17 @@
 import 'reflect-metadata';
+
 import { Container } from 'inversify';
-import { ArticlesService } from './articles.service';
-import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
-import { TagsRepositoryInterface } from '../tags/types/tags.repository.interface';
-import { ArticlesServiceInterface } from './types/articles.service.interface';
-import { TYPES } from '../types';
-import { TagsServiceInterface } from '../tags/types/tags.service.interface';
-import { TagsService } from '../tags/tags.service';
+
 import { HttpError } from '../errors/httpError';
+import { TagsService } from '../tags/tags.service';
+import { TagsRepositoryInterface } from '../tags/types/tags.repository.interface';
+import { TagsServiceInterface } from '../tags/types/tags.service.interface';
+import { TYPES } from '../types';
 import { UsersRepositoryInterface } from '../users/types/users.repository.interface';
+
+import { ArticlesRepositoryInterface } from './types/articles.repository.interface';
+import { ArticlesServiceInterface } from './types/articles.service.interface';
+import { ArticlesService } from './articles.service';
 
 const ArticlesRepositoryMock: ArticlesRepositoryInterface = {
 	createArticle: jest.fn(),

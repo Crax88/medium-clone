@@ -1,12 +1,14 @@
 import { inject, injectable } from 'inversify';
 import { Repository } from 'typeorm';
+
 import { TypeormService } from '../shared/services/typeorm.service';
-import { User } from './user.entity';
-import { UsersRepositoryInterface } from './types/users.repository.interface';
-import { UserRegisterDto } from './types/userRegister.dto';
-import { UserUpdateDto } from './types/userUpdate.dto';
-import { UserDto } from './types/user.dto';
 import { TYPES } from '../types';
+
+import { UserDto } from './types/user.dto';
+import { UserRegisterDto } from './types/userRegister.dto';
+import { UsersRepositoryInterface } from './types/users.repository.interface';
+import { UserUpdateDto } from './types/userUpdate.dto';
+import { User } from './user.entity';
 
 @injectable()
 export class UsersRepository implements UsersRepositoryInterface {

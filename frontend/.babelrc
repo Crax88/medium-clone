@@ -1,13 +1,14 @@
 {
 	"presets": [
-		["@babel/preset-env", { "modules": false }],
+		["@babel/preset-env"],
 		[
 			"@babel/preset-react",
 			{
 				"runtime": "automatic"
 			}
 		],
-		"@babel/preset-typescript"
+		"@babel/preset-typescript",
+		"@linaria"
 	],
 	"plugins": [
 		[

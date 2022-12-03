@@ -5,6 +5,7 @@
 *.mdx
 *.hbs
 *.gif
+/assets
 
 .eslintignore
 .gitignore
@@ -13,4 +14,5 @@
 package.json
 /build
 /public
+/config
 node_modules

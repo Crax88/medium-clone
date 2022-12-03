@@ -19,7 +19,7 @@ export const RegisterPage = () => {
 					<Title className={center}>Sign in</Title>
 					<p className={center}>
 						<NavLink
-							to="/register"
+							to="/login"
 							className={navLinkHover}
 						>
 							Need an account?{' '}
@@ -57,7 +57,7 @@ export const RegisterPage = () => {
 								color="var(--clr-primary)"
 								padding="0.75rem 1.5rem"
 								radius="0.3rem"
-								children="Sign In"
+								children="Sign up"
 							/>
 						</FormButton>
 					</div>

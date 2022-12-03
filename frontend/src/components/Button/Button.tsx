@@ -9,6 +9,16 @@ const Container = styled.button<ButtonProps>`
 	fontsize: '1.25rem';
 	fontfamily: 'var(--ff-serif) sans-serif';
 	color: #fff;
+	&:hover,
+	&:active {
+		background-color: #449d44;
+		border-color: #419641;
+		outline: none;
+	}
+	&:focus {
+		outline: none;
+		box-shadow: 0 0 0 3px rgba(12, 128, 58, 0.547);
+	}
 `;
 
 interface ButtonProps {

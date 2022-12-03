@@ -7,7 +7,7 @@ import { styled } from '@linaria/react';
 import './styles.css';
 import { globalCss } from 'global';
 const Wrapper = styled.div`
-	color: red;
+	color: #373a3c;
 `;
 export const App = () => {
 	return (

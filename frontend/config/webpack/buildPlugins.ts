@@ -3,6 +3,7 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import ReactRefreshWEbpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BuildOptions } from './types';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
 
@@ -12,6 +13,7 @@ export const buildPlugins = (options: BuildOptions): webpack.WebpackPluginInstan
 			template: options.pathes.html,
 			title: options.title,
 		}),
+
 		new CopyWebpackPlugin({ patterns: [{ from: options.pathes.assets, to: '.' }] }),
 		new webpack.ProgressPlugin(),
 		new MiniCssExtractPlugin({
@@ -27,6 +29,7 @@ export const buildPlugins = (options: BuildOptions): webpack.WebpackPluginInstan
 	if (options.isDev) {
 		plugins.push(new ReactRefreshWEbpackPlugin());
 		plugins.push(new webpack.HotModuleReplacementPlugin());
+		plugins.push(new ForkTsCheckerWebpackPlugin());
 	}
 	if (options.analyzer) {
 		plugins.push(new BundleAnalyzerPlugin({ openAnalyzer: true }));

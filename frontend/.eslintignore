@@ -2,5 +2,5 @@ package.json
 /build
 /public
 node_modules
-config
+/config
 webpack.config.ts

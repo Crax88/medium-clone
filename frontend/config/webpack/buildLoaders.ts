@@ -3,15 +3,18 @@ import webpack from 'webpack';
 import { BuildOptions } from './types';
 
 export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
-	const babelLaoder = {
-		test: /\.(js|jsx|tsx)$/,
-		exclude: /(node_modules)/,
-		use: {
-			loader: 'babel-loader',
-			options: {
-				presets: ['@babel/preset-env'],
+	const babelLoader = {
+		test: /\.(ts|tsx|js)$/,
+		exclude: /node_modules/,
+		use: [
+			{ loader: 'babel-loader' },
+			{
+				loader: '@linaria/webpack-loader',
+				options: {
+					sourceMap: options.isDev,
+				},
 			},
-		},
+		],
 	};
 
 	const fileLoader = {
@@ -23,17 +26,12 @@ export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
 		test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
 		type: 'asset/inline',
 	};
-
-	const tsLoader = {
-		test: /\.tsx?$/,
-		use: 'ts-loader',
-		exclude: /node_modules/,
-	};
-
 	const cssLoader = {
 		test: /\.css$/i,
 		use: [
-			options.isDev ? 'style-loader' : MiniCssExtractPlugin.loader,
+			{
+				loader: MiniCssExtractPlugin.loader,
+			},
 			{
 				loader: 'css-loader',
 				options: {
@@ -43,10 +41,11 @@ export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
 							? '[path][name]__[local]--[hash:base64:5]'
 							: '[hash:base64:8]',
 					},
+					sourceMap: options.isDev,
 				},
 			},
 		],
 	};
 
-	return [assetLoader, fileLoader, cssLoader, babelLaoder, tsLoader];
+	return [assetLoader, fileLoader, cssLoader, babelLoader];
 };

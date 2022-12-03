@@ -37,9 +37,9 @@ export const center = css`
 	text-align: center;
 `;
 export const navLinkHover = css`
-	color: var(--brand-primary);
+	color:hsl(var(--clr-primary));
 	:hover {
-		color: #006400;
+		color: #3d8b3d;
 		text-decoration: underline;
 	}
 `;
@@ -54,14 +54,9 @@ export const form = css`
 export const FormButton = styled.div`
 	display: flex;
 	justify-content: right;
-	& button:hover {
-		background-color: #006400;
-	}
-	& button:focus {
-		outline: none;
-		box-shadow: 0 0 0 1px black;
-	}
+	
 `;
+
 export const LoginPage = () => {
 	return (
 		<div>
@@ -73,7 +68,7 @@ export const LoginPage = () => {
 							to="/register"
 							className={navLinkHover}
 						>
-							Need an account?{' '}
+							Have an account?{' '}
 						</NavLink>
 					</p>
 					<div className={form}>
@@ -100,7 +95,7 @@ export const LoginPage = () => {
 								color="var(--clr-primary)"
 								padding="0.75rem 1.5rem"
 								radius="0.3rem"
-								children="Sign In"
+								children="Sign in"
 							/>
 						</FormButton>
 					</div>

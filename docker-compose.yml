@@ -34,6 +34,7 @@ services:
       DB_USER: ${DB_USER}
       DB_NAME: ${DB_NAME}
       DB_PASSWORD: ${DB_PASSWORD}
+      NODE_END: ${NODE_ENV}
     ports:
       - "4000:4000"
     depends_on:

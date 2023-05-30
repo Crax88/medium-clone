@@ -1,8 +1,7 @@
 {
-	"extends": "./tsconfig",
-	"exclude": ["**/*.spec.ts", "jest.*"],
-	"types": ["reflect-metadata"],
-	"compilerOptions": {
-		"sourceMap": false
-	}
+  "extends": "./tsconfig",
+  "exclude": ["**/*.spec.ts", "jest.*"],
+  "compilerOptions": {
+    "sourceMap": false,
+  }
 }

@@ -6,14 +6,18 @@
 	"scripts": {
 		"build": "tsc -p ./tsconfig.prod.json",
 		"build:dev": "tsc",
-		"start": "node main.js",
+		"start": "node dist/main.js",
 		"start:dev": "nodemon -L ./src/main.ts",
 		"test": "jest",
 		"lint:fixAll": "npm run lint:fix && npm run format:fix",
 		"lint": "eslint ./src/**",
 		"lint:fix": "eslint ./src/** --fix",
 		"format": "prettier --check ./src/**",
-		"format:fix": "prettier --write ./src/**"
+		"format:fix": "prettier --write ./src/**",
+		"typeorm": "ts-node ./node_modules/typeorm/cli.js --dataSource=src/ormconfig.ts",
+		"db:drop": "npm run typeorm schema:drop",
+		"db:create": "npm run typeorm migration:generate",
+		"db:migrate": "npm run typeorm migration:run"
 	},
 	"repository": {
 		"type": "git",
@@ -54,6 +58,7 @@
 		"@types/express": "^4.17.14",
 		"@types/jest": "^29.2.0",
 		"@types/jsonwebtoken": "^8.5.9",
+		"@types/node": "^20.2.5",
 		"@typescript-eslint/eslint-plugin": "^5.40.1",
 		"@typescript-eslint/parser": "^5.40.1",
 		"eslint": "^8.25.0",

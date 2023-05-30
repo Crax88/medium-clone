@@ -2,6 +2,7 @@
 	"extends": "./tsconfig",
 	"exclude": ["**/*.spec.ts", "jest.*", "node_modules", "dist"],
 	"compilerOptions": {
-		"sourceMap": false
+		"sourceMap": false,
+		"types": []
 	}
 }

@@ -4,7 +4,7 @@
 	"description": "Medium clone backend with Express Typeorm Typescript",
 	"main": "src/main.ts",
 	"scripts": {
-		"build": "tsc -p ./tsconfig.prod.json --noEmit",
+		"build": "tsc -p ./tsconfig.prod.json",
 		"build:dev": "tsc",
 		"start": "node dist/main.js",
 		"start:dev": "nodemon -L ./src/main.ts",

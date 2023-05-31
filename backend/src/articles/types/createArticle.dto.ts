@@ -26,5 +26,6 @@ export class CreateArticleDto {
 export class CreateArticleRequestDto {
 	@ValidateNested()
 	@Type(() => CreateArticleDto)
+	@IsNotEmpty()
 	article: CreateArticleDto;
 }

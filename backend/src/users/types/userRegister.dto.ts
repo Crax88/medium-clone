@@ -20,5 +20,6 @@ export class UserRegisterDto {
 export class UserRegisterRequestDto {
 	@ValidateNested()
 	@Type(() => UserRegisterDto)
+	@IsNotEmpty()
 	user: UserRegisterDto;
 }

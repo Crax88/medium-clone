@@ -57,7 +57,7 @@ describe('UsersService', () => {
 		});
 		let count = 0;
 		usersRepository.findUser = jest.fn().mockImplementation((dto) => {
-			console.log(count);
+			
 			if (count < 2) {
 				count++;
 				return null;

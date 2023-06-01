@@ -12,5 +12,6 @@ export class UserLoginDto {
 export class UserLoginRequestDto {
 	@ValidateNested()
 	@Type(() => UserLoginDto)
+	@IsNotEmpty()
 	user: UserLoginDto;
 }

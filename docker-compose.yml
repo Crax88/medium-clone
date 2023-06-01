@@ -40,6 +40,7 @@ services:
       REFRESH_TOKEN_SECRET: ${REFRESH_TOKEN_SECRET}
       REFRESH_TOKEN_EXPIRES: ${REFRESH_TOKEN_EXPIRES}
       SALT: ${SALT}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     ports:
       - "4000:4000"
     depends_on:

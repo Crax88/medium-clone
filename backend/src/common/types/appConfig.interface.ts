@@ -11,6 +11,7 @@ export interface AppConfigInterface {
 	REFRESH_TOKEN_SECRET: string;
 	REFRESH_TOKEN_EXPIRES: string;
 	SALT: string;
+	ALLOWED_ORIGINS: string;
 }
 
 export type AppConfigKey = keyof AppConfigInterface;

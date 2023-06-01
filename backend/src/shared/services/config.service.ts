@@ -22,6 +22,7 @@ export class ConfigService implements ConfigInterface {
 		REFRESH_TOKEN_SECRET: '',
 		REFRESH_TOKEN_EXPIRES: '',
 		SALT: '',
+		ALLOWED_ORIGINS: '',
 	};
 
 	constructor(@inject(TYPES.LoggerService) private loggerService: LoggerInterface) {

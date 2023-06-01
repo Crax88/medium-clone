@@ -6,15 +6,7 @@ export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
 	const babelLoader = {
 		test: /\.(ts|tsx|js)$/,
 		exclude: /node_modules/,
-		use: [
-			{ loader: 'babel-loader' },
-			{
-				loader: '@linaria/webpack-loader',
-				options: {
-					sourceMap: options.isDev,
-				},
-			},
-		],
+		use: [{ loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } }],
 	};
 
 	const fileLoader = {

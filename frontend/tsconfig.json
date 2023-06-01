@@ -2,9 +2,11 @@
 	"compilerOptions": {
 		"target": "esnext",
 		"module": "esnext",
+		"allowJs": false,
 		"moduleResolution": "node",
 		"lib": ["DOM", "ESNext"],
 		"jsx": "react-jsx",
+		"typeRoots": ["node_modules/@types", "types/"],
 		// "noEmit": true,
 		"isolatedModules": true,
 		"esModuleInterop": true,
@@ -19,7 +21,7 @@
 			"src": ["src/*"]
 		}
 	},
-	"include": ["src/**/*"],
+	"include": ["src/**/*", "types"],
 	"exclude": ["node_modules", "build"],
 	"ts-node": {
 		"compilerOptions": {

@@ -24,5 +24,6 @@ export class UpdateArticleDto {
 export class UpdateArticleRequestDto {
 	@ValidateNested()
 	@Type(() => UpdateArticleDto)
+	@IsNotEmpty()
 	article: UpdateArticleDto;
 }

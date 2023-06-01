@@ -519,7 +519,7 @@ describe('ArticlesService', () => {
 		});
 
 		const favoriteResult = await articlesService.unfavoriteArticle('slug1', 1);
-		console.log(favoriteResult);
+		
 		expect(favoriteResult).toHaveProperty('article');
 		expect(favoriteResult.article.favoritesCount).toEqual(0);
 		expect(favoriteResult.article.favorited).toEqual(false);

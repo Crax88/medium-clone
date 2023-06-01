@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import { json } from 'body-parser';
 import cookieParser from 'cookie-parser';
+import cors, { CorsOptions } from 'cors';
 import express, { Express } from 'express';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
@@ -72,6 +73,21 @@ export class App {
 				legacyHeaders: false,
 			}),
 		);
+		const corsOptions: CorsOptions = {
+			origin: (origin, callback) => {
+				if (
+					!origin ||
+					this.configService.get('ALLOWED_ORIGINS').split(';').indexOf(origin) === -1
+				) {
+					callback(new Error('Not Allowed by CORS'));
+				} else {
+					callback(null, true);
+				}
+			},
+			credentials: true,
+			optionsSuccessStatus: 200,
+		};
+		this.app.use(cors(corsOptions));
 		const authMiddleware = new AuthMiddleware(this.tokensService);
 		this.app.use(authMiddleware.execute.bind(authMiddleware));
 	}

@@ -1,14 +1,18 @@
-declare module '*.png';
-
-declare module '*.svg' {
-	const content: string;
-	// eslint-disable-next-line import/no-default-export
-	export default content;
-}
-
-declare const __API_URL__: string;
-
 declare global {
+	declare const __API_URL__: string;
+
+	declare module '*.png';
+
+	declare module '*.module.css';
+
+	declare module '*.svg' {
+		import * as React from 'react';
+
+		import React from 'react';
+		const SVG: React.VFC<React.SVGProps<SVGSVGElement>>;
+		export default SVG;
+	}
+
 	/**
 	 * Custom utility types
 	 */
@@ -21,9 +25,9 @@ declare global {
 	export type Indexed<K = string, T = unknown> = { [key: K]: T };
 
 	// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-	declare type RootState = import('../src/app/appStore').RootState;
+	declare type RootState = import('../src/app/store').RootState;
 	// eslint-disable-next-line @typescript-eslint/consistent-type-imports
-	declare type AppDispatch = import('../src/app/appStore').AppDispatch;
+	declare type AppDispatch = import('../src/app/store').AppDispatch;
 }
 
 export {};

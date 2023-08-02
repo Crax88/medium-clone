@@ -1,0 +1,15 @@
+.container {
+	padding-inline: 2em;
+	margin-inline: auto;
+	max-width: 75rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.logo {
+	font-family: var(--ff-titil);
+	color: hsl(var(--clr-primary));
+	font-size: var(--fs-600);
+	text-decoration: none;
+}

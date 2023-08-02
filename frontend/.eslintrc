@@ -1,5 +1,5 @@
 {
-	"root": true,
+	// "root": true,
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
 		"project": "./tsconfig.json",
@@ -24,13 +24,20 @@
 		"prettier",
 		"plugin:prettier/recommended"
 	],
-	"plugins": ["react", "react-hooks", "jsx-a11y", "import", "@typescript-eslint", "prettier"],
+	"plugins": [
+		"react",
+		"react-hooks",
+		"jsx-a11y",
+		"import",
+		"@typescript-eslint",
+		"prettier"
+	],
 	"rules": {
 		"react-hooks/rules-of-hooks": "error",
 		"react-hooks/exhaustive-deps": "error",
 		"react/prop-types": "off",
 		"react/react-in-jsx-scope": "off",
-		"import/no-default-export": "error",
+		"import/no-default-export": "off",
 		"import/prefer-default-export": "off",
 		"import/no-named-as-default-member": "off",
 		"import/no-duplicates": "off",
@@ -40,14 +47,17 @@
 		"@typescript-eslint/quotes": [
 			"error",
 			"single",
-			{ "avoidEscape": true, "allowTemplateLiterals": true }
+			{
+				"avoidEscape": true,
+				"allowTemplateLiterals": true
+			}
 		],
 		"react/jsx-first-prop-new-line": [1, "multiline"],
 		"react/jsx-max-props-per-line": [1],
 		"react/jsx-closing-bracket-location": [2, "tag-aligned"],
-		"max-len": ["error", { "ignoreComments": true }],
+		"max-len": [0, 80, 0, { "ignoreComments": true, "ignoreUrls": true }],
 		"no-console": "warn",
-		"no-unused-vars": "error",
+		"no-unused-vars": "off",
 		"import/no-unresolved": "off",
 		"@typescript-eslint/no-unused-vars": ["error"],
 		"@typescript-eslint/no-var-requires": "off",
@@ -62,7 +72,7 @@
 				"useTabs": true,
 				"semi": true,
 				"bracketSpacing": true,
-				"printWidth": 100,
+				"printWidth": 80,
 				"endOfLine": "auto",
 				"tabWidth": 2,
 				"jsxSingleQuote": false,
@@ -76,11 +86,11 @@
 			"version": "detect"
 		},
 		"import/resolver": {
-			"webpack": {
-				"config": "webpack.config.ts"
-			},
 			"node": {
 				"extensions": [".js", ".jsx", ".ts", ".tsx"]
+			},
+			"webpack": {
+				"config": "webpack.config.ts"
 			}
 			// "typescript": {
 			// 	"alwaysTryTypes": true,

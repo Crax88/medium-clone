@@ -1,0 +1,60 @@
+.page {
+	margin-bottom: 5rem;
+}
+
+.banner {
+	background-color: hsl(var(--clr-black));
+	padding: 2rem 0 2rem 0;
+}
+
+.container {
+	padding-inline: 2em;
+	margin-inline: auto;
+	max-width: 75rem;
+}
+
+.banner h1 {
+	color: hsl(var(--clr-white));
+	font-weight: 600;
+	font-size: var(--fs-800);
+}
+
+.article_actions img {
+	width: 32px;
+	aspect-ratio: 1;
+	border-radius: 50%;
+}
+
+.article_actions {
+	display: flex;
+	gap: 0.5rem;
+	margin-top: 1rem;
+}
+
+.info {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.author {
+	color: hsl(var(--clr-primary));
+	text-decoration: none;
+	font-weight: 500;
+	line-height: 1;
+}
+
+.date {
+	color: hsl(var(--clr-gray));
+	font-size: var(--fs-300);
+	line-height: 1;
+}
+
+.article_body {
+	margin-top: 1rem;
+}
+
+.article_body a {
+	color: hsl(var(--clr-primary));
+	text-decoration: none;
+}

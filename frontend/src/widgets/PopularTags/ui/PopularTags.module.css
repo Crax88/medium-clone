@@ -1,0 +1,19 @@
+.popularTags_container {
+	background-color: hsl(var(--clr-light-gray));
+	padding: 10px;
+	text-align: left;
+	border-radius: 4px;
+	width: 100%;
+}
+
+.popularTags_container ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.popularTags_container ul li {
+	margin: 0.1rem;
+}

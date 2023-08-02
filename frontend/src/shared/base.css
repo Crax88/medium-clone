@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=Merriweather+Sans:wght@400;700&family=Source+Sans+Pro:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Source+Serif+Pro:wght@400;700&family=Titillium+Web:wght@700&display=swap');
+
+/* ------------------- */
+/* Custom properties   */
+/* ------------------- */
+
+:root {
+	--clr-primary: 120 39% 54%;
+	--clr-danger: 0 50% 72%;
+	--clr-white: 0 0% 100%;
+	--clr-gray: 0 0% 60%;
+	--clr-light-gray: 0 0% 95%;
+	--clr-dark-gray: 206 7% 54%;
+	--clr-black: 204 4% 23%;
+	--clr-blue: 207 75% 66%;
+
+	--fs-900: 3.5rem;
+	--fs-800: 2.8rem;
+	--fs-700: 2rem;
+	--fs-600: 1.5rem;
+	--fs-500: 1.2rem;
+	--fs-400: 1rem;
+	--fs-300: 0.8rem;
+	--fs-200: 0.6rem;
+
+	--ff-merri: 'Merriweather Sans', sans-serif;
+	--ff-sans: 'Source Sans Pro', sans-serif;
+	--ff-serif: 'Source Serif Pro', sans-serif;
+	--ff-titil: 'Titillium Web', sans-serif;
+}
+
+/* ------------------- */
+/* Reset               */
+/* ------------------- */
+
+/* Box sizing */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* Reset margins & paddings*/
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+figure,
+picture {
+	margin: 0;
+	padding: 0;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+	font-weight: 400;
+}
+
+/* set up the body */
+body {
+	font-family: var(--ff-sans);
+	font-size: var(--fs-400);
+	color: hsl(var(--clr-dark));
+	background-color: hsl(var(--clr-white));
+	line-height: 1.5;
+	min-height: 100vh;
+	position: relative;
+	display: grid;
+	grid-template-rows: min-content 1fr;
+
+	overflow-x: hidden;
+}
+
+/* make images easier to work with */
+img,
+picutre {
+	max-width: 100%;
+	display: block;
+}
+
+/* make form elements easier to work with */
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}

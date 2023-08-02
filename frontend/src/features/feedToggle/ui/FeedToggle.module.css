@@ -1,0 +1,21 @@
+.feed_toggle__list {
+	display: flex;
+	list-style: none;
+	padding: 0;
+}
+
+.feed_toggle__item {
+	text-decoration: none;
+	padding: 1rem;
+	color: hsl(var(--clr-gray));
+}
+
+.feed_toggle__item-active {
+	color: hsl(var(--clr-primary));
+	border-bottom: 2px solid hsl(var(--clr-primary));
+	cursor: default;
+}
+
+.feed_toggle__item:not(.feed_toggle__item-active):hover {
+	color: hsl(var(--clr-black));
+}

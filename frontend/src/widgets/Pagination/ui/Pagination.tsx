@@ -39,7 +39,9 @@ const Pagination = ({
 								{href ? (
 									<NavLink
 										aria-label={`Go to page number ${pageNum}`}
-										to={`${href}?page=${pageNum}`}
+										to={`${href}${
+											href.indexOf('?') >= 0 ? '&' : '?'
+										}page=${pageNum}`}
 										onClick={(e) => {
 											if (onPageChange) {
 												e.preventDefault();

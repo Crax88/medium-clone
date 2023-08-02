@@ -52,7 +52,7 @@ const ArticlesPage = () => {
 						pageSize={10}
 						itemsCount={articles.articlesCount}
 						currentPage={Number(page)}
-						href={pathname}
+						href={`${pathname}${tag ? '?tag=' + tag : ''}`}
 					/>
 				</div>
 			</>

@@ -11,6 +11,7 @@ const LoginPage = lazy(() => import('pages/login'));
 const RegisterPage = lazy(() => import('pages/register'));
 const ArticlePage = lazy(() => import('pages/article'));
 const EditorPage = lazy(() => import('pages/editor'));
+const ProfilePage = lazy(() => import('pages/profile'));
 
 const WithWrapper = ({ children }: { children: ReactNode }) => {
 	return <Suspense fallback={<PageLoader />}>{children}</Suspense>;
@@ -84,14 +85,22 @@ export const AppRouting = () => {
 						</WithWrapper>
 					}
 				/>
-				{/* <Route
-					path="/feed"
+				<Route
+					path="/profile/:username"
 					element={
 						<WithWrapper>
-							<FeedPage />
+							<ProfilePage />
 						</WithWrapper>
 					}
-				/> */}
+				/>
+				<Route
+					path="/profile/:username/favorited"
+					element={
+						<WithWrapper>
+							<ProfilePage />
+						</WithWrapper>
+					}
+				/>
 			</Route>
 		</Routes>
 	);

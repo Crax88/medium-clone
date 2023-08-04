@@ -13,7 +13,7 @@ const ArticlePreview = ({ article, bottomSlot, actionsSlot }: Props) => {
 	return (
 		<article className={classes.articlePreview}>
 			<div className={classes.articleMeta}>
-				<Link to={`/@${article.author.username}`}>
+				<Link to={`/profile/${article.author.username}`}>
 					<img
 						src={article.author.image}
 						alt={article.author.username}
@@ -21,7 +21,7 @@ const ArticlePreview = ({ article, bottomSlot, actionsSlot }: Props) => {
 				</Link>
 				<div className={classes.info}>
 					<Link
-						to={`/@${article.author.username}`}
+						to={`/profile/${article.author.username}`}
 						className={classes.author}
 					>
 						{article.author.username}

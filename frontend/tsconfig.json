@@ -21,7 +21,12 @@
 			"src": ["src/*"]
 		}
 	},
-	"include": ["src/**/*", "./types/app.d.ts"],
+	"include": [
+		"./src/**/*",
+		"./types/app.d.ts",
+		"./webpack.config.ts",
+		"./config/**/*"
+	],
 	"exclude": ["./node_modules/", "build"],
 	"ts-node": {
 		"compilerOptions": {

@@ -6,7 +6,9 @@ export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
 	const babelLoader = {
 		test: /\.(ts|tsx|js)$/,
 		exclude: /node_modules/,
-		use: [{ loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } }],
+		use: [
+			{ loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } },
+		],
 	};
 
 	const fileLoader = {

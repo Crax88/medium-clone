@@ -33,7 +33,7 @@ export const buildPlugins = (
 			__API_URL__: JSON.stringify('/api'),
 		}),
 		new EslintWebPackPlugin({
-			overrideConfigFile: path.resolve(__dirname, '..', '..', '.eslintrc'),
+			overrideConfigFile: path.resolve(__dirname, '..', '..', '.eslintrc.js'),
 			extensions: ['tsx', 'ts'],
 		}),
 	];

@@ -1,12 +1,15 @@
 import webpack from 'webpack';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import { buildResolvers } from './buildResolvers';
 import { buildLoaders } from './buildLoaders';
 import { buildPlugins } from './buildPlugins';
 import { buildDevServer } from './buildDevServer';
 import { BuildOptions } from './types';
 
-export const buildWebpackConfig = (options: BuildOptions): webpack.Configuration => {
+export const buildWebpackConfig = (
+	options: BuildOptions,
+): webpack.Configuration => {
 	const { mode, pathes, isDev } = options;
 	return {
 		mode,
@@ -34,7 +37,10 @@ export const buildWebpackConfig = (options: BuildOptions): webpack.Configuration
 		optimization: options.isDev
 			? undefined
 			: {
-					minimizer: [new CssMinimizerPlugin()],
+					minimizer: [
+						new CssMinimizerPlugin(),
+						new TerserPlugin({ test: /\.(ts|tsx|js)$/ }),
+					],
 					moduleIds: 'deterministic',
 					runtimeChunk: {
 						name: 'manifest',
@@ -47,9 +53,39 @@ export const buildWebpackConfig = (options: BuildOptions): webpack.Configuration
 								test: /[\\/]node_modules[\\/]/,
 								chunks: 'all',
 							},
-							common: {
-								name: 'components',
-								test: /[\\/]src[\\/]components[\\/]/,
+							shared: {
+								name: 'shared',
+								test: /[\\/]src[\\/]shared[\\/]/,
+								chunks: 'all',
+								minSize: 0,
+							},
+							entities: {
+								name: 'entities',
+								test: /[\\/]src[\\/]entities[\\/]/,
+								chunks: 'all',
+								minSize: 0,
+							},
+							features: {
+								name: 'features',
+								test: /[\\/]src[\\/]features[\\/]/,
+								chunks: 'all',
+								minSize: 0,
+							},
+							widgets: {
+								name: 'widgets',
+								test: /[\\/]src[\\/]widgets[\\/]/,
+								chunks: 'all',
+								minSize: 0,
+							},
+							pages: {
+								name: 'pages',
+								test: /[\\/]src[\\/]pages[\\/]/,
+								chunks: 'all',
+								minSize: 0,
+							},
+							app: {
+								name: 'app',
+								test: /[\\/]src[\\/]pages[\\/]/,
 								chunks: 'all',
 								minSize: 0,
 							},

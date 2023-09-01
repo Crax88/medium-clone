@@ -6,3 +6,4 @@ package.json
 webpack.config.ts
 *.css
 *.svg
+.eslintrc.json

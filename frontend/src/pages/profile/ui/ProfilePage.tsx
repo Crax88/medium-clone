@@ -1,16 +1,14 @@
 import classes from './ProfilePage.module.css';
 import { useEffect, type ReactNode, useMemo } from 'react';
-import { ArticlesList } from 'widgets/ArticlesList';
 import { FeedToggle } from 'features/feedToggle';
 import { useParams, useLocation } from 'react-router-dom';
-import { config, getQueryParams } from 'shared/lib';
+import { getQueryParams } from 'shared/lib';
 import { useAppSelector } from 'shared/model/hooks';
 import { selectIsAuth, selectUser } from 'entities/session';
 import { useGetProfileQuery, ProfileCard } from 'entities/profile';
-import { useGetArticlesQuery } from 'entities/article';
-import { Pagination } from 'widgets/Pagination';
 import { FollowProfile } from 'features/profile/followProfile';
 import { EditProfile } from 'features/profile/editProfile';
+import { GlobalArticlesList } from 'widgets/ArticlesList';
 
 const ProfilePage = () => {
 	const { username = '' } = useParams();
@@ -19,13 +17,7 @@ const ProfilePage = () => {
 	const isAuth = useAppSelector(selectIsAuth);
 	const user = useAppSelector(selectUser);
 
-	const {
-		data: profile,
-		// isLoading: profileIsLoading,
-		// isSuccess: profileIsSuccess,
-		// isError: profileIsError,
-		// error: profileError,
-	} = useGetProfileQuery(
+	const { data: profile } = useGetProfileQuery(
 		{
 			username,
 		},
@@ -34,51 +26,6 @@ const ProfilePage = () => {
 			refetchOnFocus: true,
 		},
 	);
-
-	const {
-		data: articles,
-		isLoading: articlesIsLoading,
-		isSuccess: articlesIsSuccess,
-		isFetching: articlesIsFetching,
-		isError: articlesIsError,
-		error: articlesError,
-	} = useGetArticlesQuery(
-		{
-			...(pathname.includes('favorited')
-				? { favorited: username }
-				: { author: username }),
-			limit: config.pageSize,
-			offset: (Number(page) - 1) * config.pageSize,
-		},
-		{
-			refetchOnMountOrArgChange: true,
-			refetchOnFocus: true,
-		},
-	);
-
-	let content: ReactNode | null = null;
-	if (articlesIsLoading) {
-		content = <div className={classes.articlePreview}>Loading articles...</div>;
-	} else if (articlesIsSuccess) {
-		content = (
-			<>
-				<ArticlesList articles={articles.articles} />
-				{articlesIsFetching && (
-					<div className={classes.articlePreview}>Loading articles...</div>
-				)}
-				<div className={classes.pagination_container}>
-					<Pagination
-						pageSize={10}
-						itemsCount={articles.articlesCount}
-						currentPage={Number(page)}
-						href={`${pathname}`}
-					/>
-				</div>
-			</>
-		);
-	} else if (articlesIsError) {
-		content = <p>{JSON.stringify(articlesError)}</p>;
-	}
 
 	const feedLinks = useMemo(() => {
 		const links: {
@@ -149,7 +96,18 @@ const ProfilePage = () => {
 				<div className={classes.content}>
 					<main>
 						<FeedToggle links={feedLinks} />
-						<section className={classes.main}>{content}</section>
+						<section className={classes.main}>
+							<GlobalArticlesList
+								query={{
+									page: +page,
+									author: pathname.includes('favorited') ? undefined : username,
+									favorited: !pathname.includes('favorited')
+										? undefined
+										: username,
+								}}
+								pathName={pathname}
+							/>
+						</section>
 					</main>
 				</div>
 			</div>

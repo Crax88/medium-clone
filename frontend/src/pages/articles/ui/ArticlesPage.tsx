@@ -1,65 +1,19 @@
-import { useGetArticlesQuery } from 'entities/article';
 import classes from './ArticlesPage.module.css';
 import { useEffect, type ReactNode, useMemo } from 'react';
 import { PopularTags } from 'widgets/PopularTags';
-import { ArticlesList } from 'widgets/ArticlesList';
 import { FeedToggle } from 'features/feedToggle';
 import { useLocation } from 'react-router-dom';
-import { config, getQueryParams } from 'shared/lib';
-import { Pagination } from 'widgets/Pagination';
+import { getQueryParams } from 'shared/lib';
 import { useAppSelector } from 'shared/model/hooks';
 import { selectIsAuth } from 'entities/session';
 import HashIcon from '../asset/hashIcon.svg';
+import { GlobalArticlesList } from 'widgets/ArticlesList';
 
 const ArticlesPage = () => {
 	const { search, pathname } = useLocation();
 	const isAuth = useAppSelector(selectIsAuth);
 	const { tag, page = 1 } = getQueryParams(search);
 	const isFeed = pathname === '/feed';
-
-	const {
-		data: articles,
-		isLoading,
-		isSuccess,
-		isFetching,
-		isError,
-		error,
-	} = useGetArticlesQuery(
-		{
-			tag,
-			limit: config.pageSize,
-			offset: (Number(page) - 1) * config.pageSize,
-			isFeed,
-		},
-		{
-			refetchOnMountOrArgChange: true,
-			refetchOnFocus: true,
-		},
-	);
-
-	let content: ReactNode | null = null;
-	if (isLoading) {
-		content = <div className={classes.articlePreview}>Loading articles...</div>;
-	} else if (isSuccess) {
-		content = (
-			<>
-				<ArticlesList articles={articles.articles} />
-				{isFetching && (
-					<div className={classes.articlePreview}>Loading articles...</div>
-				)}
-				<div className={classes.pagination_container}>
-					<Pagination
-						pageSize={10}
-						itemsCount={articles.articlesCount}
-						currentPage={Number(page)}
-						href={`${pathname}${tag ? '?tag=' + tag : ''}`}
-					/>
-				</div>
-			</>
-		);
-	} else if (isError) {
-		content = <p>{JSON.stringify(error)}</p>;
-	}
 
 	const feedLinks = useMemo(() => {
 		const links: {
@@ -119,7 +73,12 @@ const ArticlesPage = () => {
 				<div className={classes.content}>
 					<main>
 						<FeedToggle links={feedLinks} />
-						<section className={classes.main}>{content}</section>
+						<section className={classes.main}>
+							<GlobalArticlesList
+								query={{ tag, page: +page, isFeed }}
+								pathName={pathname}
+							/>
+						</section>
 					</main>
 					<aside className={classes.aside}>
 						<PopularTags />

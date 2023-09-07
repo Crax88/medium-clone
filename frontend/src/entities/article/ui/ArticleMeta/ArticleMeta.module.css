@@ -24,5 +24,6 @@
 }
 
 .actions_container {
-	margin-left: auto;
+	display: flex;
+	align-items: center;
 }

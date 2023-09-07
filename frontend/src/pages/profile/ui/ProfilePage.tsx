@@ -3,29 +3,13 @@ import { useEffect, type ReactNode, useMemo } from 'react';
 import { FeedToggle } from 'features/feedToggle';
 import { useParams, useLocation } from 'react-router-dom';
 import { getQueryParams } from 'shared/lib';
-import { useAppSelector } from 'shared/model/hooks';
-import { selectIsAuth, selectUser } from 'entities/session';
-import { useGetProfileQuery, ProfileCard } from 'entities/profile';
-import { FollowProfile } from 'features/profile/followProfile';
-import { EditProfile } from 'features/profile/editProfile';
 import { GlobalArticlesList } from 'widgets/ArticlesList';
+import { ProfileCard } from 'widgets/ProfileCard';
 
 const ProfilePage = () => {
 	const { username = '' } = useParams();
 	const { pathname, search } = useLocation();
 	const { page = 1 } = getQueryParams(search);
-	const isAuth = useAppSelector(selectIsAuth);
-	const user = useAppSelector(selectUser);
-
-	const { data: profile } = useGetProfileQuery(
-		{
-			username,
-		},
-		{
-			refetchOnMountOrArgChange: true,
-			refetchOnFocus: true,
-		},
-	);
 
 	const feedLinks = useMemo(() => {
 		const links: {
@@ -55,43 +39,14 @@ const ProfilePage = () => {
 		});
 	}, [pathname]);
 
-	const follow = useMemo(() => {
-		if (profile && user?.username !== username) {
-			return (
-				<FollowProfile
-					key={1}
-					following={profile.following}
-					username={profile.username}
-				/>
-			);
-		}
-		return null;
-	}, [profile, username, user?.username]);
-
-	const edit = useMemo(() => {
-		if (isAuth && user?.username === username) {
-			return <EditProfile />;
-		}
-		return null;
-	}, [isAuth, username, user?.username]);
-
 	return (
 		<>
-			{profile && (
-				<div className={classes.profile_wrapper}>
-					<div className={classes.container}>
-						<ProfileCard
-							profile={profile}
-							actionSlot={
-								<>
-									{edit}
-									{follow}
-								</>
-							}
-						/>
-					</div>
+			<div className={classes.profile_wrapper}>
+				<div className={classes.container}>
+					<ProfileCard username={username} />
 				</div>
-			)}
+			</div>
+
 			<div className={classes.container}>
 				<div className={classes.content}>
 					<main>

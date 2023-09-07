@@ -24,10 +24,12 @@ const ArticleMetaW = ({ article }: TProps) => {
 							<DeleteArticle slug={article.slug} />
 						</>
 					)}
-					<FollowProfile
-						username={article.author.username}
-						following={article.author.following}
-					/>
+					{user?.username !== article.author.username && (
+						<FollowProfile
+							username={article.author.username}
+							following={article.author.following}
+						/>
+					)}
 					<FavoriteArticle
 						favoritesCount={article.favoritesCount}
 						isFavorited={article.favorited}

@@ -7,13 +7,7 @@ export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
 		test: /\.(ts|tsx|js)$/,
 		exclude: /node_modules/,
 		use: [
-			{ loader: 'babel-loader' },
-			{
-				loader: '@linaria/webpack-loader',
-				options: {
-					sourceMap: options.isDev,
-				},
-			},
+			{ loader: 'babel-loader', options: { presets: ['@babel/preset-env'] } },
 		],
 	};
 
@@ -22,8 +16,14 @@ export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
 		type: 'asset/resource',
 	};
 
+	const svgLoader = {
+		test: /\.svg$/i,
+		// issuer: /\.[jt]sx?$/,
+		use: ['@svgr/webpack'],
+	};
+
 	const assetLoader = {
-		test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
+		test: /\.(woff(2)?|eot|ttf|otf|)$/,
 		type: 'asset/inline',
 	};
 	const cssLoader = {
@@ -47,5 +47,5 @@ export const buildLoaders = (options: BuildOptions): webpack.RuleSetRule[] => {
 		],
 	};
 
-	return [assetLoader, fileLoader, cssLoader, babelLoader];
+	return [assetLoader, fileLoader, svgLoader, cssLoader, babelLoader];
 };

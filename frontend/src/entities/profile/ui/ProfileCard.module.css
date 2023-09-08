@@ -1,0 +1,40 @@
+.profile_card {
+	width: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	max-width: 800px;
+}
+
+.profile_info {
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	align-items: center;
+}
+
+.profile_image {
+	border-radius: 50%;
+	max-width: 100px;
+}
+
+.profile_name {
+	font-size: var(--fs-600);
+	font-weight: 700;
+}
+
+.profile_bio {
+	font-weight: 300;
+	color: hsl(var(--clr-gray));
+	max-width: 400px;
+}
+
+.profile_actions {
+	width: 100%;
+	text-align: right;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 0.5rem;
+}

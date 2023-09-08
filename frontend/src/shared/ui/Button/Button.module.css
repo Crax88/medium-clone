@@ -1,0 +1,73 @@
+.app_button {
+	border-radius: 0.25rem;
+	border: 1px solid hsl(var(--clr-gray) / 0.8);
+	color: hsl(var(--clr-gray) / 0.8);
+	background-color: transparent;
+	cursor: pointer;
+	font-size: var(--fs-400);
+	padding: 0.5rem 1rem;
+	text-align: center;
+	display: inline-block;
+}
+
+.app_button:hover {
+	background-color: hsl(var(--clr-gray) / 0.8);
+	color: hsl(var(--clr-white));
+}
+
+.app_button_contained {
+	background-color: hsl(var(--clr-gray) / 0.8);
+	color: hsl(var(--clr-white));
+}
+
+.app_button_contained:hover {
+	background-color: hsl(var(--clr-gray));
+}
+
+.app_button_primary {
+	border: 1px solid hsl(var(--clr-primary));
+	color: hsl(var(--clr-primary));
+}
+
+.app_button_primary:hover {
+	background-color: hsl(var(--clr-primary));
+	color: hsl(var(--clr-white));
+}
+
+.app_button_primary_contained {
+	background-color: hsl(var(--clr-primary) / 0.8);
+	color: hsl(var(--clr-white));
+}
+
+.app_button_primary_contained:hover {
+	background-color: hsl(var(--clr-primary));
+}
+
+.app_button_danger {
+	border: 1px solid hsl(var(--clr-danger));
+	color: hsl(var(--clr-danger));
+}
+
+.app_button_danger:hover {
+	background-color: hsl(var(--clr-danger));
+	color: hsl(var(--clr-white));
+}
+
+.app_button_danger_contained {
+	background-color: hsl(var(--clr-danger) / 0.9);
+	color: hsl(var(--clr-white));
+}
+
+.app_button_danger_contained:hover {
+	background-color: hsl(var(--clr-danger));
+}
+
+.app_button_small {
+	padding: 0.25rem 0.5rem;
+	font-size: var(--fs-300);
+}
+
+.app_button_large {
+	padding: 0.75rem 1.5rem;
+	font-size: var(--fs-500);
+}

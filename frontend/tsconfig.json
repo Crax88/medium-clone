@@ -2,9 +2,11 @@
 	"compilerOptions": {
 		"target": "esnext",
 		"module": "esnext",
+		"allowJs": false,
 		"moduleResolution": "node",
 		"lib": ["DOM", "ESNext"],
 		"jsx": "react-jsx",
+		"typeRoots": ["node_modules/@types", "./types/app.d.ts"],
 		// "noEmit": true,
 		"isolatedModules": true,
 		"esModuleInterop": true,
@@ -19,8 +21,13 @@
 			"src": ["src/*"]
 		}
 	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules", "build"],
+	"include": [
+		"./src/**/*",
+		"./types/app.d.ts",
+		"./webpack.config.ts",
+		"./config/**/*"
+	],
+	"exclude": ["./node_modules/", "build"],
 	"ts-node": {
 		"compilerOptions": {
 			"module": "CommonJS"

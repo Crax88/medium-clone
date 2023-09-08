@@ -1,0 +1,19 @@
+.nav {
+	display: flex;
+	align-items: center;
+	list-style: none;
+	gap: 1rem;
+}
+
+.nav li a {
+	text-decoration: none;
+	color: hsl(var(--clr-gray));
+}
+
+nav li a:hover {
+	color: hsl(var(--clr-dark));
+}
+
+.nav li a.active-link {
+	color: hsl(var(--clr-dark));
+}

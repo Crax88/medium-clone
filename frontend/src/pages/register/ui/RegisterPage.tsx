@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { classNames as cn } from 'shared/lib';
 import classes from './RegisterPage.module.css';
-import { RegisterForm } from 'features/authenticate/register';
+import { RegisterForm } from 'features/session/register';
 
 const RegisterPage = () => {
 	const navigate = useNavigate();

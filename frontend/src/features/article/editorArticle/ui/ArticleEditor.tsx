@@ -5,18 +5,23 @@ import {
 	articleFormSchema,
 } from '../model/articleFormSchema';
 import { Button, Input, Textarea } from 'shared/ui';
-import classes from './ArticleForm.module.css';
-import { useEffect } from 'react';
+import classes from './ArticleEditor.module.css';
 import { isFetchBaseQueryError, isValidationError } from 'shared/api';
-import { TArticle, useCreateArticleMutation } from 'entities/article';
-import { useUpdateArticleMutation } from 'entities/article/api/articleApi';
+import { TArticleCreateDto } from 'entities/article/api/types';
 
 type Props = {
-	onComplete?: (article: TArticle) => void;
-	editArticle?: TArticle;
+	onSubmit: (article: TArticleCreateDto) => void;
+	initialArticle: TArticleCreateDto;
+	isLoading: boolean;
+	error: any;
 };
 
-const ArticleForm = ({ onComplete, editArticle }: Props) => {
+const ArticleEditor = ({
+	onSubmit,
+	initialArticle,
+	isLoading,
+	error,
+}: Props) => {
 	const {
 		register,
 		handleSubmit,
@@ -24,31 +29,10 @@ const ArticleForm = ({ onComplete, editArticle }: Props) => {
 	} = useForm<ArticlenFormSchema>({
 		resolver: zodResolver(articleFormSchema),
 		defaultValues: {
-			title: editArticle?.title || '',
-			description: editArticle?.description || '',
-			body: editArticle?.body || '',
-			tagList: editArticle?.tagList.join(',') || '',
+			...initialArticle,
+			tagList: initialArticle.tagList.join(','),
 		},
 	});
-
-	const [
-		createArticle,
-		{
-			isLoading: createLoading,
-			isSuccess: createSuccess,
-			error: createError,
-			data: newArticle,
-		},
-	] = useCreateArticleMutation();
-	const [
-		updateArticle,
-		{
-			isLoading: updateLoading,
-			isSuccess: updateSuccess,
-			error: updateError,
-			data: updatedArticle,
-		},
-	] = useUpdateArticleMutation();
 
 	const onSubmitHandler = (values: ArticlenFormSchema) => {
 		const articleData = {
@@ -58,48 +42,22 @@ const ArticleForm = ({ onComplete, editArticle }: Props) => {
 			tagList: values.tagList?.split(',') ?? [],
 		};
 
-		if (editArticle) {
-			updateArticle({
-				slug: editArticle.slug,
-				values: articleData,
-			});
-		} else {
-			createArticle(articleData);
-		}
+		onSubmit(articleData);
 	};
 
-	let serverError: string[] = [];
+	const serverError: string[] = [];
 
-	if (createLoading || updateLoading) {
-		serverError = [];
-	} else if (createError || updateError) {
-		const err = createError || updateError;
-		if (isValidationError(err)) {
-			for (const key in err.data.errors) {
-				serverError.push(`${key} ${err.data.errors[key]}`);
+	if (error) {
+		if (isValidationError(error)) {
+			for (const key in error.data.errors) {
+				serverError.push(`${key} ${error.data.errors[key]}`);
 			}
-		} else if (isFetchBaseQueryError(err)) {
-			serverError.push(JSON.stringify(err.data));
+		} else if (isFetchBaseQueryError(error)) {
+			serverError.push(JSON.stringify(error.data));
 		} else {
-			serverError.push(err?.message || 'Something went wrong');
+			serverError.push(error?.message || 'Something went wrong');
 		}
 	}
-
-	useEffect(() => {
-		if (createSuccess && newArticle && onComplete) {
-			onComplete(newArticle);
-		}
-		if (updateSuccess && onComplete && updatedArticle) {
-			onComplete(updatedArticle);
-		}
-	}, [
-		createSuccess,
-		updateSuccess,
-		onComplete,
-		updateArticle,
-		newArticle,
-		updatedArticle,
-	]);
 
 	return (
 		<form onSubmit={handleSubmit(onSubmitHandler)}>
@@ -152,6 +110,7 @@ const ArticleForm = ({ onComplete, editArticle }: Props) => {
 					variant="contained"
 					size="large"
 					type="submit"
+					disabled={isLoading}
 				>
 					Publish Article
 				</Button>
@@ -160,4 +119,4 @@ const ArticleForm = ({ onComplete, editArticle }: Props) => {
 	);
 };
 
-export default ArticleForm;
+export default ArticleEditor;

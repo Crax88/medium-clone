@@ -1,0 +1,22 @@
+.form_control {
+	display: block;
+	width: 100%;
+	background-color: hsl(var(--clr-white));
+	color: hsl(var(--clr-black));
+	padding: 0.5rem 0.75rem;
+	border: 1px solid hsl(var(--clr-gray));
+	border-radius: 0.25rem;
+	resize: vertical;
+}
+
+.form_control:focus,
+.form_control:active {
+	outline: none;
+	border-color: hsl(var(--clr-blue));
+}
+
+.form_control_large {
+	padding: 0.75rem 1.5rem;
+	border-radius: 0.3rem;
+	font-size: var(--fs-500);
+}

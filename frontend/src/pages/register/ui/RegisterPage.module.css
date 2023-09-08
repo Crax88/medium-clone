@@ -1,0 +1,26 @@
+.container {
+	padding-inline: 2em;
+	margin-inline: auto;
+	max-width: 75rem;
+}
+
+.login {
+	text-align: center;
+}
+
+.login_header {
+	font-size: 2.5rem;
+	margin: 0;
+	font-weight: 500;
+}
+
+.login_link {
+	text-decoration: none;
+	color: hsl(var(--clr-primary));
+	margin-top: 0.5rem;
+}
+
+.login_form {
+	max-width: 500px;
+	margin: 0.5rem auto 0 auto;
+}

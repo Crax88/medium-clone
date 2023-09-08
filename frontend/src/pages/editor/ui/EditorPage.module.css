@@ -1,0 +1,10 @@
+.container {
+	padding-inline: 2em;
+	margin-inline: auto;
+	max-width: 75rem;
+}
+
+.form_container {
+	margin-inline: auto;
+	max-width: 800px;
+}

@@ -1,12 +1,15 @@
 import webpack from 'webpack';
 import CssMinimizerPlugin from 'css-minimizer-webpack-plugin';
+import TerserPlugin from 'terser-webpack-plugin';
 import { buildResolvers } from './buildResolvers';
 import { buildLoaders } from './buildLoaders';
 import { buildPlugins } from './buildPlugins';
 import { buildDevServer } from './buildDevServer';
 import { BuildOptions } from './types';
 
-export const buildWebpackConfig = (options: BuildOptions): webpack.Configuration => {
+export const buildWebpackConfig = (
+	options: BuildOptions,
+): webpack.Configuration => {
 	const { mode, pathes, isDev } = options;
 	return {
 		mode,
@@ -34,7 +37,10 @@ export const buildWebpackConfig = (options: BuildOptions): webpack.Configuration
 		optimization: options.isDev
 			? undefined
 			: {
-					minimizer: [new CssMinimizerPlugin()],
+					minimizer: [
+						new CssMinimizerPlugin(),
+						new TerserPlugin({ test: /\.(ts|tsx|js)$/ }),
+					],
 					moduleIds: 'deterministic',
 					runtimeChunk: {
 						name: 'manifest',
@@ -46,12 +52,6 @@ export const buildWebpackConfig = (options: BuildOptions): webpack.Configuration
 								name: 'vendor',
 								test: /[\\/]node_modules[\\/]/,
 								chunks: 'all',
-							},
-							common: {
-								name: 'components',
-								test: /[\\/]src[\\/]components[\\/]/,
-								chunks: 'all',
-								minSize: 0,
 							},
 						},
 					},

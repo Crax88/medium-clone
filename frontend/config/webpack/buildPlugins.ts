@@ -6,15 +6,23 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin';
 import { BuildOptions } from './types';
 import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+import EslintWebPackPlugin from 'eslint-webpack-plugin';
+import path from 'path';
 
-export const buildPlugins = (options: BuildOptions): webpack.WebpackPluginInstance[] => {
+export const buildPlugins = (
+	options: BuildOptions,
+): webpack.WebpackPluginInstance[] => {
 	const plugins = [
 		new HtmlWebpackPlugin({
 			template: options.pathes.html,
 			title: options.title,
+			favicon: path.resolve(__dirname, '..', '..', 'public', 'favicon.ico'),
+			publicPath: './',
 		}),
 
-		new CopyWebpackPlugin({ patterns: [{ from: options.pathes.assets, to: '.' }] }),
+		new CopyWebpackPlugin({
+			patterns: [{ from: options.pathes.assets, to: '.' }],
+		}),
 		new webpack.ProgressPlugin(),
 		new MiniCssExtractPlugin({
 			filename: 'css/[name].[contenthash:8].css',
@@ -23,6 +31,10 @@ export const buildPlugins = (options: BuildOptions): webpack.WebpackPluginInstan
 		new webpack.DefinePlugin({
 			__IS_DEV__: JSON.stringify(options.isDev),
 			__API_URL__: JSON.stringify('/api'),
+		}),
+		new EslintWebPackPlugin({
+			overrideConfigFile: path.resolve(__dirname, '..', '..', '.eslintrc.js'),
+			extensions: ['tsx', 'ts'],
 		}),
 	];
 

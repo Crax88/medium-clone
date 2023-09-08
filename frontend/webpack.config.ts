@@ -11,7 +11,9 @@ const pathes: BuildPathes = {
 	assets: path.resolve(__dirname, 'public', 'assets'),
 };
 
-export default (env: BuildEnv = { mode: 'development', port: 3000, analyzerMode: 'off' }) => {
+export default (
+	env: BuildEnv = { mode: 'development', port: 3000, analyzerMode: 'off' },
+) => {
 	const mode = env.mode;
 	const port = env.port;
 	const isDev = mode === 'development';

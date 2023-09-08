@@ -1,0 +1,23 @@
+.tag_default {
+	text-decoration: none;
+	padding: 0.1rem 0.6em;
+	font-size: var(--fs-300);
+	border-radius: 10rem;
+	color: hsl(var(--clr-dark-gray));
+}
+
+.tag_contained {
+	background-color: hsla(var(--clr-dark-gray) / 0.8);
+	color: hsl(var(--clr-white));
+}
+
+.tag_contained:hover {
+	background-color: hsl(var(--clr-dark-gray));
+}
+
+.tag_outlined {
+	border: 1px solid hsl(var(--clr-gray));
+	color: hsl(var(--clr-gray));
+	background-color: transparent;
+	font-weight: 300;
+}

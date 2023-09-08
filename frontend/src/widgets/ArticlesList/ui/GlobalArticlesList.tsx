@@ -53,11 +53,13 @@ const GlobalArticlesList = ({ query, pathName }: Props) => {
 								<ArticleMeta
 									article={article}
 									actionsSlot={
-										<FavoriteArticleBtn
-											slug={article.slug}
-											favoritesCount={article.favoritesCount}
-											isFavorited={article.favorited}
-										/>
+										<div style={{ marginLeft: 'auto' }}>
+											<FavoriteArticleBtn
+												slug={article.slug}
+												favoritesCount={article.favoritesCount}
+												isFavorited={article.favorited}
+											/>
+										</div>
 									}
 								/>
 							}

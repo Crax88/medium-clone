@@ -3,6 +3,8 @@ import { useGetArticleQuery } from 'entities/article';
 import { useParams } from 'react-router-dom';
 import classes from './ArticlePage.module.css';
 import { ArticleMeta } from 'widgets/ArticleMeta';
+import { CommentsList } from 'widgets/CommentsList';
+import { NewCommentEditor } from 'widgets/NewCommentEditor';
 
 const ArticlePage = () => {
 	const { slug = '' } = useParams();
@@ -51,6 +53,11 @@ const ArticlePage = () => {
 						style={{ justifyContent: 'center' }}
 					>
 						<ArticleMeta article={article} />
+					</div>
+					<div style={{ margin: 'auto', maxWidth: '66%' }}>
+						<NewCommentEditor slug={article.slug} />
+						<br />
+						<CommentsList slug={article.slug} />
 					</div>
 				</div>
 			</div>

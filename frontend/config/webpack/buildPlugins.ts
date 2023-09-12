@@ -18,6 +18,7 @@ export const buildPlugins = (
 			title: options.title,
 			favicon: path.resolve(__dirname, '..', '..', 'public', 'favicon.ico'),
 			publicPath: './',
+			inject: 'body',
 		}),
 
 		new CopyWebpackPlugin({

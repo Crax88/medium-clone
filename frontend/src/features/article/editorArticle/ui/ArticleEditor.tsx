@@ -13,7 +13,7 @@ type Props = {
 	onSubmit: (article: TArticleCreateDto) => void;
 	initialArticle: TArticleCreateDto;
 	isLoading: boolean;
-	error: any;
+	error: unknown;
 };
 
 const ArticleEditor = ({
@@ -54,8 +54,10 @@ const ArticleEditor = ({
 			}
 		} else if (isFetchBaseQueryError(error)) {
 			serverError.push(JSON.stringify(error.data));
+		} else if (error instanceof Error) {
+			serverError.push(error?.message);
 		} else {
-			serverError.push(error?.message || 'Something went wrong');
+			serverError.push('Server error');
 		}
 	}
 

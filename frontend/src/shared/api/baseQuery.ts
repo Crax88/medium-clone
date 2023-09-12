@@ -16,17 +16,12 @@ export const baseQuery: BaseQueryFn<
 > = fetchBaseQuery({
 	baseUrl: config.apiUrl,
 	// credentials: 'include',
-	prepareHeaders: (headers) => {
-		headers.set(
-			'Authorization',
-			// eslint-disable-next-line max-len
-			'Token eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImVtYWlsIjoidGVzdGNyYXhAZ21haWwuY29tIiwidXNlcm5hbWUiOiJUZXN0Q3JheCJ9LCJpYXQiOjE2OTA5NzAxNzEsImV4cCI6MTY5NjE1NDE3MX0.fG-vjDgJX4AG2-03VhYbWPlRkNEx1p2qMgE5XZFSc5M',
-		);
-		// const { accessToken } = (getState() as RootState).session;
+	prepareHeaders: (headers, { getState }) => {
+		const { acccessToken } = (getState() as RootState).session;
 
-		// if (accessToken) {
-		// 	headers.set('Authorization', `Bearer ${accessToken}`);
-		// }
+		if (acccessToken) {
+			headers.set('Authorization', `Token ${acccessToken}`);
+		}
 
 		return headers;
 	},

@@ -1,0 +1,38 @@
+.comment {
+	display: flex;
+	flex-direction: column;
+	border: 1px solid hsl(var(--clr-light-gray));
+	border-radius: 0.25rem;
+}
+
+.comment_header {
+	min-width: 0;
+	padding: 0;
+	margin: 0;
+	border: 0;
+}
+
+.comment_header textarea {
+	resize: none;
+}
+
+.comment_footer {
+	border-top: 1px solid hsl(var(--clr-light-gray));
+	font-size: var(--fs-300);
+	font-weight: 300;
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	background-color: hsl(var(--clr-light-gray));
+	padding: 0.75rem 1.25rem;
+	min-width: 0;
+	margin: 0;
+	border: 0;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.errors_container {
+	margin: 0;
+	padding: 0;
+}

@@ -1,0 +1,5 @@
+.useravatar {
+	border-radius: 50%;
+	height: 20px;
+	aspect-ratio: 1;
+}

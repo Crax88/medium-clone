@@ -1,5 +1,5 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { LoginForm } from 'features/authenticate/login';
+import { LoginForm } from 'features/session/login';
 import { classNames as cn } from 'shared/lib';
 import classes from './LoginPage.module.css';
 

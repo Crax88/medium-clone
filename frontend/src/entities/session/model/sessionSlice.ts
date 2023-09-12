@@ -1,6 +1,6 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createSlice } from '@reduxjs/toolkit';
 import { sessionApi } from '../api/sessionApi';
-import { type Session } from './types';
+import { User, type Session } from './types';
 
 type SessionState =
 	| ({ isAuth: true } & Session)
@@ -18,6 +18,9 @@ export const sessionSlice = createSlice({
 			state.isAuth = false;
 			state.acccessToken = undefined;
 			state.user = undefined;
+		},
+		updateUser: (state, action: PayloadAction<User>) => {
+			state.user = action.payload;
 		},
 	},
 	extraReducers: (builder) => {
@@ -49,4 +52,4 @@ export const selectIsAuth = (state: RootState) => state.session.isAuth;
 
 export const selectUser = (state: RootState) => state.session.user;
 
-export const { clearSession } = sessionSlice.actions;
+export const { clearSession, updateUser } = sessionSlice.actions;

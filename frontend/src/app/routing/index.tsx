@@ -12,6 +12,7 @@ const RegisterPage = lazy(() => import('pages/register'));
 const ArticlePage = lazy(() => import('pages/article'));
 const EditorPage = lazy(() => import('pages/editor'));
 const ProfilePage = lazy(() => import('pages/profile'));
+const SettingsPage = lazy(() => import('pages/settings'));
 
 const WithWrapper = ({ children }: { children: ReactNode }) => {
 	return <Suspense fallback={<PageLoader />}>{children}</Suspense>;
@@ -98,6 +99,14 @@ export const AppRouting = () => {
 					element={
 						<WithWrapper>
 							<ProfilePage />
+						</WithWrapper>
+					}
+				/>
+				<Route
+					path="/setting"
+					element={
+						<WithWrapper>
+							<SettingsPage />
 						</WithWrapper>
 					}
 				/>

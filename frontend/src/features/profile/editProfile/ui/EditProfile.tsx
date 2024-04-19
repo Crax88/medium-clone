@@ -7,7 +7,7 @@ const EditProfile = () => {
 	const navigate = useNavigate();
 
 	const handleClick = () => {
-		navigate('/settings');
+		navigate('/setting');
 	};
 
 	return (

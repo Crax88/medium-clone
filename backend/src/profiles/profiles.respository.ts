@@ -20,9 +20,9 @@ export class ProfilesRepository implements ProfilesRepositoryInterface {
 		const profile = await this.repository
 			.createQueryBuilder('p')
 			.select([
-				'p.username',
-				'p.bio',
-				'p.image',
+				'p.username as username',
+				'p.bio as bio',
+				'p.image as image',
 				'CASE WHEN pf.follower_id IS NOT NULL THEN true ELSE false END as following',
 			])
 			.leftJoin(

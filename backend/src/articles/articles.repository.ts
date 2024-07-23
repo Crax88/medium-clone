@@ -46,8 +46,8 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 				'a.title as title',
 				'a.description as description',
 				'a.body as body',
-				'a.created_at as createdAt',
-				'a.updated_at as updatedAt',
+				'a.created_at as "createdAt"',
+				'a.updated_at as "updatedAt"',
 				'json_build_object(\'username\',"u"."username",\'bio\',"u"."bio",\'image\',"u"."image", \'following\', COALESCE(pf.follower_id::bool, false)) as author',
 				'COALESCE(t."tagList", \'{}\') as "tagList"',
 				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',
@@ -113,7 +113,7 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 			.limit(query.limit ? Number(query.limit) : 10)
 			.offset(query.offset ? Number(query.offset) : 0)
 			.getRawMany();
-
+		
 		return { articles, articlesCount };
 	}
 
@@ -125,8 +125,8 @@ export class ArticlesRepository implements ArticlesRepositoryInterface {
 				'a.title as title',
 				'a.description as description',
 				'a.body as body',
-				'a.created_at as createdAt',
-				'a.updated_at as updatedAt',
+				'a.created_at as "createdAt"',
+				'a.updated_at as "updatedAt"',
 				'json_build_object(\'username\',"u"."username",\'bio\',"u"."bio",\'image\',"u"."image", \'following\', COALESCE(pf.follower_id::bool, false)) as author',
 				'COALESCE(t."tagList", \'{}\') as "tagList"',
 				'COALESCE("af"."favoritesCount"::integer, 0) as "favoritesCount"',

@@ -4,7 +4,10 @@ import { useAppSelector } from 'shared/model/hooks';
 import { selectIsAuth } from 'entities/session';
 import PlusIcon from '../asset/plusIcon.svg';
 import MinusIcon from '../asset/minusIcon.svg';
-import { memo } from 'react';
+import {
+	memo,
+	// , useEffect
+} from 'react';
 import { TProfile } from 'entities/profile';
 import {
 	useFollowProfileMutation,
@@ -20,10 +23,20 @@ const FollowProfile = ({ username, following }: Props) => {
 	const navigate = useNavigate();
 	const { pathname, search } = useLocation();
 	const isAuth = useAppSelector(selectIsAuth);
-	const [followProfile, { isLoading: followLoading }] =
-		useFollowProfileMutation();
-	const [unfollowProfile, { isLoading: unfollowLoading }] =
-		useUnfollowProfileMutation();
+	const [
+		followProfile,
+		{
+			isLoading: followLoading,
+			// isSuccess: followSuccess
+		},
+	] = useFollowProfileMutation();
+	const [
+		unfollowProfile,
+		{
+			isLoading: unfollowLoading,
+			// isSuccess: unfollowSuccess
+		},
+	] = useUnfollowProfileMutation();
 	const disabled = followLoading || unfollowLoading;
 
 	const handleClick = () => {
@@ -36,20 +49,13 @@ const FollowProfile = ({ username, following }: Props) => {
 		}
 	};
 
-	// let content = '';
-	// if (following) {
-	// 	content += (
-	// 		<>
-	// 			<span>Unfollow</span> <span>{username}</span>`
-	// 		</>
-	// 	);
-	// } else {
-	// 	content += (
-	// 		<>
-	// 			<span>Follow</span> <span>{username}</span>`
-	// 		</>
-	// 	);
-	// }
+	// useEffect(() => {
+	// 	if (followSuccess || unfollowSuccess) {
+	// 		let a = 6;
+	// 		a = 7;
+	// 	}
+	// }, [followSuccess, unfollowSuccess]);
+
 	return (
 		<Button
 			onClick={handleClick}

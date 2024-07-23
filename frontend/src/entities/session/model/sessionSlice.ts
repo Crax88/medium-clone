@@ -22,6 +22,11 @@ export const sessionSlice = createSlice({
 		updateUser: (state, action: PayloadAction<User>) => {
 			state.user = action.payload;
 		},
+		setAuth: (state: SessionState, action: PayloadAction<Session>) => {
+			state.isAuth = true;
+			state.user = action.payload.user;
+			state.acccessToken = action.payload.acccessToken;
+		},
 	},
 	extraReducers: (builder) => {
 		builder.addMatcher(
@@ -52,4 +57,4 @@ export const selectIsAuth = (state: RootState) => state.session.isAuth;
 
 export const selectUser = (state: RootState) => state.session.user;
 
-export const { clearSession, updateUser } = sessionSlice.actions;
+export const { clearSession, updateUser, setAuth } = sessionSlice.actions;

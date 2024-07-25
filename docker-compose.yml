@@ -42,7 +42,7 @@ services:
       SALT: ${SALT}
       ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
     ports:
-      - "4000:4000"
+      - "${API_PORT}:${API_PORT}"
     depends_on:
       db:
         condition: service_healthy

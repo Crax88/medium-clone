@@ -91,7 +91,7 @@ export class ArticlesService implements ArticlesServiceInterface {
 	}
 
 	async getArticle(slug: string, userId?: number): Promise<ArticleResponseDto> {
-		const article = await this.articlesRepository.getArticle(slug);
+		const article = await this.articlesRepository.getArticle(slug, userId);
 		if (!article) {
 			throw new HttpError(404, 'article not found');
 		}

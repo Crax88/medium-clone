@@ -27,14 +27,14 @@ export const sessionApi = baseApi.injectEndpoints({
 			invalidatesTags: [SESSION_TAG],
 			transformResponse: (response: SessionDto) => mapSession(response),
 		}),
-		// me: build.query<User, void>({
-		// 	query: () => ({
-		// 		url: `/me`,
-		// 	}),
-		// 	providesTags: [SESSION_TAG],
-		// 	transformResponse: (response: UserDto) => mapUser(response),
-		// }),
+		me: builder.query<Session['user'], void>({
+			query: () => ({
+				url: `/user`,
+			}),
+			providesTags: [SESSION_TAG],
+			// transformResponse: (response: UserDto) => mapUser(response),
+		}),
 	}),
 });
 
-export const { useLoginMutation, useRegisterMutation } = sessionApi;
+export const { useLoginMutation, useRegisterMutation, useMeQuery } = sessionApi;

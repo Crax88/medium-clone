@@ -47,6 +47,7 @@ export class UsersController extends BaseController implements UsersControllerIn
 				path: '/user',
 				method: 'get',
 				handler: this.authenticate,
+				middlewares: [new AuthGuard()],
 			},
 			{
 				path: '/user',
@@ -81,10 +82,14 @@ export class UsersController extends BaseController implements UsersControllerIn
 	): Promise<void> {
 		try {
 			const { user, refreshToken } = await this.usersService.login(req.body);
+			
 			res.cookie('rf', refreshToken, {
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
+				sameSite: 'lax'
+				
 			});
+			
 			this.ok(res, { user });
 		} catch (error) {
 			next(error);
@@ -105,12 +110,13 @@ export class UsersController extends BaseController implements UsersControllerIn
 	async refresh(req: Request<{}, {}, {}>, res: Response, next: NextFunction): Promise<void> {
 		try {
 			const { rf } = req.cookies;
+			
 			const { user, refreshToken } = await this.usersService.refresh(rf);
 			res.cookie('rf', refreshToken, {
 				maxAge: 30 * 24 * 60 * 60 * 1000,
 				httpOnly: true,
 			});
-			this.ok(res, { user });
+			this.ok(res, { user, refreshToken });
 		} catch (error) {
 			next(error);
 		}
